@@ -4,8 +4,10 @@ go 1.19
 
 require (
 	github.com/gofiber/fiber/v2 v2.37.1
+	github.com/golang-jwt/jwt/v4 v4.4.2
 	github.com/joho/godotenv v1.4.0
 	github.com/matoous/go-nanoid/v2 v2.0.0
+	golang.org/x/crypto v0.0.0-20220919173607-35f4265a4bc0
 )
 
 require (
@@ -19,7 +21,6 @@ require (
 	github.com/jackc/pgx/v4 v4.17.2 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
-	golang.org/x/crypto v0.0.0-20220919173607-35f4265a4bc0 // indirect
 	golang.org/x/text v0.3.7 // indirect
 )
 

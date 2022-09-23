@@ -44,8 +44,8 @@ func init() {
 
 	// fmt.Printf("DNS: %s\n", dns)
 	configs.Store, err = gorm.Open(postgres.Open(dns), &gorm.Config{
-		DisableForeignKeyConstraintWhenMigrating: true,
-		SkipDefaultTransaction:                   true,
+		// DisableForeignKeyConstraintWhenMigrating: true,
+		SkipDefaultTransaction: true,
 		NowFunc: func() time.Time {
 			return time.Now().Local()
 		},
@@ -64,7 +64,14 @@ func init() {
 	// Auto Migration DB
 	configs.Store.AutoMigrate(&models.User{})
 	configs.Store.AutoMigrate(&models.JwtToken{})
+	configs.Store.AutoMigrate(&models.Adminstrator{})
 	configs.Store.AutoMigrate(&models.Area{})
+	configs.Store.AutoMigrate(&models.Whs{})
+	configs.Store.AutoMigrate(&models.Factory{})
+	configs.Store.AutoMigrate(&models.Position{})
+	configs.Store.AutoMigrate(&models.Department{})
+	configs.Store.AutoMigrate(&models.PrefixName{})
+	configs.Store.AutoMigrate(&models.Profile{})
 }
 
 func main() {
