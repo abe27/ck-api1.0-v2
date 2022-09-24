@@ -112,7 +112,7 @@ func CreateFileEdi(c *fiber.Ctx) error {
 	obj.Mailbox = mailbox
 	obj.FileType = filetype
 	// Read Text files
-	services.ReadGediFile(&obj)
+	go services.ReadGediFile(&obj)
 	// // Create upload log
 	logData := models.SyncLogger{
 		Title:       "upload gedi file",
@@ -122,14 +122,14 @@ func CreateFileEdi(c *fiber.Ctx) error {
 
 	r.Message = services.MessageCreatedData(&obj.ID)
 	r.Data = &obj
-	response := c.Status(fiber.StatusNotModified).JSON(&r)
+	response := c.Status(fiber.StatusCreated).JSON(&r)
 	if objDup.BatchNo != "" {
 		logData = models.SyncLogger{
 			Title:       "upload gedi file",
 			Description: fmt.Sprintf("Duplicate edi batch number: %s", obj.BatchNo),
 			IsSuccess:   true,
 		}
-		response = c.Status(fiber.StatusNotModified).JSON(&r)
+		response = c.Status(fiber.StatusOK).JSON(&r)
 	}
 
 	db.Create(&logData)

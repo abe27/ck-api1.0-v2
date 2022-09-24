@@ -89,7 +89,6 @@ func SetUpRouter(c *fiber.App) {
 	part_type.Get("/:id", controllers.ShowPartTypeByID)
 	part_type.Put("/:id", controllers.UpdatePartTypeByID)
 	part_type.Delete("/:id", controllers.DeletePartTypeByID)
-
 	// Part Type Router
 	edi := r.Group("edi")
 	edi_type := edi.Group("type")
@@ -106,10 +105,32 @@ func SetUpRouter(c *fiber.App) {
 	mailbox.Put("/:id", controllers.UpdateMailboxByID)
 	mailbox.Delete("/:id", controllers.DeleteMailboxByID)
 
+	part := r.Group("part")
+	part.Get("", controllers.GetAllPart)
+	part.Post("", controllers.CreatePart)
+	part.Get("/:id", controllers.ShowPartByID)
+	part.Put("/:id", controllers.UpdatePartByID)
+	part.Delete("/:id", controllers.DeletePartByID)
+
+	ledger := r.Group("ledger")
+	ledger.Get("", controllers.GetAllLedger)
+	ledger.Post("", controllers.CreateLedger)
+	ledger.Get("/:id", controllers.ShowLedgerByID)
+	ledger.Put("/:id", controllers.UpdateLedgerByID)
+	ledger.Delete("/:id", controllers.DeleteLedgerByID)
+
 	file_edi := edi.Group("file")
 	file_edi.Get("", controllers.GetAllFileEdi)
 	file_edi.Post("", controllers.CreateFileEdi)
 	file_edi.Get("/:id", controllers.ShowFileEdiByID)
 	file_edi.Put("/:id", controllers.UpdateFileEdiByID)
 	file_edi.Delete("/:id", controllers.DeleteFileEdiByID)
+	// Receive Type
+	receive := r.Group("receive")
+	receive_type := receive.Group("type")
+	receive_type.Get("", controllers.GetAllReceiveType)
+	receive_type.Post("", controllers.CreateReceiveType)
+	receive_type.Get("/:id", controllers.ShowReceiveTypeByID)
+	receive_type.Put("/:id", controllers.UpdateReceiveTypeByID)
+	receive_type.Delete("/:id", controllers.DeleteReceiveTypeByID)
 }

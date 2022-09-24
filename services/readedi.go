@@ -7,6 +7,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/abe27/api/configs"
 	"github.com/abe27/api/models"
@@ -14,25 +15,31 @@ import (
 
 func ConvertFloat(i string) float64 {
 	n, err := strconv.ParseFloat(i, 64)
-	db := configs.Store
-	logData := models.SyncLogger{
-		Title:       "edi convert float64",
-		Description: fmt.Sprintf("%s", err),
-		IsSuccess:   true,
+	if err != nil {
+		db := configs.Store
+		logData := models.SyncLogger{
+			Title:       "edi convert float64",
+			Description: fmt.Sprintf("%s", err),
+			IsSuccess:   true,
+		}
+		db.Create(&logData)
+		n = 0
 	}
-	db.Create(&logData)
 	return n
 }
 
 func ConvertInt(i string) int64 {
 	n, err := strconv.ParseInt(i, 10, 64)
-	db := configs.Store
-	logData := models.SyncLogger{
-		Title:       "edi convert int64",
-		Description: fmt.Sprintf("%s", err),
-		IsSuccess:   true,
+	if err != nil {
+		db := configs.Store
+		logData := models.SyncLogger{
+			Title:       "edi convert int64",
+			Description: fmt.Sprintf("%s", err),
+			IsSuccess:   true,
+		}
+		db.Create(&logData)
+		n = 0
 	}
-	db.Create(&logData)
 	return n
 }
 
@@ -53,10 +60,15 @@ func ReadGediFile(fileEdi *models.FileEdi) {
 	var typeData models.PartType
 	db.Select("id,title").First(&typeData, "title=?", fileEdi.Factory.PartType)
 
+	IsSync := false
+	if fileEdi.Factory.Title == "AW" {
+		IsSync = true
+	}
+
 	if fileEdi.FileType.Title == "R" {
 		for scanner.Scan() {
 			txt := scanner.Text()
-			receiveKey := (txt[4:(4 + 12)])
+			receiveKey := strings.ReplaceAll((txt[4:(4 + 12)]), " ", "")
 			// Check Whs
 			var receiveTypeData models.ReceiveType
 			db.Preload("Whs").First(&receiveTypeData, "title=?", receiveKey[:3])
@@ -64,6 +76,33 @@ func ReadGediFile(fileEdi *models.FileEdi) {
 			// Initailize Part Data
 			PartNo := strings.ReplaceAll(txt[76:(76+25)], " ", "")
 			PartName := strings.ReplaceAll(txt[101:(101+25)], " ", "")
+			SlugPartNo := strings.ReplaceAll(PartNo, "-", "")
+
+			part := models.Part{
+				Slug:        SlugPartNo,
+				Title:       PartNo,
+				Description: PartName,
+				IsActive:    true,
+			}
+
+			err := db.FirstOrCreate(&part, &models.Part{Slug: SlugPartNo}).Error
+			if err != nil {
+				logData := models.SyncLogger{
+					Title:       fmt.Sprintf("create master part %s", SlugPartNo),
+					Description: fmt.Sprintf("%s", err),
+					IsSuccess:   true,
+				}
+				db.Create(&logData)
+			}
+
+			// Initailize Ledger
+			ledger := models.Ledger{
+				WhsID:      &receiveTypeData.Whs.ID,
+				PartID:     &part.ID,
+				PartTypeID: &typeData.ID,
+				UnitID:     &unitData.ID,
+			}
+			db.FirstOrCreate(&ledger, &models.Ledger{WhsID: &receiveTypeData.Whs.ID, PartID: &part.ID})
 
 			obj := models.GEDIReceive{
 				Factory:          fileEdi.Factory.Title,
@@ -112,7 +151,52 @@ func ReadGediFile(fileEdi *models.FileEdi) {
 				AllocateQty:      0,
 			}
 
-			fmt.Printf("%s ==> %s unit:%s\n", obj.PartNo, obj.PartName, obj.Unit)
+			// Initailize ReceiveEnt
+			dte, _ := time.Parse("02/01/2006", obj.Aetodt)
+			receiveEnt := models.Receive{
+				FileEdiID:     &fileEdi.ID,
+				ReceiveTypeID: &receiveTypeData.ID,
+				ReceiveDate:   dte,
+				TransferOutNo: receiveKey,
+				TexNo:         "-",
+				IsSync:        true,
+				IsActive:      true,
+			}
+			db.FirstOrCreate(&receiveEnt, models.Receive{
+				TransferOutNo: obj.ReceivingKey,
+			})
+
+			receiveDetail := models.ReceiveDetail{
+				ReceiveID: &receiveEnt.ID,
+				LedgerID:  &ledger.ID,
+				PlanQty:   obj.PlnQty,
+				PlanCtn:   obj.Plnctn,
+				IsActive:  true,
+			}
+
+			db.FirstOrCreate(&receiveDetail, models.ReceiveDetail{
+				ReceiveID: &receiveEnt.ID,
+				LedgerID:  &ledger.ID,
+			})
+
+			receiveDetail.PlanQty = obj.PlnQty
+			receiveDetail.PlanCtn = obj.Plnctn
+			db.Save(&receiveDetail)
+
+			var countReceive []models.ReceiveDetail
+			db.Where("receive_id=?", receiveEnt.ID).Find(&countReceive)
+			ctn := 0
+			for _, x := range countReceive {
+				ctn += int(x.PlanCtn)
+			}
+			receiveEnt.Item = int64(len(countReceive))
+			receiveEnt.PlanCtn = int64(ctn)
+
+			// Disable Sync AW Data
+			receiveEnt.IsSync = IsSync
+			db.Save(&receiveEnt)
+
+			fmt.Printf("%s ==> %s unit:%d\n", SlugPartNo, obj.PartName, obj.PlnQty)
 		}
 	} else {
 		// plantype := "ORDERPLAN"

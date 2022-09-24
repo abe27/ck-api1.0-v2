@@ -82,6 +82,8 @@ func init() {
 	configs.Store.AutoMigrate(&models.SyncLogger{})
 	configs.Store.AutoMigrate(&models.Part{})
 	configs.Store.AutoMigrate(&models.Ledger{})
+	configs.Store.AutoMigrate(&models.Receive{})
+	configs.Store.AutoMigrate(&models.ReceiveDetail{})
 }
 
 func main() {
