@@ -19,6 +19,7 @@ var MessageRegister = func(msg string) string { return "Register " + msg + " is 
 var MessageInputValidationError = "Invalid value!"
 var MessagePasswordNotMatched = "Password is valid!"
 var MessageSystemError = "System is error!"
+var MessageSystemErrorNotSaveFile = "System is error! can't save file!"
 var MessageAuthentication = "Welcome to API Server!"
 var MessageNotFoundUser = "User is not found!"
 var MessagePasswordNotMatch = "Password is not matched!"
@@ -43,6 +44,6 @@ var MessageDuplicateData = func(title *string) string {
 var MessageDeleteData = func(title *string) string {
 	return fmt.Sprintf("Delete Data by ID: `%s(%d)` is completed.", *title, title)
 }
-var MessageUploadFileError = func(title *string) string {
-	return fmt.Sprintf("Upload File Error: `%s(%d)` is completed.", *title, title)
+var MessageUploadFileError = func(title string) string {
+	return fmt.Sprintf("Upload File Error: `%s` is completed.", title)
 }

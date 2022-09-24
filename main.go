@@ -68,6 +68,7 @@ func init() {
 	configs.Store.AutoMigrate(&models.Area{})
 	configs.Store.AutoMigrate(&models.Whs{})
 	configs.Store.AutoMigrate(&models.Factory{})
+	configs.Store.AutoMigrate(&models.ReceiveType{})
 	configs.Store.AutoMigrate(&models.Unit{})
 	configs.Store.AutoMigrate(&models.PartType{})
 	configs.Store.AutoMigrate(&models.FileType{})
@@ -77,6 +78,10 @@ func init() {
 	configs.Store.AutoMigrate(&models.Profile{})
 	configs.Store.AutoMigrate(&models.Mailbox{})
 	configs.Store.AutoMigrate(&models.FileEdi{})
+	configs.Store.AutoMigrate(&models.CartonHistory{})
+	configs.Store.AutoMigrate(&models.SyncLogger{})
+	configs.Store.AutoMigrate(&models.Part{})
+	configs.Store.AutoMigrate(&models.Ledger{})
 }
 
 func main() {

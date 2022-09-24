@@ -79,6 +79,14 @@ func UpdateFactoryByID(c *fiber.Ctx) error {
 	}
 	/// Save Data
 	// data.Title = obj.Title
+	data.InvPrefix = obj.InvPrefix
+	data.LabelPrefix = obj.LabelPrefix
+	data.PartUnit = obj.PartUnit
+	data.CdCode = obj.CdCode
+	data.PartType = obj.PartType
+	data.Sortg1 = obj.Sortg1
+	data.Sortg2 = obj.Sortg2
+	data.Sortg3 = obj.Sortg3
 	data.Description = obj.Description
 	data.IsActive = obj.IsActive
 	////

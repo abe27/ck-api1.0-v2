@@ -1,6 +1,9 @@
 package controllers
 
 import (
+	"fmt"
+	"strings"
+
 	"github.com/abe27/api/configs"
 	"github.com/abe27/api/models"
 	"github.com/abe27/api/services"
@@ -28,19 +31,109 @@ func CreateFileEdi(c *fiber.Ctx) error {
 	err := c.BodyParser(&obj)
 	if err != nil {
 		r.Message = services.MessageInputValidationError
-		r.Data = &err
-		return c.Status(fiber.StatusNotAcceptable).JSON(&r)
+		r.Data = err
+		return c.Status(fiber.StatusInternalServerError).JSON(&r)
 	}
-	// Fetch All Data
-	err = configs.Store.Create(&obj).Error
+
+	// Upload GEDI File To Directory
+	file, err := c.FormFile("file_edi")
 	if err != nil {
-		r.Message = services.MessageDuplicateData(&obj.BatchNo)
-		r.Data = &err
-		return c.Status(fiber.StatusBadRequest).JSON(&r)
+		r.Message = services.MessageUploadFileError(err.Error())
+		r.Data = err
+		return c.Status(fiber.StatusInternalServerError).JSON(&r)
 	}
-	r.Message = services.MessageCreatedData(&obj.BatchNo)
+
+	obj.BatchPath = fmt.Sprintf("edi/%s", file.Filename)
+	err = c.SaveFile(file, fmt.Sprintf("./public/edi/%s", file.Filename))
+	if err != nil {
+		r.Message = services.MessageSystemErrorNotSaveFile
+		r.Data = err
+		return c.Status(fiber.StatusInternalServerError).JSON(&r)
+	}
+	/// Check File Type
+	objName := strings.ReplaceAll(fmt.Sprint(file.Filename[0:13]), " ", "")
+	FileTypeID := "R"
+	if fmt.Sprint(objName[0:5]) == "OES.V" {
+		FileTypeID = "O"
+	}
+
+	FactoryID := "AW"
+	if objName[12:13] == "5" {
+		FactoryID = "INJ"
+	}
+	/// End Check File Type
+
+	// Create FileEdi
+	db := configs.Store
+	var factory models.Factory
+	err = db.Where("title=?", FactoryID).First(&factory).Error
+	if err != nil {
+		r.Message = services.MessageNotFoundData(&FactoryID)
+		r.Data = err
+		return c.Status(fiber.StatusNotFound).JSON(&r)
+	}
+
+	var mailbox models.Mailbox
+	err = db.Preload("Area").Where("mailbox=?", obj.MailboxID).First(&mailbox).Error
+	if err != nil {
+		r.Message = services.MessageNotFoundData(obj.MailboxID)
+		r.Data = err
+		return c.Status(fiber.StatusNotFound).JSON(&r)
+	}
+
+	var filetype models.FileType
+	err = db.Where("title=?", FileTypeID).First(&filetype).Error
+	if err != nil {
+		r.Message = services.MessageNotFoundData(&FileTypeID)
+		r.Data = err
+		return c.Status(fiber.StatusNotFound).JSON(&r)
+	}
+
+	// Create GEDI file
+	obj.FactoryID = &factory.ID
+	obj.MailboxID = &mailbox.ID
+	obj.FileTypeID = &filetype.ID
+	obj.IsDownload = true
+	obj.Size = file.Size
+	obj.BatchName = file.Filename
+
+	var objDup models.FileEdi
+	db.Select("batch_no").First(&objDup, "batch_no=?", obj.BatchNo)
+
+	err = db.FirstOrCreate(&obj, models.FileEdi{BatchNo: obj.BatchNo}).Error
+	if err != nil {
+		r.Message = services.MessageSystemError
+		r.Data = err
+		return c.Status(fiber.StatusInternalServerError).JSON(&r)
+	}
+
+	// Goroutines Read GEDI files
+	obj.Factory = factory
+	obj.Mailbox = mailbox
+	obj.FileType = filetype
+	// Read Text files
+	services.ReadGediFile(&obj)
+	// // Create upload log
+	logData := models.SyncLogger{
+		Title:       "upload gedi file",
+		Description: fmt.Sprintf("Uploaded %s is completed", obj.BatchNo),
+		IsSuccess:   true,
+	}
+
+	r.Message = services.MessageCreatedData(&obj.ID)
 	r.Data = &obj
-	return c.Status(fiber.StatusCreated).JSON(&r)
+	response := c.Status(fiber.StatusNotModified).JSON(&r)
+	if objDup.BatchNo != "" {
+		logData = models.SyncLogger{
+			Title:       "upload gedi file",
+			Description: fmt.Sprintf("Duplicate edi batch number: %s", obj.BatchNo),
+			IsSuccess:   true,
+		}
+		response = c.Status(fiber.StatusNotModified).JSON(&r)
+	}
+
+	db.Create(&logData)
+	return response
 }
 
 func ShowFileEdiByID(c *fiber.Ctx) error {

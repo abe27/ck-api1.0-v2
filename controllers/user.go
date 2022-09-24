@@ -120,7 +120,7 @@ func Profile(c *fiber.Ctx) error {
 	var jwtToken models.JwtToken
 	err := db.Select("user_id").Where("id=?", token).First(&jwtToken).Error
 	if err != nil {
-		r.Message = services.MessageSystemError
+		r.Message = services.MessageNotFoundTokenKey
 		r.Data = err
 		return c.Status(fiber.StatusInternalServerError).JSON(&r)
 	}

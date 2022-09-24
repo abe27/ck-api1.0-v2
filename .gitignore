@@ -36,3 +36,4 @@ go.work
 go.sum
 tmp
 .air.toml
+public/edi/*.TXT
