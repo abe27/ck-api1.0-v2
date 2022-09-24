@@ -185,3 +185,48 @@ func (obj *Mailbox) BeforeCreate(tx *gorm.DB) (err error) {
 	obj.ID = id
 	return
 }
+
+type Pc struct {
+	ID          string    `gorm:"primaryKey;size:21" json:"id"`
+	Title       string    `gorm:"not null;unique;size:50" json:"title" form:"title" binding:"required"`
+	Description string    `json:"description" form:"description" binding:"required"`
+	IsActive    bool      `json:"is_active" form:"is_active" binding:"required"`
+	CreatedAt   time.Time `json:"created_at" form:"created_at" default:"now"`
+	UpdatedAt   time.Time `json:"updated_at" form:"updated_at" default:"now"`
+}
+
+func (obj *Pc) BeforeCreate(tx *gorm.DB) (err error) {
+	id, _ := g.New()
+	obj.ID = id
+	return
+}
+
+type Commercial struct {
+	ID          string    `gorm:"primaryKey;size:21" json:"id"`
+	Title       string    `gorm:"not null;unique;size:50" json:"title" form:"title" binding:"required"`
+	Description string    `json:"description" form:"description" binding:"required"`
+	IsActive    bool      `json:"is_active" form:"is_active" binding:"required"`
+	CreatedAt   time.Time `json:"created_at" form:"created_at" default:"now"`
+	UpdatedAt   time.Time `json:"updated_at" form:"updated_at" default:"now"`
+}
+
+func (obj *Commercial) BeforeCreate(tx *gorm.DB) (err error) {
+	id, _ := g.New()
+	obj.ID = id
+	return
+}
+
+type SampleFlg struct {
+	ID          string    `gorm:"primaryKey;size:21" json:"id"`
+	Title       string    `gorm:"not null;unique;size:50" json:"title" form:"title" binding:"required"`
+	Description string    `json:"description" form:"description" binding:"required"`
+	IsActive    bool      `json:"is_active" form:"is_active" binding:"required"`
+	CreatedAt   time.Time `json:"created_at" form:"created_at" default:"now"`
+	UpdatedAt   time.Time `json:"updated_at" form:"updated_at" default:"now"`
+}
+
+func (obj *SampleFlg) BeforeCreate(tx *gorm.DB) (err error) {
+	id, _ := g.New()
+	obj.ID = id
+	return
+}
