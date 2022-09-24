@@ -39,7 +39,7 @@ type JwtToken struct {
 // 	return
 // }
 
-type Adminstrator struct {
+type Administrator struct {
 	ID        string    `gorm:"primaryKey;size:21;" json:"id"`
 	UserID    *string   `gorm:"unique;" json:"user_id" form:"user_id"`
 	IsActive  bool      `gorm:"null" json:"is_active,omitempty" form:"is_active" default:"false"`
@@ -48,7 +48,7 @@ type Adminstrator struct {
 	User      User      `gorm:"foreignKey:UserID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"user"`
 }
 
-func (obj *Adminstrator) BeforeCreate(tx *gorm.DB) (err error) {
+func (obj *Administrator) BeforeCreate(tx *gorm.DB) (err error) {
 	id, _ := g.New()
 	obj.ID = id
 	return

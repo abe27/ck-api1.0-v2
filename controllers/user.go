@@ -113,10 +113,10 @@ func Verify(c *fiber.Ctx) error {
 
 func Profile(c *fiber.Ctx) error {
 	var r models.Response
-	// Delete Token
 	db := configs.Store
 	s := c.Get("Authorization")
 	token := strings.TrimPrefix(s, "Bearer ")
+	// Fetch User By Token
 	var jwtToken models.JwtToken
 	err := db.Select("user_id").Where("id=?", token).First(&jwtToken).Error
 	if err != nil {
@@ -124,9 +124,26 @@ func Profile(c *fiber.Ctx) error {
 		r.Data = err
 		return c.Status(fiber.StatusInternalServerError).JSON(&r)
 	}
+	// Fetch UserID
+	var profileData models.Profile
+	err = db.
+		Preload("User").
+		Preload("Area").
+		Preload("Whs").
+		Preload("Factory").
+		Preload("Position").
+		Preload("Department").
+		Preload("PrefixName").
+		Where("user_id=?", jwtToken.UserID).Find(&profileData).
+		Error
+	if err != nil {
+		r.Message = services.MessageNotFoundData(&jwtToken.ID)
+		r.Data = err
+		return c.Status(fiber.StatusInternalServerError).JSON(&r)
+	}
 
-	r.Message = services.MessageShowDataByID(token)
-	r.Data = nil
+	r.Message = services.MessageShowDataByID(&token)
+	r.Data = &profileData
 	return c.Status(fiber.StatusOK).JSON(&r)
 }
 

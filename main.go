@@ -64,10 +64,12 @@ func init() {
 	// Auto Migration DB
 	configs.Store.AutoMigrate(&models.User{})
 	configs.Store.AutoMigrate(&models.JwtToken{})
-	configs.Store.AutoMigrate(&models.Adminstrator{})
+	configs.Store.AutoMigrate(&models.Administrator{})
 	configs.Store.AutoMigrate(&models.Area{})
 	configs.Store.AutoMigrate(&models.Whs{})
 	configs.Store.AutoMigrate(&models.Factory{})
+	configs.Store.AutoMigrate(&models.Unit{})
+	configs.Store.AutoMigrate(&models.PartType{})
 	configs.Store.AutoMigrate(&models.Position{})
 	configs.Store.AutoMigrate(&models.Department{})
 	configs.Store.AutoMigrate(&models.PrefixName{})

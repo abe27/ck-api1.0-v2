@@ -12,7 +12,7 @@ func MessageShowAll(txt string) string {
 }
 
 func MessageNotFound(txt string) string {
-	return fmt.Sprintf("Not found, %s on %s", txt, (time.Now()).Format("2006-01-02 15:04:05"))
+	return fmt.Sprintf("Not found, %s", txt)
 }
 
 var MessageRegister = func(msg string) string { return "Register " + msg + " is completed!" }
@@ -29,14 +29,20 @@ var MessageUserLeave = "User is logout!"
 var MessageUserNotActive = "User is not active!"
 
 var MessageShowAllData = func(title string) string { return fmt.Sprintf("Show All `%s`!", title) }
-var MessageCreatedData = func(title string) string { return fmt.Sprintf("Create Data `%s` is completed", title) }
-var MessageShowDataByID = func(title string) string { return fmt.Sprintf("Show Data by ID: `%s`", title) }
-var MessageUpdateDataByID = func(title string) string { return fmt.Sprintf("Update Data by ID: `%s` is completed!", title) }
-var MessageNotFoundData = func(title string) string {
-	return fmt.Sprintf("Not found `%s`!", title)
+var MessageCreatedData = func(title *string) string { return fmt.Sprintf("Create Data `%s(%d)` is completed", *title, title) }
+var MessageShowDataByID = func(title *string) string { return fmt.Sprintf("Show Data by ID: `%s(%d)`", *title, title) }
+var MessageUpdateDataByID = func(title *string) string {
+	return fmt.Sprintf("Update Data by ID: `%s(%d)` is completed!", *title, title)
 }
-var MessageDuplicateData = func(title string) string {
-	return fmt.Sprintf("`%s` is Duplicate!", title)
+var MessageNotFoundData = func(title *string) string {
+	return fmt.Sprintf("Not found `%s(%d)`!", *title, title)
 }
-var MessageDeleteData = func(title string) string { return fmt.Sprintf("Delete Data by ID: `%s` is completed.", title) }
-var MessageUploadFileError = func(title string) string { return fmt.Sprintf("Upload File Error: `%s` is completed.", title) }
+var MessageDuplicateData = func(title *string) string {
+	return fmt.Sprintf("`%v(%d)` is Duplicate!", *title, title)
+}
+var MessageDeleteData = func(title *string) string {
+	return fmt.Sprintf("Delete Data by ID: `%s(%d)` is completed.", *title, title)
+}
+var MessageUploadFileError = func(title *string) string {
+	return fmt.Sprintf("Upload File Error: `%s(%d)` is completed.", *title, title)
+}

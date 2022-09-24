@@ -7,24 +7,24 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func GetAllArea(c *fiber.Ctx) error {
+func GetAllDepartment(c *fiber.Ctx) error {
 	var r models.Response
-	var obj []models.Area
+	var obj []models.Department
 	// Fetch All Data
 	err := configs.Store.Find(&obj).Error
 	if err != nil {
-		r.Message = services.MessageNotFound("Area")
+		r.Message = services.MessageNotFound("Department")
 		r.Data = &err
 		return c.Status(fiber.StatusNotFound).JSON(&r)
 	}
-	r.Message = services.MessageShowAll("Area")
+	r.Message = services.MessageShowAll("Department")
 	r.Data = &obj
 	return c.Status(fiber.StatusOK).JSON(&r)
 }
 
-func CreateArea(c *fiber.Ctx) error {
+func CreateDepartment(c *fiber.Ctx) error {
 	var r models.Response
-	var obj models.Area
+	var obj models.Department
 	err := c.BodyParser(&obj)
 	if err != nil {
 		r.Message = services.MessageInputValidationError
@@ -43,10 +43,10 @@ func CreateArea(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusCreated).JSON(&r)
 }
 
-func ShowAreaByID(c *fiber.Ctx) error {
+func ShowDepartmentByID(c *fiber.Ctx) error {
 	var r models.Response
 	id := c.Params("id")
-	var obj models.Area
+	var obj models.Department
 	err := configs.Store.First(&obj, &id).Error
 	if err != nil {
 		r.Message = services.MessageNotFoundData(&id)
@@ -58,10 +58,10 @@ func ShowAreaByID(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusNotFound).JSON(&r)
 }
 
-func UpdateAreaByID(c *fiber.Ctx) error {
+func UpdateDepartmentByID(c *fiber.Ctx) error {
 	var r models.Response
 	id := c.Params("id")
-	var obj models.Area
+	var obj models.Department
 	err := c.BodyParser(&obj)
 	if err != nil {
 		r.Message = services.MessageInputValidationError
@@ -70,7 +70,7 @@ func UpdateAreaByID(c *fiber.Ctx) error {
 	}
 	// Fetch All Data
 	db := configs.Store
-	var data models.Area
+	var data models.Department
 	err = db.First(&data, &id).Error
 	if err != nil {
 		r.Message = services.MessageNotFoundData(&id)
@@ -94,11 +94,11 @@ func UpdateAreaByID(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusAccepted).JSON(&r)
 }
 
-func DeleteAreaByID(c *fiber.Ctx) error {
+func DeleteDepartmentByID(c *fiber.Ctx) error {
 	var r models.Response
 	id := c.Params("id")
 	db := configs.Store
-	var obj models.Area
+	var obj models.Department
 	err := db.First(&obj, &id).Error
 	if err != nil {
 		r.Message = services.MessageNotFoundData(&id)
