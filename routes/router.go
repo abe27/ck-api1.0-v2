@@ -105,4 +105,11 @@ func SetUpRouter(c *fiber.App) {
 	mailbox.Get("/:id", controllers.ShowMailboxByID)
 	mailbox.Put("/:id", controllers.UpdateMailboxByID)
 	mailbox.Delete("/:id", controllers.DeleteMailboxByID)
+
+	file_edi := edi.Group("file")
+	file_edi.Get("", controllers.GetAllFileEdi)
+	file_edi.Post("", controllers.CreateFileEdi)
+	file_edi.Get("/:id", controllers.ShowFileEdiByID)
+	file_edi.Put("/:id", controllers.UpdateFileEdiByID)
+	file_edi.Delete("/:id", controllers.DeleteFileEdiByID)
 }

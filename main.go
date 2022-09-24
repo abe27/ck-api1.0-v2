@@ -76,6 +76,7 @@ func init() {
 	configs.Store.AutoMigrate(&models.PrefixName{})
 	configs.Store.AutoMigrate(&models.Profile{})
 	configs.Store.AutoMigrate(&models.Mailbox{})
+	configs.Store.AutoMigrate(&models.FileEdi{})
 }
 
 func main() {
