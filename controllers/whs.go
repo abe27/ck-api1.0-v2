@@ -55,7 +55,7 @@ func ShowWhsByID(c *fiber.Ctx) error {
 	}
 	r.Message = services.MessageShowDataByID(&id)
 	r.Data = &obj
-	return c.Status(fiber.StatusNotFound).JSON(&r)
+	return c.Status(fiber.StatusFound).JSON(&r)
 }
 
 func UpdateWhsByID(c *fiber.Ctx) error {

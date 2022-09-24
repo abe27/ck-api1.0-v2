@@ -7,24 +7,24 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func GetAllUnit(c *fiber.Ctx) error {
+func GetAllFileType(c *fiber.Ctx) error {
 	var r models.Response
-	var obj []models.Unit
+	var obj []models.FileType
 	// Fetch All Data
 	err := configs.Store.Find(&obj).Error
 	if err != nil {
-		r.Message = services.MessageNotFound("Unit")
+		r.Message = services.MessageNotFound("FileType")
 		r.Data = &err
 		return c.Status(fiber.StatusNotFound).JSON(&r)
 	}
-	r.Message = services.MessageShowAll("Unit")
+	r.Message = services.MessageShowAll("FileType")
 	r.Data = &obj
 	return c.Status(fiber.StatusOK).JSON(&r)
 }
 
-func CreateUnit(c *fiber.Ctx) error {
+func CreateFileType(c *fiber.Ctx) error {
 	var r models.Response
-	var obj models.Unit
+	var obj models.FileType
 	err := c.BodyParser(&obj)
 	if err != nil {
 		r.Message = services.MessageInputValidationError
@@ -43,10 +43,10 @@ func CreateUnit(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusCreated).JSON(&r)
 }
 
-func ShowUnitByID(c *fiber.Ctx) error {
+func ShowFileTypeByID(c *fiber.Ctx) error {
 	var r models.Response
 	id := c.Params("id")
-	var obj models.Unit
+	var obj models.FileType
 	err := configs.Store.First(&obj, &id).Error
 	if err != nil {
 		r.Message = services.MessageNotFoundData(&id)
@@ -58,10 +58,10 @@ func ShowUnitByID(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusFound).JSON(&r)
 }
 
-func UpdateUnitByID(c *fiber.Ctx) error {
+func UpdateFileTypeByID(c *fiber.Ctx) error {
 	var r models.Response
 	id := c.Params("id")
-	var obj models.Unit
+	var obj models.FileType
 	err := c.BodyParser(&obj)
 	if err != nil {
 		r.Message = services.MessageInputValidationError
@@ -70,7 +70,7 @@ func UpdateUnitByID(c *fiber.Ctx) error {
 	}
 	// Fetch All Data
 	db := configs.Store
-	var data models.Unit
+	var data models.FileType
 	err = db.First(&data, &id).Error
 	if err != nil {
 		r.Message = services.MessageNotFoundData(&id)
@@ -94,11 +94,11 @@ func UpdateUnitByID(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusAccepted).JSON(&r)
 }
 
-func DeleteUnitByID(c *fiber.Ctx) error {
+func DeleteFileTypeByID(c *fiber.Ctx) error {
 	var r models.Response
 	id := c.Params("id")
 	db := configs.Store
-	var obj models.Unit
+	var obj models.FileType
 	err := db.First(&obj, &id).Error
 	if err != nil {
 		r.Message = services.MessageNotFoundData(&id)

@@ -55,7 +55,7 @@ func ShowPrefixNameByID(c *fiber.Ctx) error {
 	}
 	r.Message = services.MessageShowDataByID(&id)
 	r.Data = &obj
-	return c.Status(fiber.StatusNotFound).JSON(&r)
+	return c.Status(fiber.StatusFound).JSON(&r)
 }
 
 func UpdatePrefixNameByID(c *fiber.Ctx) error {

@@ -70,10 +70,12 @@ func init() {
 	configs.Store.AutoMigrate(&models.Factory{})
 	configs.Store.AutoMigrate(&models.Unit{})
 	configs.Store.AutoMigrate(&models.PartType{})
+	configs.Store.AutoMigrate(&models.FileType{})
 	configs.Store.AutoMigrate(&models.Position{})
 	configs.Store.AutoMigrate(&models.Department{})
 	configs.Store.AutoMigrate(&models.PrefixName{})
 	configs.Store.AutoMigrate(&models.Profile{})
+	configs.Store.AutoMigrate(&models.Mailbox{})
 }
 
 func main() {

@@ -89,4 +89,20 @@ func SetUpRouter(c *fiber.App) {
 	part_type.Get("/:id", controllers.ShowPartTypeByID)
 	part_type.Put("/:id", controllers.UpdatePartTypeByID)
 	part_type.Delete("/:id", controllers.DeletePartTypeByID)
+
+	// Part Type Router
+	edi := r.Group("edi")
+	edi_type := edi.Group("type")
+	edi_type.Get("", controllers.GetAllFileType)
+	edi_type.Post("", controllers.CreateFileType)
+	edi_type.Get("/:id", controllers.ShowFileTypeByID)
+	edi_type.Put("/:id", controllers.UpdateFileTypeByID)
+	edi_type.Delete("/:id", controllers.DeleteFileTypeByID)
+
+	mailbox := edi.Group("mailbox")
+	mailbox.Get("", controllers.GetAllMailbox)
+	mailbox.Post("", controllers.CreateMailbox)
+	mailbox.Get("/:id", controllers.ShowMailboxByID)
+	mailbox.Put("/:id", controllers.UpdateMailboxByID)
+	mailbox.Delete("/:id", controllers.DeleteMailboxByID)
 }

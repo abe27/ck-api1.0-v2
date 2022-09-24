@@ -55,7 +55,7 @@ func ShowDepartmentByID(c *fiber.Ctx) error {
 	}
 	r.Message = services.MessageShowDataByID(&id)
 	r.Data = &obj
-	return c.Status(fiber.StatusNotFound).JSON(&r)
+	return c.Status(fiber.StatusFound).JSON(&r)
 }
 
 func UpdateDepartmentByID(c *fiber.Ctx) error {

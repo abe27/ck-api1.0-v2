@@ -7,47 +7,63 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func GetAllUnit(c *fiber.Ctx) error {
+func GetAllMailbox(c *fiber.Ctx) error {
 	var r models.Response
-	var obj []models.Unit
+	var obj []models.Mailbox
 	// Fetch All Data
 	err := configs.Store.Find(&obj).Error
 	if err != nil {
-		r.Message = services.MessageNotFound("Unit")
+		r.Message = services.MessageNotFound("Mailbox")
 		r.Data = &err
 		return c.Status(fiber.StatusNotFound).JSON(&r)
 	}
-	r.Message = services.MessageShowAll("Unit")
+	r.Message = services.MessageShowAll("Mailbox")
 	r.Data = &obj
 	return c.Status(fiber.StatusOK).JSON(&r)
 }
 
-func CreateUnit(c *fiber.Ctx) error {
+func CreateMailbox(c *fiber.Ctx) error {
 	var r models.Response
-	var obj models.Unit
-	err := c.BodyParser(&obj)
+	var frm models.Mailbox
+	err := c.BodyParser(&frm)
 	if err != nil {
 		r.Message = services.MessageInputValidationError
 		r.Data = &err
 		return c.Status(fiber.StatusNotAcceptable).JSON(&r)
 	}
 	// Fetch All Data
-	err = configs.Store.Create(&obj).Error
+	db := configs.Store
+	var area models.Area
+	err = db.First(&area, "title=?", frm.AreaID).Error
 	if err != nil {
-		r.Message = services.MessageDuplicateData(&obj.Title)
+		r.Message = services.MessageNotFoundData(frm.AreaID)
+		r.Data = &err
+		return c.Status(fiber.StatusNotFound).JSON(&r)
+	}
+
+	var obj models.Mailbox
+	obj.Mailbox = frm.Mailbox
+	obj.Password = frm.Password
+	obj.HostUrl = frm.HostUrl
+	obj.AreaID = &area.ID
+	obj.IsActive = frm.IsActive
+
+	err = db.Create(&obj).Error
+	if err != nil {
+		r.Message = services.MessageDuplicateData(&obj.Mailbox)
 		r.Data = &err
 		return c.Status(fiber.StatusBadRequest).JSON(&r)
 	}
-	r.Message = services.MessageCreatedData(&obj.Title)
+	r.Message = services.MessageCreatedData(&obj.Mailbox)
 	r.Data = &obj
 	return c.Status(fiber.StatusCreated).JSON(&r)
 }
 
-func ShowUnitByID(c *fiber.Ctx) error {
+func ShowMailboxByID(c *fiber.Ctx) error {
 	var r models.Response
 	id := c.Params("id")
-	var obj models.Unit
-	err := configs.Store.First(&obj, &id).Error
+	var obj models.Mailbox
+	err := configs.Store.Preload("Area").First(&obj, &id).Error
 	if err != nil {
 		r.Message = services.MessageNotFoundData(&id)
 		r.Data = &err
@@ -58,10 +74,10 @@ func ShowUnitByID(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusFound).JSON(&r)
 }
 
-func UpdateUnitByID(c *fiber.Ctx) error {
+func UpdateMailboxByID(c *fiber.Ctx) error {
 	var r models.Response
 	id := c.Params("id")
-	var obj models.Unit
+	var obj models.Mailbox
 	err := c.BodyParser(&obj)
 	if err != nil {
 		r.Message = services.MessageInputValidationError
@@ -70,7 +86,7 @@ func UpdateUnitByID(c *fiber.Ctx) error {
 	}
 	// Fetch All Data
 	db := configs.Store
-	var data models.Unit
+	var data models.Mailbox
 	err = db.First(&data, &id).Error
 	if err != nil {
 		r.Message = services.MessageNotFoundData(&id)
@@ -79,7 +95,7 @@ func UpdateUnitByID(c *fiber.Ctx) error {
 	}
 	/// Save Data
 	// data.Title = obj.Title
-	data.Description = obj.Description
+	// data.Description = obj.Description
 	data.IsActive = obj.IsActive
 	////
 	err = db.Save(&data).Error
@@ -94,11 +110,11 @@ func UpdateUnitByID(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusAccepted).JSON(&r)
 }
 
-func DeleteUnitByID(c *fiber.Ctx) error {
+func DeleteMailboxByID(c *fiber.Ctx) error {
 	var r models.Response
 	id := c.Params("id")
 	db := configs.Store
-	var obj models.Unit
+	var obj models.Mailbox
 	err := db.First(&obj, &id).Error
 	if err != nil {
 		r.Message = services.MessageNotFoundData(&id)
