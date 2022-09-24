@@ -35,3 +35,4 @@ go.work
 .env
 go.sum
 tmp
+.air.toml
