@@ -41,6 +41,8 @@ func CreateLedger(c *fiber.Ctx) error {
 	// Fetch All Data
 	db := configs.Store
 	// Get Master Data
+	var whs models.Whs
+	db.First(&whs, "title=?", &obj.WhsID)
 	var factory models.Factory
 	db.First(&factory, "title=?", &obj.FactoryID)
 	var part models.Part
@@ -51,12 +53,13 @@ func CreateLedger(c *fiber.Ctx) error {
 	db.First(&unit, "title=?", &obj.UnitID)
 
 	// Add Variable
+	obj.WhsID = &whs.ID
 	obj.FactoryID = &factory.ID
 	obj.PartID = &part.ID
 	obj.PartTypeID = &partType.ID
 	obj.UnitID = &unit.ID
 
-	db.Where("factory_id=?", &obj.FactoryID).Where("part_id=?", &part.ID).First(&obj)
+	db.Where("whs_id=?", &whs.ID).Where("factory_id=?", &factory.ID).Where("part_id=?", &part.ID).First(&obj)
 	if obj.ID != "" {
 		r.Message = services.MessageDuplicateData(&part.Slug)
 		r.Data = &err

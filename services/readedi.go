@@ -92,6 +92,7 @@ func ReadGediFile(fileEdi *models.FileEdi) {
 
 			// Initailize Ledger
 			ledger := models.Ledger{
+				WhsID:      &receiveTypeData.Whs.ID,
 				FactoryID:  &fileEdi.Factory.ID,
 				PartID:     &part.ID,
 				PartTypeID: &typeData.ID,
@@ -196,6 +197,9 @@ func ReadGediFile(fileEdi *models.FileEdi) {
 		}
 	} else {
 		// plantype := "ORDERPLAN"
+		/// For Order CK-2 only
+		var whs models.Whs
+		db.First(&whs, "title=?", "COM")
 		rnd := 1
 		for scanner.Scan() {
 			line := scanner.Text()
@@ -203,7 +207,6 @@ func ReadGediFile(fileEdi *models.FileEdi) {
 			Updtime, _ := time.Parse("20060102150405", strings.ReplaceAll(line[141:(141+14)], " ", "")) // "%Y%m%d%H%M%S"),
 			EtdDte, _ := time.Parse("20060102", strings.ReplaceAll(line[28:(28+8)], " ", ""))
 			OrderMonth, _ := time.Parse("20060102", strings.ReplaceAll(line[118:(118+8)], " ", ""))
-
 			obj := models.OrderPlan{
 				Seq:              int64(rnd),
 				Vendor:           fileEdi.Factory.Title,
@@ -211,6 +214,7 @@ func ReadGediFile(fileEdi *models.FileEdi) {
 				Sortg1:           fileEdi.Factory.Sortg1,
 				Sortg2:           fileEdi.Factory.Sortg2,
 				Sortg3:           fileEdi.Factory.Sortg3,
+				WhsID:            &whs.ID,
 				PlanType:         "ORDERPLAN",
 				Pono:             strings.ReplaceAll(line[13:(13+15)], " ", ""),
 				RecId:            strings.ReplaceAll(line[0:4], " ", ""),
@@ -261,9 +265,6 @@ func ReadGediFile(fileEdi *models.FileEdi) {
 			var orderZone models.OrderZone
 			db.Preload("Whs").Where("value=?", obj.Bioabt).Where("factory_id=?", fileEdi.Factory.ID).First(&orderZone)
 			obj.OrderZoneID = &orderZone.ID
-
-			// Check Whs
-			obj.Whs = orderZone.Whs.Title
 			// For Consignee
 			affcode := models.Affcode{
 				Title:       obj.Biac,
@@ -326,6 +327,7 @@ func ReadGediFile(fileEdi *models.FileEdi) {
 
 			// Ledger
 			ledger := models.Ledger{
+				WhsID:       &whs.ID,
 				FactoryID:   &fileEdi.Factory.ID,
 				PartID:      &part.ID,
 				PartTypeID:  &typeData.ID,
@@ -340,6 +342,7 @@ func ReadGediFile(fileEdi *models.FileEdi) {
 			}
 
 			db.FirstOrCreate(&ledger, &models.Ledger{
+				WhsID:      &whs.ID,
 				FactoryID:  &fileEdi.Factory.ID,
 				PartID:     &part.ID,
 				PartTypeID: &typeData.ID,

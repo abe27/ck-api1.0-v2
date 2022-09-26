@@ -10,6 +10,7 @@ import (
 type OrderPlan struct {
 	ID               string      `gorm:"primaryKey;size:21;" json:"id"`
 	FileEdiID        *string     `json:"file_edi_id" form:"file_edi_id"`
+	WhsID            *string     `json:"whs_id" form:"whs_id"`
 	OrderZoneID      *string     `json:"order_zone_id" form:"order_type_id" binding:"required"`
 	ConsigneeID      *string     `json:"consignee_id" form:"consignee_id"`
 	ReviseOrderID    *string     `json:"revise_order_id" form:"revise_order_id" binding:"required"`
@@ -22,7 +23,6 @@ type OrderPlan struct {
 	Seq              int64       `form:"seq" json:"seq"`
 	Vendor           string      `gorm:"size:5" form:"vendor" json:"vendor"`
 	Cd               string      `gorm:"size:5" form:"cd" json:"cd"`
-	Whs              string      `form:"whs" json:"whs"`
 	Tagrp            string      `gorm:"size:5" form:"tagrp" json:"tagrp"`
 	Sortg1           string      `gorm:"size:25" form:"sortg1" json:"sortg1"`
 	Sortg2           string      `gorm:"size:25" form:"sortg2" json:"sortg2"`
@@ -78,6 +78,7 @@ type OrderPlan struct {
 	CreatedAt        time.Time   `json:"created_at" form:"created_at" default:"now"`
 	UpdatedAt        time.Time   `json:"updated_at" form:"updated_at" default:"now"`
 	FileEdi          FileEdi     `gorm:"foreignKey:FileEdiID;references:ID;" json:"file_gedi"`
+	Whs              Whs         `gorm:"foreignKey:WhsID;references:ID;" json:"whs"`
 	Consignee        Consignee   `gorm:"foreignKey:ConsigneeID;references:ID" json:"consignee"`
 	ReviseOrder      ReviseOrder `gorm:"foreignKey:ReviseOrderID;references:ID" json:"reviseOrder"`
 	Ledger           Ledger      `gorm:"foreignKey:LedgerID;references:ID" json:"ledger"`
