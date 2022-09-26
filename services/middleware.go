@@ -39,7 +39,8 @@ func CreateToken(user models.User) models.AuthSession {
 		Preload("Position").
 		Preload("Department").
 		Preload("PrefixName").
-		First(&profile, "user_id=?", &user.ID)
+		Where("user_id=?", &user.ID).
+		First(&profile)
 	// As variable
 	obj.Profile = &profile
 	obj.User = &user

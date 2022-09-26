@@ -7,50 +7,49 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func GetAllReceiveType(c *fiber.Ctx) error {
+func GetAllAffcode(c *fiber.Ctx) error {
 	var r models.Response
-	var obj []models.ReceiveType
+	var obj []models.Affcode
 	// Fetch All Data
-	err := configs.Store.Preload("Whs").Find(&obj).Error
+	err := configs.Store.Find(&obj).Error
 	if err != nil {
-		r.Message = services.MessageNotFound("ReceiveType")
+		r.Message = services.MessageNotFound("Affcode")
 		r.Data = &err
 		return c.Status(fiber.StatusNotFound).JSON(&r)
 	}
-	r.Message = services.MessageShowAll("ReceiveType")
+
+	r.Message = services.MessageShowAll("Affcode")
 	r.Data = &obj
 	return c.Status(fiber.StatusOK).JSON(&r)
 }
 
-func CreateReceiveType(c *fiber.Ctx) error {
+func CreateAffcode(c *fiber.Ctx) error {
 	var r models.Response
-	var obj models.ReceiveType
+	var obj models.Affcode
 	err := c.BodyParser(&obj)
 	if err != nil {
 		r.Message = services.MessageInputValidationError
 		r.Data = &err
 		return c.Status(fiber.StatusNotAcceptable).JSON(&r)
 	}
+
 	// Fetch All Data
-	db := configs.Store
-	var whs models.Whs
-	db.First(&whs, "title=?", obj.WhsID)
-	obj.WhsID = whs.ID
-	err = db.Create(&obj).Error
+	err = configs.Store.Create(&obj).Error
 	if err != nil {
 		r.Message = services.MessageDuplicateData(&obj.Title)
 		r.Data = &err
 		return c.Status(fiber.StatusBadRequest).JSON(&r)
 	}
+
 	r.Message = services.MessageCreatedData(&obj.Title)
 	r.Data = &obj
 	return c.Status(fiber.StatusCreated).JSON(&r)
 }
 
-func ShowReceiveTypeByID(c *fiber.Ctx) error {
+func ShowAffcodeByID(c *fiber.Ctx) error {
 	var r models.Response
 	id := c.Params("id")
-	var obj models.ReceiveType
+	var obj models.Affcode
 	err := configs.Store.First(&obj, &id).Error
 	if err != nil {
 		r.Message = services.MessageNotFoundData(&id)
@@ -62,10 +61,10 @@ func ShowReceiveTypeByID(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusFound).JSON(&r)
 }
 
-func UpdateReceiveTypeByID(c *fiber.Ctx) error {
+func UpdateAffcodeByID(c *fiber.Ctx) error {
 	var r models.Response
 	id := c.Params("id")
-	var obj models.ReceiveType
+	var obj models.Affcode
 	err := c.BodyParser(&obj)
 	if err != nil {
 		r.Message = services.MessageInputValidationError
@@ -74,7 +73,7 @@ func UpdateReceiveTypeByID(c *fiber.Ctx) error {
 	}
 	// Fetch All Data
 	db := configs.Store
-	var data models.ReceiveType
+	var data models.Affcode
 	err = db.First(&data, &id).Error
 	if err != nil {
 		r.Message = services.MessageNotFoundData(&id)
@@ -82,7 +81,7 @@ func UpdateReceiveTypeByID(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusNotFound).JSON(&r)
 	}
 	/// Save Data
-	// data.Value = obj.Value
+	// data.Title = obj.Title
 	data.Description = obj.Description
 	data.IsActive = obj.IsActive
 	////
@@ -98,11 +97,11 @@ func UpdateReceiveTypeByID(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusAccepted).JSON(&r)
 }
 
-func DeleteReceiveTypeByID(c *fiber.Ctx) error {
+func DeleteAffcodeByID(c *fiber.Ctx) error {
 	var r models.Response
 	id := c.Params("id")
 	db := configs.Store
-	var obj models.ReceiveType
+	var obj models.Affcode
 	err := db.First(&obj, &id).Error
 	if err != nil {
 		r.Message = services.MessageNotFoundData(&id)

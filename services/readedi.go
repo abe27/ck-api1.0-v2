@@ -60,11 +60,6 @@ func ReadGediFile(fileEdi *models.FileEdi) {
 	var typeData models.PartType
 	db.Select("id,title").First(&typeData, "title=?", fileEdi.Factory.PartType)
 
-	IsSync := false
-	if fileEdi.Factory.Title == "AW" {
-		IsSync = true
-	}
-
 	if fileEdi.FileType.Title == "R" {
 		for scanner.Scan() {
 			txt := scanner.Text()
@@ -189,17 +184,134 @@ func ReadGediFile(fileEdi *models.FileEdi) {
 			for _, x := range countReceive {
 				ctn += int(x.PlanCtn)
 			}
+			receiveEnt.FileEdiID = &fileEdi.ID
 			receiveEnt.Item = int64(len(countReceive))
 			receiveEnt.PlanCtn = int64(ctn)
 
 			// Disable Sync AW Data
-			receiveEnt.IsSync = IsSync
+			receiveEnt.IsSync = fileEdi.Factory.IsActive
 			db.Save(&receiveEnt)
 
 			fmt.Printf("%s ==> %s unit:%d\n", SlugPartNo, obj.PartName, obj.PlnQty)
 		}
 	} else {
 		// plantype := "ORDERPLAN"
-		fmt.Printf("for order plan\n")
+		rnd := 1
+		for scanner.Scan() {
+			line := scanner.Text()
+			Upddte, _ := time.Parse("20060102150405", strings.ReplaceAll(line[141:(141+14)], " ", ""))  //, "%Y%m%d%H%M%S"),
+			Updtime, _ := time.Parse("20060102150405", strings.ReplaceAll(line[141:(141+14)], " ", "")) // "%Y%m%d%H%M%S"),
+			EtdDte, _ := time.Parse("20060102", strings.ReplaceAll(line[28:(28+8)], " ", ""))
+			OrderMonth, _ := time.Parse("20060102", strings.ReplaceAll(line[118:(118+8)], " ", ""))
+
+			obj := models.OrderPlan{
+				Seq:              int64(rnd),
+				Vendor:           fileEdi.Factory.Title,
+				Cd:               fileEdi.Factory.CdCode,
+				Sortg1:           fileEdi.Factory.Sortg1,
+				Sortg2:           fileEdi.Factory.Sortg2,
+				Sortg3:           fileEdi.Factory.Sortg3,
+				PlanType:         "ORDERPLAN",
+				Pono:             strings.ReplaceAll(line[13:(13+15)], " ", ""),
+				RecId:            strings.ReplaceAll(line[0:4], " ", ""),
+				Biac:             strings.ReplaceAll(line[5:(5+8)], " ", ""),
+				EtdTap:           EtdDte, //), "%Y%m%d"),
+				PartNo:           strings.ReplaceAll(line[36:(36+25)], " ", ""),
+				PartName:         strings.TrimRight(line[61:(61+25)], " "),
+				SampFlg:          strings.ReplaceAll(line[88:(88+1)], " ", ""),
+				Orderorgi:        ConvertFloat(line[89:(89 + 9)]),
+				Orderround:       ConvertFloat(line[98:(98 + 9)]),
+				FirmFlg:          strings.ReplaceAll(line[107:(107+1)], " ", ""),
+				ShippedFlg:       strings.ReplaceAll(line[108:(108+1)], " ", ""),
+				ShippedQty:       ConvertFloat(line[109:(109 + 9)]),
+				Ordermonth:       OrderMonth, //, "%Y%m%d" ),
+				BalQty:           ConvertFloat(line[126:(126 + 9)]),
+				Bidrfl:           strings.ReplaceAll(line[135:(135+1)], " ", ""),
+				DeleteFlg:        strings.ReplaceAll(line[136:(136+1)], " ", ""),
+				Reasoncd:         strings.ReplaceAll(line[138:(138+3)], " ", ""),
+				Upddte:           Upddte,                                         //, "%Y%m%d%H%M%S"),
+				Updtime:          Updtime,                                        // "%Y%m%d%H%M%S"),
+				CarrierCode:      strings.ReplaceAll(line[155:(155+4)], " ", ""), //
+				Bioabt:           ConvertInt(line[159:(159 + 1)]),
+				Bicomd:           strings.ReplaceAll(line[160:(160+1)], " ", ""), //
+				Bistdp:           ConvertFloat(line[165:(165 + 9)]),
+				Binewt:           ConvertFloat(line[174:(174 + 9)]),
+				Bigrwt:           ConvertFloat(line[183:(183 + 9)]),
+				Bishpc:           strings.ReplaceAll(line[192:(192+8)], " ", ""), //
+				Biivpx:           strings.ReplaceAll(line[200:(200+2)], " ", ""), //
+				Bisafn:           strings.ReplaceAll(line[202:(202+6)], " ", ""), //
+				Biwidt:           ConvertFloat(line[212:(212 + 4)]),
+				Bihigh:           ConvertFloat(line[216:(216 + 4)]),
+				Bileng:           ConvertFloat(line[208:(208 + 4)]),
+				LotNo:            strings.ReplaceAll(line[220:], " ", ""),
+				Minimum:          0,
+				Maximum:          0,
+				Picshelfbin:      "PNON",
+				Stkshelfbin:      "SNON",
+				Ovsshelfbin:      "ONON",
+				PicshelfbasicQty: 0,
+				OuterPcs:         0,
+				AllocateQty:      0,
+				CreatedAt:        Updtime,
+			}
+
+			// Check Whs
+			obj.Whs = "COM"
+			if obj.Pono[:1] == "#" {
+				obj.Whs = "NESC"
+			} else if obj.Pono[:1] == "@" {
+				obj.Whs = "ICAM"
+			}
+
+			var whs models.Whs
+			db.Select("id,title").First(&whs, "title=?", obj.Whs)
+			var orderZone models.OrderZone
+			db.Select("id").
+				Where("value=?", obj.Bioabt).
+				Where("factory_id=?", fileEdi.Factory.ID).
+				Where("whs_id=?", whs.ID).
+				First(&orderZone)
+
+			obj.FileEdiID = &fileEdi.ID
+			obj.OrderZoneID = &orderZone.ID
+
+			// For Consignee
+			affcode := models.Affcode{
+				Title:       obj.Biac,
+				Description: "-",
+			}
+			db.FirstOrCreate(&affcode, &models.Affcode{Title: obj.Biac})
+			customer := models.Customer{
+				Title:       obj.Bishpc,
+				Description: obj.Bisafn,
+			}
+			db.FirstOrCreate(&customer, &models.Customer{Title: obj.Bishpc})
+
+			consigneeData := models.Consignee{
+				WhsID:      &whs.ID,             // whs_id
+				FactoryID:  &fileEdi.Factory.ID, // factory_id
+				AffcodeID:  &affcode.ID,         // affcode_id
+				CustomerID: &customer.ID,        // customer_id
+				Prefix:     obj.Biivpx,          // prefix
+			}
+			db.FirstOrCreate(&consigneeData, models.Consignee{
+				WhsID:      &whs.ID,             // whs_id
+				FactoryID:  &fileEdi.Factory.ID, // factory_id
+				AffcodeID:  &affcode.ID,         // affcode_id
+				CustomerID: &customer.ID,        // customer_id
+				Prefix:     obj.Biivpx,          // prefix
+			})
+			obj.ConsigneeID = &consigneeData.ID
+
+			/// Revise Type
+			obj.ReviseOrderID = nil
+			obj.LedgerID = nil
+			obj.PcID = nil
+			obj.CommercialID = nil
+			obj.OrderTypeID = nil
+			obj.ShipmentID = nil
+			obj.SampleFlgID = nil
+			rnd++
+		}
 	}
 }

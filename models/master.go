@@ -204,6 +204,7 @@ func (obj *Pc) BeforeCreate(tx *gorm.DB) (err error) {
 type Commercial struct {
 	ID          string    `gorm:"primaryKey;size:21" json:"id"`
 	Title       string    `gorm:"not null;unique;size:50" json:"title" form:"title" binding:"required"`
+	Prefix      string    `gorm:"size:5" json:"prefix" form:"prefix" binding:"required"`
 	Description string    `json:"description" form:"description" binding:"required"`
 	IsActive    bool      `json:"is_active" form:"is_active" binding:"required"`
 	CreatedAt   time.Time `json:"created_at" form:"created_at" default:"now"`
@@ -226,6 +227,51 @@ type SampleFlg struct {
 }
 
 func (obj *SampleFlg) BeforeCreate(tx *gorm.DB) (err error) {
+	id, _ := g.New()
+	obj.ID = id
+	return
+}
+
+type ReviseOrder struct {
+	ID          string    `gorm:"primaryKey;size:21" json:"id"`
+	Title       string    `gorm:"not null;unique;size:15" json:"title" form:"title" binding:"required"`
+	Description string    `json:"description" form:"description" binding:"required"`
+	IsActive    bool      `json:"is_active" form:"is_active" binding:"required"`
+	CreatedAt   time.Time `json:"created_at" form:"created_at" default:"now"`
+	UpdatedAt   time.Time `json:"updated_at" form:"updated_at" default:"now"`
+}
+
+func (obj *ReviseOrder) BeforeCreate(tx *gorm.DB) (err error) {
+	id, _ := g.New()
+	obj.ID = id
+	return
+}
+
+type Shipment struct {
+	ID          string    `gorm:"primaryKey;size:21" json:"id"`
+	Title       string    `gorm:"not null;unique;size:15" json:"title" form:"title" binding:"required"`
+	Description string    `json:"description" form:"description" binding:"required"`
+	IsActive    bool      `json:"is_active" form:"is_active" binding:"required"`
+	CreatedAt   time.Time `json:"created_at" form:"created_at" default:"now"`
+	UpdatedAt   time.Time `json:"updated_at" form:"updated_at" default:"now"`
+}
+
+func (obj *Shipment) BeforeCreate(tx *gorm.DB) (err error) {
+	id, _ := g.New()
+	obj.ID = id
+	return
+}
+
+type OrderType struct {
+	ID          string    `gorm:"primaryKey;size:21" json:"id"`
+	Title       string    `gorm:"not null;unique;size:15" json:"title" form:"title" binding:"required"`
+	Description string    `json:"description" form:"description" binding:"required"`
+	IsActive    bool      `json:"is_active" form:"is_active" binding:"required"`
+	CreatedAt   time.Time `json:"created_at" form:"created_at" default:"now"`
+	UpdatedAt   time.Time `json:"updated_at" form:"updated_at" default:"now"`
+}
+
+func (obj *OrderType) BeforeCreate(tx *gorm.DB) (err error) {
 	id, _ := g.New()
 	obj.ID = id
 	return

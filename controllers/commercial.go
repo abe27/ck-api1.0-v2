@@ -7,24 +7,24 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func GetAllReceiveType(c *fiber.Ctx) error {
+func GetAllCommercial(c *fiber.Ctx) error {
 	var r models.Response
-	var obj []models.ReceiveType
+	var obj []models.Commercial
 	// Fetch All Data
-	err := configs.Store.Preload("Whs").Find(&obj).Error
+	err := configs.Store.Find(&obj).Error
 	if err != nil {
-		r.Message = services.MessageNotFound("ReceiveType")
+		r.Message = services.MessageNotFound("Commercial")
 		r.Data = &err
 		return c.Status(fiber.StatusNotFound).JSON(&r)
 	}
-	r.Message = services.MessageShowAll("ReceiveType")
+	r.Message = services.MessageShowAll("Commercial")
 	r.Data = &obj
 	return c.Status(fiber.StatusOK).JSON(&r)
 }
 
-func CreateReceiveType(c *fiber.Ctx) error {
+func CreateCommercial(c *fiber.Ctx) error {
 	var r models.Response
-	var obj models.ReceiveType
+	var obj models.Commercial
 	err := c.BodyParser(&obj)
 	if err != nil {
 		r.Message = services.MessageInputValidationError
@@ -32,11 +32,7 @@ func CreateReceiveType(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusNotAcceptable).JSON(&r)
 	}
 	// Fetch All Data
-	db := configs.Store
-	var whs models.Whs
-	db.First(&whs, "title=?", obj.WhsID)
-	obj.WhsID = whs.ID
-	err = db.Create(&obj).Error
+	err = configs.Store.Create(&obj).Error
 	if err != nil {
 		r.Message = services.MessageDuplicateData(&obj.Title)
 		r.Data = &err
@@ -47,10 +43,10 @@ func CreateReceiveType(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusCreated).JSON(&r)
 }
 
-func ShowReceiveTypeByID(c *fiber.Ctx) error {
+func ShowCommercialByID(c *fiber.Ctx) error {
 	var r models.Response
 	id := c.Params("id")
-	var obj models.ReceiveType
+	var obj models.Commercial
 	err := configs.Store.First(&obj, &id).Error
 	if err != nil {
 		r.Message = services.MessageNotFoundData(&id)
@@ -62,10 +58,10 @@ func ShowReceiveTypeByID(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusFound).JSON(&r)
 }
 
-func UpdateReceiveTypeByID(c *fiber.Ctx) error {
+func UpdateCommercialByID(c *fiber.Ctx) error {
 	var r models.Response
 	id := c.Params("id")
-	var obj models.ReceiveType
+	var obj models.Commercial
 	err := c.BodyParser(&obj)
 	if err != nil {
 		r.Message = services.MessageInputValidationError
@@ -74,7 +70,7 @@ func UpdateReceiveTypeByID(c *fiber.Ctx) error {
 	}
 	// Fetch All Data
 	db := configs.Store
-	var data models.ReceiveType
+	var data models.Commercial
 	err = db.First(&data, &id).Error
 	if err != nil {
 		r.Message = services.MessageNotFoundData(&id)
@@ -82,7 +78,7 @@ func UpdateReceiveTypeByID(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusNotFound).JSON(&r)
 	}
 	/// Save Data
-	// data.Value = obj.Value
+	data.Prefix = obj.Prefix
 	data.Description = obj.Description
 	data.IsActive = obj.IsActive
 	////
@@ -98,11 +94,11 @@ func UpdateReceiveTypeByID(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusAccepted).JSON(&r)
 }
 
-func DeleteReceiveTypeByID(c *fiber.Ctx) error {
+func DeleteCommercialByID(c *fiber.Ctx) error {
 	var r models.Response
 	id := c.Params("id")
 	db := configs.Store
-	var obj models.ReceiveType
+	var obj models.Commercial
 	err := db.First(&obj, &id).Error
 	if err != nil {
 		r.Message = services.MessageNotFoundData(&id)

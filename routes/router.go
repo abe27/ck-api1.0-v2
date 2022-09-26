@@ -2,6 +2,7 @@ package routes
 
 import (
 	"github.com/abe27/api/controllers"
+	"github.com/abe27/api/services"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -11,15 +12,17 @@ func SetUpRouter(c *fiber.App) {
 	// Group Prefix Router
 	r := c.Group("/api/v1")
 	// User
-	user := r.Group("/auth")
-	user.Post("/register", controllers.Register)
-	user.Post("/login", controllers.Login)
-	user.Get("/me", controllers.Profile)
-	user.Get("/verify", controllers.Verify)
-	user.Get("/logout", controllers.Logout)
+	r.Post("/register", controllers.Register)
+	r.Post("/login", controllers.Login)
+	// Use Router Middleware
+	app := r.Use(services.AuthorizationRequired)
+	auth := app.Group("auth")
+	auth.Get("/me", controllers.Profile)
+	auth.Get("/verify", controllers.Verify)
+	auth.Get("/logout", controllers.Logout)
 
 	// Administrator Router
-	administrator := r.Group("administrator")
+	administrator := app.Group("administrator")
 	administrator.Get("", controllers.GetAllAdministrator)
 	administrator.Post("", controllers.CreateAdministrator)
 	administrator.Get("/:id", controllers.ShowAdministratorByID)
@@ -27,7 +30,7 @@ func SetUpRouter(c *fiber.App) {
 	administrator.Delete("/:id", controllers.DeleteAdministratorByID)
 
 	// Area Router
-	area := r.Group("/area")
+	area := app.Group("/area")
 	area.Get("", controllers.GetAllArea)
 	area.Post("", controllers.CreateArea)
 	area.Get("/:id", controllers.ShowAreaByID)
@@ -35,7 +38,7 @@ func SetUpRouter(c *fiber.App) {
 	area.Delete("/:id", controllers.DeleteAreaByID)
 
 	// Whs Router
-	whs := r.Group("/whs")
+	whs := app.Group("/whs")
 	whs.Get("", controllers.GetAllWhs)
 	whs.Post("", controllers.CreateWhs)
 	whs.Get("/:id", controllers.ShowWhsByID)
@@ -43,7 +46,7 @@ func SetUpRouter(c *fiber.App) {
 	whs.Delete("/:id", controllers.DeleteWhsByID)
 
 	// Factory Router
-	factory := r.Group("/factory")
+	factory := app.Group("/factory")
 	factory.Get("", controllers.GetAllFactory)
 	factory.Post("", controllers.CreateFactory)
 	factory.Get("/:id", controllers.ShowFactoryByID)
@@ -51,7 +54,7 @@ func SetUpRouter(c *fiber.App) {
 	factory.Delete("/:id", controllers.DeleteFactoryByID)
 
 	// Prefix Name Router
-	prefixname := r.Group("/prefixname")
+	prefixname := app.Group("/prefixname")
 	prefixname.Get("", controllers.GetAllPrefixName)
 	prefixname.Post("", controllers.CreatePrefixName)
 	prefixname.Get("/:id", controllers.ShowPrefixNameByID)
@@ -59,7 +62,7 @@ func SetUpRouter(c *fiber.App) {
 	prefixname.Delete("/:id", controllers.DeletePrefixNameByID)
 
 	// Position Router
-	position := r.Group("/position")
+	position := app.Group("/position")
 	position.Get("", controllers.GetAllPosition)
 	position.Post("", controllers.CreatePosition)
 	position.Get("/:id", controllers.ShowPositionByID)
@@ -67,7 +70,7 @@ func SetUpRouter(c *fiber.App) {
 	position.Delete("/:id", controllers.DeletePositionByID)
 
 	// Department Router
-	department := r.Group("/department")
+	department := app.Group("/department")
 	department.Get("", controllers.GetAllDepartment)
 	department.Post("", controllers.CreateDepartment)
 	department.Get("/:id", controllers.ShowDepartmentByID)
@@ -75,28 +78,61 @@ func SetUpRouter(c *fiber.App) {
 	department.Delete("/:id", controllers.DeleteDepartmentByID)
 
 	// Unit Router
-	unit := r.Group("/unit")
+	unit := app.Group("/unit")
 	unit.Get("", controllers.GetAllUnit)
 	unit.Post("", controllers.CreateUnit)
 	unit.Get("/:id", controllers.ShowUnitByID)
 	unit.Put("/:id", controllers.UpdateUnitByID)
 	unit.Delete("/:id", controllers.DeleteUnitByID)
 
+	// Pc Router
+	pc := app.Group("/pc")
+	pc.Get("", controllers.GetAllPc)
+	pc.Post("", controllers.CreatePc)
+	pc.Get("/:id", controllers.ShowPcByID)
+	pc.Put("/:id", controllers.UpdatePcByID)
+	pc.Delete("/:id", controllers.DeletePcByID)
+
+	// Commercial Router
+	commercial := app.Group("/commercial")
+	commercial.Get("", controllers.GetAllCommercial)
+	commercial.Post("", controllers.CreateCommercial)
+	commercial.Get("/:id", controllers.ShowCommercialByID)
+	commercial.Put("/:id", controllers.UpdateCommercialByID)
+	commercial.Delete("/:id", controllers.DeleteCommercialByID)
+
+	// SampleFlg Router
+	sampleflg := app.Group("/sampleflg")
+	sampleflg.Get("", controllers.GetAllSampleFlg)
+	sampleflg.Post("", controllers.CreateSampleFlg)
+	sampleflg.Get("/:id", controllers.ShowSampleFlgByID)
+	sampleflg.Put("/:id", controllers.UpdateSampleFlgByID)
+	sampleflg.Delete("/:id", controllers.DeleteSampleFlgByID)
+
+	// Shipment Type Router
+	shipment := app.Group("shipment")
+	shipment.Get("", controllers.GetAllShipment)
+	shipment.Post("", controllers.CreateShipment)
+	shipment.Get("/:id", controllers.ShowShipmentByID)
+	shipment.Put("/:id", controllers.UpdateShipmentByID)
+	shipment.Delete("/:id", controllers.DeleteShipmentByID)
+
 	// Part Type Router
-	part_type := r.Group("parttype")
-	part_type.Get("", controllers.GetAllPartType)
-	part_type.Post("", controllers.CreatePartType)
-	part_type.Get("/:id", controllers.ShowPartTypeByID)
-	part_type.Put("/:id", controllers.UpdatePartTypeByID)
-	part_type.Delete("/:id", controllers.DeletePartTypeByID)
+	partType := app.Group("parttype")
+	partType.Get("", controllers.GetAllPartType)
+	partType.Post("", controllers.CreatePartType)
+	partType.Get("/:id", controllers.ShowPartTypeByID)
+	partType.Put("/:id", controllers.UpdatePartTypeByID)
+	partType.Delete("/:id", controllers.DeletePartTypeByID)
+
 	// Part Type Router
-	edi := r.Group("edi")
-	edi_type := edi.Group("type")
-	edi_type.Get("", controllers.GetAllFileType)
-	edi_type.Post("", controllers.CreateFileType)
-	edi_type.Get("/:id", controllers.ShowFileTypeByID)
-	edi_type.Put("/:id", controllers.UpdateFileTypeByID)
-	edi_type.Delete("/:id", controllers.DeleteFileTypeByID)
+	edi := app.Group("edi")
+	ediType := edi.Group("type")
+	ediType.Get("", controllers.GetAllFileType)
+	ediType.Post("", controllers.CreateFileType)
+	ediType.Get("/:id", controllers.ShowFileTypeByID)
+	ediType.Put("/:id", controllers.UpdateFileTypeByID)
+	ediType.Delete("/:id", controllers.DeleteFileTypeByID)
 
 	mailbox := edi.Group("mailbox")
 	mailbox.Get("", controllers.GetAllMailbox)
@@ -105,32 +141,83 @@ func SetUpRouter(c *fiber.App) {
 	mailbox.Put("/:id", controllers.UpdateMailboxByID)
 	mailbox.Delete("/:id", controllers.DeleteMailboxByID)
 
-	part := r.Group("part")
+	part := app.Group("part")
 	part.Get("", controllers.GetAllPart)
 	part.Post("", controllers.CreatePart)
 	part.Get("/:id", controllers.ShowPartByID)
 	part.Put("/:id", controllers.UpdatePartByID)
 	part.Delete("/:id", controllers.DeletePartByID)
 
-	ledger := r.Group("ledger")
+	ledger := app.Group("ledger")
 	ledger.Get("", controllers.GetAllLedger)
 	ledger.Post("", controllers.CreateLedger)
 	ledger.Get("/:id", controllers.ShowLedgerByID)
 	ledger.Put("/:id", controllers.UpdateLedgerByID)
 	ledger.Delete("/:id", controllers.DeleteLedgerByID)
 
-	file_edi := edi.Group("file")
-	file_edi.Get("", controllers.GetAllFileEdi)
-	file_edi.Post("", controllers.CreateFileEdi)
-	file_edi.Get("/:id", controllers.ShowFileEdiByID)
-	file_edi.Put("/:id", controllers.UpdateFileEdiByID)
-	file_edi.Delete("/:id", controllers.DeleteFileEdiByID)
+	fileEdi := edi.Group("file")
+	fileEdi.Get("", controllers.GetAllFileEdi)
+	fileEdi.Post("", controllers.CreateFileEdi)
+	fileEdi.Get("/:id", controllers.ShowFileEdiByID)
+	fileEdi.Put("/:id", controllers.UpdateFileEdiByID)
+	fileEdi.Delete("/:id", controllers.DeleteFileEdiByID)
 	// Receive Type
-	receive := r.Group("receive")
-	receive_type := receive.Group("type")
-	receive_type.Get("", controllers.GetAllReceiveType)
-	receive_type.Post("", controllers.CreateReceiveType)
-	receive_type.Get("/:id", controllers.ShowReceiveTypeByID)
-	receive_type.Put("/:id", controllers.UpdateReceiveTypeByID)
-	receive_type.Delete("/:id", controllers.DeleteReceiveTypeByID)
+	receive := app.Group("receive")
+	receiveType := receive.Group("type")
+	receiveType.Get("", controllers.GetAllReceiveType)
+	receiveType.Post("", controllers.CreateReceiveType)
+	receiveType.Get("/:id", controllers.ShowReceiveTypeByID)
+	receiveType.Put("/:id", controllers.UpdateReceiveTypeByID)
+	receiveType.Delete("/:id", controllers.DeleteReceiveTypeByID)
+
+	//ReviseOrder Router
+	orderGroup := app.Group("/order")
+	revise := orderGroup.Group("/revise")
+	revise.Get("", controllers.GetAllReviseOrder)
+	revise.Post("", controllers.CreateReviseOrder)
+	revise.Get("/:id", controllers.ShowReviseOrderByID)
+	revise.Put("/:id", controllers.UpdateReviseOrderByID)
+	revise.Delete("/:id", controllers.DeleteReviseOrderByID)
+
+	orderZone := orderGroup.Group("/zone")
+	orderZone.Get("", controllers.GetAllOrderZone)
+	orderZone.Post("", controllers.CreateOrderZone)
+	orderZone.Get("/:id", controllers.ShowOrderZoneByID)
+	orderZone.Put("/:id", controllers.UpdateOrderZoneByID)
+	orderZone.Delete("/:id", controllers.DeleteOrderZoneByID)
+
+	orderType := orderGroup.Group("/type")
+	orderType.Get("", controllers.GetAllOrderType)
+	orderType.Post("", controllers.CreateOrderType)
+	orderType.Get("/:id", controllers.ShowOrderTypeByID)
+	orderType.Put("/:id", controllers.UpdateOrderTypeByID)
+	orderType.Delete("/:id", controllers.DeleteOrderTypeByID)
+
+	affcode := app.Group("affcode")
+	affcode.Get("", controllers.GetAllAffcode)
+	affcode.Post("", controllers.CreateAffcode)
+	affcode.Get("/:id", controllers.ShowAffcodeByID)
+	affcode.Put("/:id", controllers.UpdateAffcodeByID)
+	affcode.Delete("/:id", controllers.DeleteAffcodeByID)
+
+	customer := app.Group("customer")
+	customer.Get("", controllers.GetAllCustomer)
+	customer.Post("", controllers.CreateCustomer)
+	customer.Get("/:id", controllers.ShowCustomerByID)
+	customer.Put("/:id", controllers.UpdateCustomerByID)
+	customer.Delete("/:id", controllers.DeleteCustomerByID)
+
+	customerAddress := app.Group("customeraddress")
+	customerAddress.Get("", controllers.GetAllCustomerAddress)
+	customerAddress.Post("", controllers.CreateCustomerAddress)
+	customerAddress.Get("/:id", controllers.ShowCustomerAddressByID)
+	customerAddress.Put("/:id", controllers.UpdateCustomerAddressByID)
+	customerAddress.Delete("/:id", controllers.DeleteCustomerAddressByID)
+
+	consignee := app.Group("consignee")
+	consignee.Get("", controllers.GetAllConsignee)
+	consignee.Post("", controllers.CreateConsignee)
+	consignee.Get("/:id", controllers.ShowConsigneeByID)
+	consignee.Put("/:id", controllers.UpdateConsigneeByID)
+	consignee.Delete("/:id", controllers.DeleteConsigneeByID)
 }

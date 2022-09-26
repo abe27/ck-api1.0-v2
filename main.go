@@ -87,6 +87,15 @@ func init() {
 	configs.Store.AutoMigrate(&models.Pc{})
 	configs.Store.AutoMigrate(&models.Commercial{})
 	configs.Store.AutoMigrate(&models.SampleFlg{})
+	configs.Store.AutoMigrate(&models.ReviseOrder{})
+	configs.Store.AutoMigrate(&models.Shipment{})
+	configs.Store.AutoMigrate(&models.OrderZone{})
+	configs.Store.AutoMigrate(&models.OrderType{})
+	configs.Store.AutoMigrate(&models.Affcode{})
+	configs.Store.AutoMigrate(&models.Customer{})
+	configs.Store.AutoMigrate(&models.CustomerAddress{})
+	configs.Store.AutoMigrate(&models.Consignee{})
+	configs.Store.AutoMigrate(&models.OrderPlan{})
 }
 
 func main() {
