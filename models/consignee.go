@@ -60,7 +60,6 @@ type Consignee struct {
 	CustomerID        *string         `json:"customer_id" form:"customer_id" binding:"required"`
 	CustomerAddressID *string         `json:"customer_ddress_id" form:"customer_address_id"`
 	Prefix            string          `json:"prefix" form:"prefix" binding:"required"`
-	LastRunning       int64           `json:"last_running" form:"last_running" default:"1"`
 	IsActive          bool            `json:"is_active" form:"is_active" binding:"required"`
 	CreatedAt         time.Time       `json:"created_at" form:"created_at" default:"now"`
 	UpdatedAt         time.Time       `json:"updated_at" form:"updated_at" default:"now"`
@@ -91,6 +90,24 @@ type OrderZone struct {
 }
 
 func (obj *OrderZone) BeforeCreate(tx *gorm.DB) (err error) {
+	id, _ := g.New()
+	obj.ID = id
+	return
+}
+
+type LastInvoice struct {
+	ID          string    `gorm:"primaryKey;size:21" json:"id"`
+	FactoryID   *string   `json:"factory_id" form:"factory_id" binding:"required"`
+	AffcodeID   *string   `json:"affcode_id" form:"affcode_id" binding:"required"`
+	LastRunning int64     `json:"last_running" form:"last_running" binding:"required"`
+	IsActive    bool      `json:"is_active" form:"is_active" binding:"required"`
+	CreatedAt   time.Time `json:"created_at" form:"created_at" default:"now"`
+	UpdatedAt   time.Time `json:"updated_at" form:"updated_at" default:"now"`
+	Factory     Factory   `gorm:"foreignKey:FactoryID;references:ID" json:"factory"`
+	Affcode     Affcode   `gorm:"foreignKey:AffcodeID;references:ID" json:"affcode"`
+}
+
+func (obj *LastInvoice) BeforeCreate(tx *gorm.DB) (err error) {
 	id, _ := g.New()
 	obj.ID = id
 	return

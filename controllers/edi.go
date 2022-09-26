@@ -27,6 +27,8 @@ func GetAllFileEdi(c *fiber.Ctx) error {
 
 func CreateFileEdi(c *fiber.Ctx) error {
 	var r models.Response
+	// Create FileEdi
+	db := configs.Store
 	var obj models.FileEdi
 	err := c.BodyParser(&obj)
 	if err != nil {
@@ -34,6 +36,9 @@ func CreateFileEdi(c *fiber.Ctx) error {
 		r.Data = err
 		return c.Status(fiber.StatusInternalServerError).JSON(&r)
 	}
+
+	var objDup models.FileEdi
+	db.Select("batch_no").First(&objDup, "batch_no=?", obj.BatchNo)
 
 	// Upload GEDI File To Directory
 	file, err := c.FormFile("file_edi")
@@ -62,9 +67,6 @@ func CreateFileEdi(c *fiber.Ctx) error {
 		FactoryID = "INJ"
 	}
 	/// End Check File Type
-
-	// Create FileEdi
-	db := configs.Store
 	var factory models.Factory
 	err = db.Where("title=?", FactoryID).First(&factory).Error
 	if err != nil {
@@ -97,9 +99,6 @@ func CreateFileEdi(c *fiber.Ctx) error {
 	obj.Size = file.Size
 	obj.BatchName = file.Filename
 
-	var objDup models.FileEdi
-	db.Select("batch_no").First(&objDup, "batch_no=?", obj.BatchNo)
-
 	err = db.FirstOrCreate(&obj, models.FileEdi{BatchNo: obj.BatchNo}).Error
 	if err != nil {
 		r.Message = services.MessageSystemError
@@ -111,8 +110,6 @@ func CreateFileEdi(c *fiber.Ctx) error {
 	obj.Factory = factory
 	obj.Mailbox = mailbox
 	obj.FileType = filetype
-	// Read Text files
-	go services.ReadGediFile(&obj)
 	// // Create upload log
 	logData := models.SyncLogger{
 		Title:       "upload gedi file",
@@ -132,6 +129,10 @@ func CreateFileEdi(c *fiber.Ctx) error {
 		response = c.Status(fiber.StatusOK).JSON(&r)
 	}
 
+	// Read Text files
+	if objDup.BatchNo == "" {
+		go services.ReadGediFile(&obj)
+	}
 	db.Create(&logData)
 	return response
 }

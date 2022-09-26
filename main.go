@@ -95,6 +95,7 @@ func init() {
 	configs.Store.AutoMigrate(&models.Customer{})
 	configs.Store.AutoMigrate(&models.CustomerAddress{})
 	configs.Store.AutoMigrate(&models.Consignee{})
+	configs.Store.AutoMigrate(&models.LastInvoice{})
 	configs.Store.AutoMigrate(&models.OrderPlan{})
 }
 

@@ -25,7 +25,7 @@ func (u *Part) BeforeCreate(tx *gorm.DB) (err error) {
 
 type Ledger struct {
 	ID          string    `gorm:"primaryKey;size:21" json:"id"`
-	WhsID       *string   `json:"whs_id" form:"whs_id" binding:"required"`
+	FactoryID   *string   `json:"factory_id" form:"factory_id" binding:"required"`
 	PartID      *string   `json:"part_id" form:"part_id" binding:"required"`
 	PartTypeID  *string   `json:"part_type_id" form:"part_type_id" binding:"required"`
 	UnitID      *string   `json:"unit_id" form:"unit_id" binding:"required"`
@@ -39,7 +39,7 @@ type Ledger struct {
 	IsActive    bool      `json:"is_active" form:"is_active" default:"true"`
 	CreatedAt   time.Time `json:"created_at" form:"created_at" default:"now"`
 	UpdatedAt   time.Time `json:"updated_at" form:"updated_at" default:"now"`
-	Whs         Whs       `gorm:"foreignKey:WhsID;references:ID" json:"whs"`
+	Factory     Factory   `gorm:"foreignKey:FactoryID;references:ID" json:"factory"`
 	Part        Part      `gorm:"foreignKey:PartID;references:ID;" json:"part"`
 	PartType    PartType  `gorm:"foreignKey:PartTypeID;references:ID" json:"part_type"`
 	Unit        Unit      `gorm:"foreignKey:UnitID;references:ID" json:"unit"`

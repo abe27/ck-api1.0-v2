@@ -92,12 +92,12 @@ func ReadGediFile(fileEdi *models.FileEdi) {
 
 			// Initailize Ledger
 			ledger := models.Ledger{
-				WhsID:      &receiveTypeData.Whs.ID,
+				FactoryID:  &fileEdi.Factory.ID,
 				PartID:     &part.ID,
 				PartTypeID: &typeData.ID,
 				UnitID:     &unitData.ID,
 			}
-			db.FirstOrCreate(&ledger, &models.Ledger{WhsID: &receiveTypeData.Whs.ID, PartID: &part.ID})
+			db.FirstOrCreate(&ledger, &models.Ledger{FactoryID: &fileEdi.Factory.ID, PartID: &part.ID})
 
 			obj := models.GEDIReceive{
 				Factory:          fileEdi.Factory.Title,
@@ -253,34 +253,33 @@ func ReadGediFile(fileEdi *models.FileEdi) {
 				OuterPcs:         0,
 				AllocateQty:      0,
 				CreatedAt:        Updtime,
+				IsReviseError:    true,
 			}
-
-			// Check Whs
-			obj.Whs = "COM"
-			if obj.Pono[:1] == "#" {
-				obj.Whs = "NESC"
-			} else if obj.Pono[:1] == "@" {
-				obj.Whs = "ICAM"
-			}
-
-			var whs models.Whs
-			db.Select("id,title").First(&whs, "title=?", obj.Whs)
-			var orderZone models.OrderZone
-			db.Select("id").
-				Where("value=?", obj.Bioabt).
-				Where("factory_id=?", fileEdi.Factory.ID).
-				Where("whs_id=?", whs.ID).
-				First(&orderZone)
 
 			obj.FileEdiID = &fileEdi.ID
+
+			var orderZone models.OrderZone
+			db.Preload("Whs").Where("value=?", obj.Bioabt).Where("factory_id=?", fileEdi.Factory.ID).First(&orderZone)
 			obj.OrderZoneID = &orderZone.ID
 
+			// Check Whs
+			obj.Whs = orderZone.Whs.Title
 			// For Consignee
 			affcode := models.Affcode{
 				Title:       obj.Biac,
 				Description: "-",
 			}
 			db.FirstOrCreate(&affcode, &models.Affcode{Title: obj.Biac})
+			// Create LastInvoice
+			lastInv := models.LastInvoice{
+				FactoryID: &fileEdi.Factory.ID,
+				AffcodeID: &affcode.ID,
+			}
+			db.FirstOrCreate(&lastInv, &models.LastInvoice{
+				FactoryID: &fileEdi.Factory.ID,
+				AffcodeID: &affcode.ID,
+			})
+
 			customer := models.Customer{
 				Title:       obj.Bishpc,
 				Description: obj.Bisafn,
@@ -288,14 +287,14 @@ func ReadGediFile(fileEdi *models.FileEdi) {
 			db.FirstOrCreate(&customer, &models.Customer{Title: obj.Bishpc})
 
 			consigneeData := models.Consignee{
-				WhsID:      &whs.ID,             // whs_id
+				WhsID:      &orderZone.ID,       // whs_id
 				FactoryID:  &fileEdi.Factory.ID, // factory_id
 				AffcodeID:  &affcode.ID,         // affcode_id
 				CustomerID: &customer.ID,        // customer_id
 				Prefix:     obj.Biivpx,          // prefix
 			}
 			db.FirstOrCreate(&consigneeData, models.Consignee{
-				WhsID:      &whs.ID,             // whs_id
+				WhsID:      &orderZone.Whs.ID,   // whs_id
 				FactoryID:  &fileEdi.Factory.ID, // factory_id
 				AffcodeID:  &affcode.ID,         // affcode_id
 				CustomerID: &customer.ID,        // customer_id
@@ -304,13 +303,85 @@ func ReadGediFile(fileEdi *models.FileEdi) {
 			obj.ConsigneeID = &consigneeData.ID
 
 			/// Revise Type
-			obj.ReviseOrderID = nil
-			obj.LedgerID = nil
-			obj.PcID = nil
-			obj.CommercialID = nil
-			obj.OrderTypeID = nil
-			obj.ShipmentID = nil
-			obj.SampleFlgID = nil
+			reviseTitle := "-"
+			var reviseData models.ReviseOrder
+			if len(obj.Reasoncd) > 0 {
+				reviseTitle = obj.Reasoncd[:1]
+			}
+			db.First(&reviseData, "title=?", reviseTitle)
+			if reviseData.ID != "" {
+				obj.IsReviseError = false
+				obj.ReviseOrderID = &reviseData.ID
+			}
+
+			// Part
+			part := models.Part{
+				Slug:        strings.ReplaceAll(obj.PartNo, "-", ""),
+				Title:       obj.PartNo,
+				Description: obj.PartName,
+			}
+			db.FirstOrCreate(&part, &models.Part{Slug: strings.ReplaceAll(obj.PartNo, "-", "")})
+			part.Description = obj.PartName
+			db.Save(&part)
+
+			// Ledger
+			ledger := models.Ledger{
+				FactoryID:   &fileEdi.Factory.ID,
+				PartID:      &part.ID,
+				PartTypeID:  &typeData.ID,
+				UnitID:      &unitData.ID,
+				DimWidth:    0,
+				DimLength:   0,
+				DimHeight:   0,
+				GrossWeight: 0,
+				NetWeight:   0,
+				Qty:         0,
+				Ctn:         0,
+			}
+
+			db.FirstOrCreate(&ledger, &models.Ledger{
+				FactoryID:  &fileEdi.Factory.ID,
+				PartID:     &part.ID,
+				PartTypeID: &typeData.ID,
+				UnitID:     &unitData.ID,
+			})
+			ledger.DimWidth = obj.Biwidt
+			ledger.DimLength = obj.Bileng
+			ledger.DimHeight = obj.Bihigh
+			ledger.GrossWeight = obj.Bigrwt
+			ledger.NetWeight = obj.Binewt
+			ledger.Qty = obj.Bistdp
+			db.Save(&ledger)
+
+			obj.LedgerID = &ledger.ID
+			var pc models.Pc
+			db.First(&pc, "title=?", strings.ReplaceAll(line[86:(86+1)], " ", ""))
+			obj.PcID = &pc.ID
+
+			var comm models.Commercial
+			db.First(&comm, "title=?", strings.ReplaceAll(line[87:(87+1)], " ", ""))
+			obj.CommercialID = &comm.ID
+
+			var orderTypeData models.OrderType
+			db.First(&orderTypeData, &models.OrderType{Title: strings.ReplaceAll(line[137:(137+1)], " ", "")})
+			obj.OrderTypeID = &orderTypeData.ID
+
+			var shipment models.Shipment
+			db.First(&shipment, "title=?", strings.ReplaceAll(line[4:(4+1)], " ", ""))
+			obj.ShipmentID = &shipment.ID
+
+			var sampleFlg models.SampleFlg
+			db.First(&sampleFlg, "title=?", obj.SampFlg)
+			obj.SampleFlgID = &sampleFlg.ID
+			err := db.Create(&obj).Error
+			if err != nil {
+				logData := models.SyncLogger{
+					Title:       "create orderplan",
+					Description: fmt.Sprintf("%s", err),
+					IsSuccess:   false,
+				}
+				db.Create(&logData)
+			}
 			rnd++
 		}
 	}
