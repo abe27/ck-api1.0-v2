@@ -193,7 +193,7 @@ func ReadGediFile(fileEdi *models.FileEdi) {
 			receiveEnt.IsSync = fileEdi.Factory.IsActive
 			db.Save(&receiveEnt)
 
-			fmt.Printf("%s ==> %s unit:%d\n", SlugPartNo, obj.PartName, obj.PlnQty)
+			// fmt.Printf("%s ==> %s unit:%d\n", SlugPartNo, obj.PartName, obj.PlnQty)
 		}
 	} else {
 		// plantype := "ORDERPLAN"
