@@ -97,6 +97,8 @@ func init() {
 	configs.Store.AutoMigrate(&models.Consignee{})
 	configs.Store.AutoMigrate(&models.LastInvoice{})
 	configs.Store.AutoMigrate(&models.OrderPlan{})
+	configs.Store.AutoMigrate(&models.OrderGroupType{})
+	configs.Store.AutoMigrate(&models.OrderGroup{})
 }
 
 func main() {

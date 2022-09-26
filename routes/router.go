@@ -193,6 +193,20 @@ func SetUpRouter(c *fiber.App) {
 	orderType.Put("/:id", controllers.UpdateOrderTypeByID)
 	orderType.Delete("/:id", controllers.DeleteOrderTypeByID)
 
+	orderGroupType := orderGroup.Group("/grouptype")
+	orderGroupType.Get("", controllers.GetAllOrderGroupType)
+	orderGroupType.Post("", controllers.CreateOrderGroupType)
+	orderGroupType.Get("/:id", controllers.ShowOrderGroupTypeByID)
+	orderGroupType.Put("/:id", controllers.UpdateOrderGroupTypeByID)
+	orderGroupType.Delete("/:id", controllers.DeleteOrderGroupTypeByID)
+
+	orderGroupConsignee := orderGroup.Group("/consignee")
+	orderGroupConsignee.Get("", controllers.GetAllOrderGroup)
+	orderGroupConsignee.Post("", controllers.CreateOrderGroup)
+	orderGroupConsignee.Get("/:id", controllers.ShowOrderGroupByID)
+	orderGroupConsignee.Put("/:id", controllers.UpdateOrderGroupByID)
+	orderGroupConsignee.Delete("/:id", controllers.DeleteOrderGroupByID)
+
 	affcode := app.Group("affcode")
 	affcode.Get("", controllers.GetAllAffcode)
 	affcode.Post("", controllers.CreateAffcode)

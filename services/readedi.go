@@ -387,5 +387,6 @@ func ReadGediFile(fileEdi *models.FileEdi) {
 			}
 			rnd++
 		}
+		// Go Create Order
 	}
 }

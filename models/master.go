@@ -276,3 +276,40 @@ func (obj *OrderType) BeforeCreate(tx *gorm.DB) (err error) {
 	obj.ID = id
 	return
 }
+
+// N=All,F=3 Front,E=3 End,O=Sprit Order
+type OrderGroupType struct {
+	ID          string    `gorm:"primaryKey;size:21" json:"id"`
+	Title       string    `gorm:"not null;unique;size:15" json:"title" form:"title" binding:"required"`
+	Description string    `json:"description" form:"description" binding:"required"`
+	IsActive    bool      `json:"is_active" form:"is_active" binding:"required"`
+	CreatedAt   time.Time `json:"created_at" form:"created_at" default:"now"`
+	UpdatedAt   time.Time `json:"updated_at" form:"updated_at" default:"now"`
+}
+
+func (obj *OrderGroupType) BeforeCreate(tx *gorm.DB) (err error) {
+	id, _ := g.New()
+	obj.ID = id
+	return
+}
+
+type OrderGroup struct {
+	ID               string         `gorm:"primaryKey;size:21" json:"id"`
+	UserID           *string        `json:"user_id" form:"user_id" binding:"required"`
+	ConsigneeID      *string        `json:"consignee_id" form:"consignee_id" binding:"required"`
+	OrderGroupTypeID *string        `json:"order_group_type_id" form:"order_group_type_id" binding:"required"`
+	SubOrder         string         `gorm:"size:15" json:"sub_order" form:"sub_order" binding:"required"`
+	Description      string         `json:"description" form:"description" binding:"required"`
+	IsActive         bool           `json:"is_active" form:"is_active" binding:"required"`
+	CreatedAt        time.Time      `json:"created_at" form:"created_at" default:"now"`
+	UpdatedAt        time.Time      `json:"updated_at" form:"updated_at" default:"now"`
+	User             User           `gorm:"foreignKey:UserID;references:ID" json:"user"`
+	Consignee        Consignee      `gorm:"foreignKey:ConsigneeID;references:ID" json:"consignee"`
+	OrderGroupType   OrderGroupType `gorm:"foreignKey:OrderGroupTypeID;references:ID" json:"order_group_type"`
+}
+
+func (obj *OrderGroup) BeforeCreate(tx *gorm.DB) (err error) {
+	id, _ := g.New()
+	obj.ID = id
+	return
+}
