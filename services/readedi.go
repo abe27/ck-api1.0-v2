@@ -351,8 +351,8 @@ func ReadGediFile(fileEdi *models.FileEdi) {
 			ledger.DimWidth = obj.Biwidt
 			ledger.DimLength = obj.Bileng
 			ledger.DimHeight = obj.Bihigh
-			ledger.GrossWeight = obj.Bigrwt
-			ledger.NetWeight = obj.Binewt
+			ledger.GrossWeight = (obj.Bigrwt / 1000)
+			ledger.NetWeight = (obj.Binewt / 1000)
 			ledger.Qty = obj.Bistdp
 			db.Save(&ledger)
 
