@@ -24,19 +24,68 @@ func GetAllOrderGroup(c *fiber.Ctx) error {
 
 func CreateOrderGroup(c *fiber.Ctx) error {
 	var r models.Response
-	var obj models.OrderGroup
-	err := c.BodyParser(&obj)
+	var frm models.FormGroupConsignee
+	err := c.BodyParser(&frm)
 	if err != nil {
 		r.Message = services.MessageInputValidationError
 		r.Data = &err
 		return c.Status(fiber.StatusNotAcceptable).JSON(&r)
 	}
 	// Fetch All Data
-	err = configs.Store.Create(&obj).Error
+	db := configs.Store
+	// Fetch Data Master
+	var user models.User
+	db.First(&user, &models.User{UserName: frm.UserID})
+	var whs models.Whs
+	db.First(&whs, &models.Whs{Title: frm.WhsID})
+	var factory models.Factory
+	db.First(&factory, &models.Factory{Title: frm.FactoryID})
+	var orderType models.OrderGroupType
+	db.First(&orderType, &models.OrderGroupType{Title: frm.OrderGroupTypeID})
+
+	// Fetch Affcode
+	var affcode models.Affcode
+	db.First(&affcode, &models.Affcode{Title: frm.AffcodeID})
+	var customer models.Customer
+	db.First(&customer, &models.Customer{Title: frm.CustcodeID})
+
+	// Fetch Consignee Data
+	var consignee models.Consignee
+	db.First(&consignee, &models.Consignee{
+		WhsID:      &whs.ID,
+		FactoryID:  &factory.ID,
+		AffcodeID:  &affcode.ID,
+		CustomerID: &customer.ID,
+	})
+
+	var obj models.OrderGroup
+	obj.UserID = &user.ID
+	obj.ConsigneeID = &consignee.ID
+	obj.OrderGroupTypeID = &orderType.ID
+	obj.SubOrder = frm.SubOrder
+	obj.Description = frm.Description
+	obj.IsActive = frm.IsActive
+
+	// Check duplicate
+	var orderGroup models.OrderGroup
+	db.Select("id,title").First(&orderGroup, &models.OrderGroup{
+		UserID:           &user.ID,
+		ConsigneeID:      &consignee.ID,
+		OrderGroupTypeID: &orderType.ID,
+		SubOrder:         frm.SubOrder,
+	})
+
+	if orderGroup.ID != "" {
+		r.Message = services.MessageDuplicateData(&orderGroup.ID)
+		r.Data = nil
+		return c.Status(fiber.StatusInternalServerError).JSON(&r)
+	}
+
+	err = db.Create(&obj).Error
 	if err != nil {
-		r.Message = services.MessageDuplicateData(&obj.SubOrder)
+		r.Message = services.MessageSystemError
 		r.Data = &err
-		return c.Status(fiber.StatusBadRequest).JSON(&r)
+		return c.Status(fiber.StatusInternalServerError).JSON(&r)
 	}
 	r.Message = services.MessageCreatedData(&obj.SubOrder)
 	r.Data = &obj

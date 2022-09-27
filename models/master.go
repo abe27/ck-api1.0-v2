@@ -313,3 +313,15 @@ func (obj *OrderGroup) BeforeCreate(tx *gorm.DB) (err error) {
 	obj.ID = id
 	return
 }
+
+type FormGroupConsignee struct {
+	UserID           string `json:"user_id" form:"user_id" binding:"required"`
+	WhsID            string `json:"whs_id" form:"whs_id"`
+	FactoryID        string `json:"factory_id" form:"factory_id"`
+	AffcodeID        string `json:"affcode_id" form:"affcode_id" binding:"required"`
+	CustcodeID       string `json:"custcode_id" form:"custcode_id" binding:"required"`
+	OrderGroupTypeID string `json:"order_group_type_id" form:"order_group_type_id" binding:"required"`
+	SubOrder         string `gorm:"size:15" json:"sub_order" form:"sub_order" binding:"required"`
+	Description      string `json:"description" form:"description" binding:"required"`
+	IsActive         bool   `json:"is_active" form:"is_active" binding:"required"`
+}
