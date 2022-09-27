@@ -15,18 +15,32 @@ func CreateOrder() {
 	etd := (time.Now()).Format("2006-01-02")
 	fmt.Printf("Create Order: %v\n", etd)
 	var ord []models.OrderPlan
-	db.Model(&models.OrderPlan{}).
-		Order("etd_tap").
-		Select("order_zone_id,consignee_id,shipment_id,etd_tap,pc_id,commercial_id,bioabt,order_group,vendor,biac,bishpc,bisafn,'sample_flg',carrier_code").
+	err := db.Model(&models.OrderPlan{}).
+		Order("etd_tap,seq").
+		Select("order_zone_id,consignee_id,shipment_id,etd_tap,pc_id,commercial_id,bioabt,order_group,vendor,biac,bishpc,bisafn,sample_flg_id,carrier_code").
 		Where("is_generate=?", false).
 		Where("is_revise_error=?", false).
 		Where("vendor=?", "INJ").
 		// Where("etd_tap >=?", etd).
-		Group("order_zone_id,consignee_id,shipment_id,etd_tap,pc_id,commercial_id,bioabt,order_group,vendor,biac,bishpc,bisafn,'sample_flg',carrier_code").
-		Find(&ord)
+		Group("order_zone_id,consignee_id,shipment_id,etd_tap,pc_id,commercial_id,bioabt,order_group,vendor,biac,bishpc,bisafn,sample_flg_id,carrier_code").
+		Find(&ord).Error
+	if err != nil {
+		sysLogger := models.SyncLogger{
+			Title:       "generate order ent",
+			Description: fmt.Sprintf("Error fetch order: %v", err),
+		}
+		db.Create(&sysLogger)
+	}
 
 	var orderTitle models.OrderTitle
-	db.Where("value=?", "000").First(&orderTitle)
+	err = db.Where("title=?", "000").First(&orderTitle).Error
+	if err != nil {
+		sysLogger := models.SyncLogger{
+			Title:       "get order title",
+			Description: fmt.Sprintf("Error fetch order title: %v", err),
+		}
+		db.Create(&sysLogger)
+	}
 
 	x := 0
 	for x < len(ord) {
