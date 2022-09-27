@@ -214,6 +214,7 @@ func ReadGediFile(fileEdi *models.FileEdi) {
 				Sortg1:           fileEdi.Factory.Sortg1,
 				Sortg2:           fileEdi.Factory.Sortg2,
 				Sortg3:           fileEdi.Factory.Sortg3,
+				Tagrp:            "C",
 				WhsID:            &whs.ID,
 				PlanType:         "ORDERPLAN",
 				Pono:             strings.ReplaceAll(line[13:(13+15)], " ", ""),
@@ -375,6 +376,42 @@ func ReadGediFile(fileEdi *models.FileEdi) {
 
 			var sampleFlg models.SampleFlg
 			db.First(&sampleFlg, "title=?", obj.SampFlg)
+
+			/// Check Order Group
+			var orderGroup models.OrderGroup
+			db.Preload("OrderGroupType").First(&orderGroup, "consignee_id=?", &obj.ConsigneeID)
+			txtOrderGroup := "NONE" // For not group order
+			if orderGroup.ID != "" {
+				switch orderGroup.OrderGroupType.Title {
+				case "N":
+					txtOrderGroup = "ALL"
+
+				case "S":
+					txtOrderGroup = obj.Pono
+
+				case "E":
+					txtOrderGroup = obj.Pono[len(obj.Pono)-3:]
+					var chkGroup models.OrderGroup
+					db.Where("consignee_id=?", &obj.ConsigneeID).Where("sub_order=?", strings.TrimSpace(txtOrderGroup)).First(&chkGroup)
+					if chkGroup.ID == "" {
+						txtOrderGroup = "ALL"
+					}
+
+				case "F":
+					txtOrderGroup = obj.Pono[:3]
+					switch orderZone.Description {
+					case "NESC", "ICAM":
+						txtOrderGroup = obj.Pono[:4]
+					}
+
+					var chkGroup models.OrderGroup
+					db.Where("consignee_id=?", &obj.ConsigneeID).Where("sub_order=?", strings.TrimSpace(txtOrderGroup)).First(&chkGroup)
+					if chkGroup.ID == "" {
+						txtOrderGroup = "ALL"
+					}
+				}
+			}
+			obj.OrderGroup = txtOrderGroup
 			obj.SampleFlgID = &sampleFlg.ID
 			err := db.Create(&obj).Error
 			if err != nil {

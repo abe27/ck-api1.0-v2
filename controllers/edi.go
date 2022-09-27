@@ -48,8 +48,9 @@ func CreateFileEdi(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(&r)
 	}
 
-	obj.BatchPath = fmt.Sprintf("edi/%s", file.Filename)
-	err = c.SaveFile(file, fmt.Sprintf("./public/edi/%s", file.Filename))
+	fName := fmt.Sprintf("%s.%s", obj.BatchNo, file.Filename)
+	obj.BatchPath = fmt.Sprintf("edi/%s", fName)
+	err = c.SaveFile(file, fmt.Sprintf("./public/edi/%s", fName))
 	if err != nil {
 		r.Message = services.MessageSystemErrorNotSaveFile
 		r.Data = err
