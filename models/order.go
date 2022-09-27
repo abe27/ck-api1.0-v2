@@ -24,13 +24,13 @@ func (obj *OrderTitle) BeforeCreate(tx *gorm.DB) (err error) {
 
 type Order struct {
 	ID           string         `gorm:"primaryKey;unique;index;size:21" json:"id"`
-	ConsigneeID  *string        `json:"consignee_id" form:"consignee_id" binding:"required"`
-	ShipmentID   *string        `json:"shipment_id" form:"shipment_id" binding:"required"`
-	EtdDate      *time.Time     `gorm:"type:date;" json:"etd_date" form:"etd_date" binding:"required"`
-	PcID         *string        `json:"pc_id" form:"pc_id" binding:"required"`
-	CommercialID *string        `json:"commercial_id" form:"commercial_id" binding:"required"`
-	SampleFlgID  *string        `json:"sample_flg_id" form:"sample_flg_id" binding:"required"`
-	OrderTitleID *string        `json:"title_id" form:"title_id" binding:"required"`
+	ConsigneeID  *string        `gorm:"not null" json:"consignee_id" form:"consignee_id" binding:"required"`
+	ShipmentID   *string        `gorm:"not null" json:"shipment_id" form:"shipment_id" binding:"required"`
+	EtdDate      *time.Time     `gorm:"not null;type:date;" json:"etd_date" form:"etd_date" binding:"required"`
+	PcID         *string        `gorm:"not null" json:"pc_id" form:"pc_id" binding:"required"`
+	CommercialID *string        `gorm:"not null" json:"commercial_id" form:"commercial_id" binding:"required"`
+	SampleFlgID  *string        `gorm:"not null" json:"sample_flg_id" form:"sample_flg_id" binding:"required"`
+	OrderTitleID *string        `gorm:"not null" json:"title_id" form:"title_id" binding:"required"`
 	Bioat        int64          `json:"bioat" form:"bioat" binding:"required"`
 	CarrierCode  string         `gorm:"size:255;" json:"carrier_code" form:"carrier_code" binding:"required"`
 	ShipForm     string         `gorm:"size:255;" json:"ship_form" form:"ship_form" binding:"required"`
@@ -64,10 +64,10 @@ func (u *Order) BeforeCreate(tx *gorm.DB) (err error) {
 
 type OrderDetail struct {
 	ID            string    `gorm:"primaryKey;unique;index;size:21" json:"id"`
-	OrderID       *string   `json:"order_id" form:"order_id" binding:"required"`
-	Pono          *string   `gorm:"size:25" json:"pono" form:"pono" binding:"required"`
-	LedgerID      *string   `json:"ledger_id" form:"ledger_id" binding:"required"`
-	OrderPlanID   *string   `json:"order_plan_id" form:"order_plan_id" binding:"required"`
+	OrderID       *string   `gorm:"not null;" json:"order_id" form:"order_id" binding:"required"`
+	Pono          *string   `gorm:"not null;size:25" json:"pono" form:"pono" binding:"required"`
+	LedgerID      *string   `gorm:"not null;" json:"ledger_id" form:"ledger_id" binding:"required"`
+	OrderPlanID   *string   `gorm:"not null;unique;" json:"order_plan_id" form:"order_plan_id" binding:"required"`
 	OrderCtn      int64     `json:"order_ctn" form:"order_ctn" binding:"required"`
 	TotalOnPallet int64     `json:"total_on_pallet" form:"total_on_pallet" binding:"required"`
 	IsMatched     bool      `json:"is_matched" form:"is_matched"`

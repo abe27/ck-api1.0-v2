@@ -9,17 +9,18 @@ import (
 
 type OrderPlan struct {
 	ID               string      `gorm:"primaryKey;size:21;" json:"id"`
-	FileEdiID        *string     `json:"file_edi_id" form:"file_edi_id"`
-	WhsID            *string     `json:"whs_id" form:"whs_id"`
-	OrderZoneID      *string     `json:"order_zone_id" form:"order_type_id" binding:"required"`
-	ConsigneeID      *string     `json:"consignee_id" form:"consignee_id"`
-	ReviseOrderID    *string     `json:"revise_order_id" form:"revise_order_id" binding:"required"`
-	LedgerID         *string     `json:"ledger_id" form:"ledger_id" binding:"required"`
-	PcID             *string     `json:"pc_id" form:"pc_id" binding:"required"`
-	CommercialID     *string     `json:"commercial_id" form:"commercial_id" binding:"required"`
-	OrderTypeID      *string     `json:"order_type_id" form:"order_type_id" binding:"required"`
-	ShipmentID       *string     `json:"shipment_id" form:"shipment_id" binding:"required"`
-	SampleFlgID      *string     `json:"sample_flg_id" form:"sample_flg_id" binding:"required"`
+	OrderId          string      `gorm:"not null;unique;size:21" form:"order_id" json:"order_id"`
+	FileEdiID        *string     `gorm:"not null;" json:"file_edi_id" form:"file_edi_id"`
+	WhsID            *string     `gorm:"not null;" json:"whs_id" form:"whs_id"`
+	OrderZoneID      *string     `gorm:"not null;" json:"order_zone_id" form:"order_type_id" binding:"required"`
+	ConsigneeID      *string     `gorm:"not null;" json:"consignee_id" form:"consignee_id"`
+	ReviseOrderID    *string     `gorm:"null;" json:"revise_order_id" form:"revise_order_id" binding:"required"`
+	LedgerID         *string     `gorm:"not null;" json:"ledger_id" form:"ledger_id" binding:"required"`
+	PcID             *string     `gorm:"not null;" json:"pc_id" form:"pc_id" binding:"required"`
+	CommercialID     *string     `gorm:"not null;" json:"commercial_id" form:"commercial_id" binding:"required"`
+	OrderTypeID      *string     `gorm:"not null;" json:"order_type_id" form:"order_type_id" binding:"required"`
+	ShipmentID       *string     `gorm:"not null;" json:"shipment_id" form:"shipment_id" binding:"required"`
+	SampleFlgID      *string     `gorm:"not null;" json:"sample_flg_id" form:"sample_flg_id" binding:"required"`
 	Seq              int64       `form:"seq" json:"seq"`
 	Vendor           string      `gorm:"size:5" form:"vendor" json:"vendor"`
 	Cd               string      `gorm:"size:5" form:"cd" json:"cd"`
@@ -35,7 +36,7 @@ type OrderPlan struct {
 	EtdTap           time.Time   `gorm:"type:date;" form:"etd_tap" json:"etd_tap"`
 	PartNo           string      `gorm:"size:25" form:"part_no" json:"part_no"`
 	PartName         string      `gorm:"size:50" form:"part_name" json:"part_name"`
-	SampFlg          string      `gorm:"column:'sample_flg';size:2" form:"sample_flg" json:"sample_flg"`
+	SampFlg          string      `gorm:"column:sample_flg;size:2" form:"sample_flg" json:"sample_flg"`
 	Orderorgi        float64     `form:"orderorgi" json:"orderorgi"`
 	Orderround       float64     `form:"orderround" json:"orderround"`
 	FirmFlg          string      `gorm:"size:2" form:"firm_flg" json:"firm_flg"`
@@ -93,6 +94,8 @@ type OrderPlan struct {
 func (u *OrderPlan) BeforeCreate(tx *gorm.DB) (err error) {
 	id, _ := g.New()
 	u.ID = id
+	OrderId, _ := g.New()
+	u.OrderId = OrderId
 	return nil
 }
 

@@ -9,10 +9,10 @@ import (
 
 type FileEdi struct {
 	ID         string    `gorm:"primaryKey;size:21" json:"id"`
-	FactoryID  *string   `json:"factory_id" form:"factory_id"`
-	MailboxID  *string   `json:"mailbox_id" form:"mailbox_id" binding:"required"`
-	FileTypeID *string   `json:"file_type_id" form:"file_type_id"`
-	BatchNo    string    `gorm:"unique;size:10" json:"batch_no" form:"batch_no" binding:"required"`
+	FactoryID  *string   `gorm:"not null;" json:"factory_id" form:"factory_id"`
+	MailboxID  *string   `gorm:"not null;" json:"mailbox_id" form:"mailbox_id" binding:"required"`
+	FileTypeID *string   `gorm:"not null;" json:"file_type_id" form:"file_type_id"`
+	BatchNo    string    `gorm:"not null;unique;size:10" json:"batch_no" form:"batch_no" binding:"required"`
 	Size       int64     `json:"size" form:"size"`
 	BatchName  string    `gorm:"size:50" json:"batch_name" form:"batch_name"`
 	CreationOn time.Time `json:"creation_on" form:"creation_on"`

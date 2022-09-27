@@ -54,12 +54,12 @@ func (obj *CustomerAddress) BeforeCreate(tx *gorm.DB) (err error) {
 
 type Consignee struct {
 	ID                string          `gorm:"primaryKey;size:21" json:"id"`
-	WhsID             *string         `json:"whs_id" form:"whs_id"`
-	FactoryID         *string         `json:"factory_id" form:"factory_id"`
-	AffcodeID         *string         `json:"affcode_id" form:"affcode_id" binding:"required"`
-	CustomerID        *string         `json:"customer_id" form:"customer_id" binding:"required"`
-	CustomerAddressID *string         `json:"customer_ddress_id" form:"customer_address_id"`
-	Prefix            string          `json:"prefix" form:"prefix" binding:"required"`
+	WhsID             *string         `gorm:"not null;" json:"whs_id" form:"whs_id"`
+	FactoryID         *string         `gorm:"not null;" json:"factory_id" form:"factory_id"`
+	AffcodeID         *string         `gorm:"not null;" json:"affcode_id" form:"affcode_id" binding:"required"`
+	CustomerID        *string         `gorm:"not null;" json:"customer_id" form:"customer_id" binding:"required"`
+	CustomerAddressID *string         `gorm:"null;" json:"customer_ddress_id" form:"customer_address_id"`
+	Prefix            string          `gorm:"not null" json:"prefix" form:"prefix" binding:"required"`
 	IsActive          bool            `json:"is_active" form:"is_active" binding:"required"`
 	CreatedAt         time.Time       `json:"created_at" form:"created_at" default:"now"`
 	UpdatedAt         time.Time       `json:"updated_at" form:"updated_at" default:"now"`
@@ -78,9 +78,9 @@ func (obj *Consignee) BeforeCreate(tx *gorm.DB) (err error) {
 
 type OrderZone struct {
 	ID          string    `gorm:"primaryKey;size:21" json:"id"`
-	Value       int64     `json:"value" form:"value" binding:"required"`
-	FactoryID   *string   `json:"factory_id" form:"factory_id" binding:"required"`
-	WhsID       *string   `json:"whs_id" form:"whs_id" binding:"required"`
+	Value       int64     `gorm:"not null;" json:"value" form:"value" binding:"required"`
+	FactoryID   *string   `gorm:"not null;" json:"factory_id" form:"factory_id" binding:"required"`
+	WhsID       *string   `gorm:"not null;" json:"whs_id" form:"whs_id" binding:"required"`
 	Description string    `json:"description" form:"description" binding:"required"`
 	IsActive    bool      `json:"is_active" form:"is_active" binding:"required"`
 	CreatedAt   time.Time `json:"created_at" form:"created_at" default:"now"`
@@ -97,8 +97,8 @@ func (obj *OrderZone) BeforeCreate(tx *gorm.DB) (err error) {
 
 type LastInvoice struct {
 	ID          string    `gorm:"primaryKey;size:21" json:"id"`
-	FactoryID   *string   `json:"factory_id" form:"factory_id" binding:"required"`
-	AffcodeID   *string   `json:"affcode_id" form:"affcode_id" binding:"required"`
+	FactoryID   *string   `gorm:"not null;" json:"factory_id" form:"factory_id" binding:"required"`
+	AffcodeID   *string   `gorm:"not null;" json:"affcode_id" form:"affcode_id" binding:"required"`
 	LastRunning int64     `json:"last_running" form:"last_running" binding:"required"`
 	IsActive    bool      `json:"is_active" form:"is_active" binding:"required"`
 	CreatedAt   time.Time `json:"created_at" form:"created_at" default:"now"`

@@ -25,11 +25,11 @@ func (u *Part) BeforeCreate(tx *gorm.DB) (err error) {
 
 type Ledger struct {
 	ID          string    `gorm:"primaryKey;size:21" json:"id"`
-	WhsID       *string   `json:"whs_id" form:"whs_id" binding:"required"`
-	FactoryID   *string   `json:"factory_id" form:"factory_id" binding:"required"`
-	PartID      *string   `json:"part_id" form:"part_id" binding:"required"`
-	PartTypeID  *string   `json:"part_type_id" form:"part_type_id" binding:"required"`
-	UnitID      *string   `json:"unit_id" form:"unit_id" binding:"required"`
+	WhsID       *string   `gorm:"not null;" json:"whs_id" form:"whs_id" binding:"required"`
+	FactoryID   *string   `gorm:"not null;" json:"factory_id" form:"factory_id" binding:"required"`
+	PartID      *string   `gorm:"not null;" json:"part_id" form:"part_id" binding:"required"`
+	PartTypeID  *string   `gorm:"not null;" json:"part_type_id" form:"part_type_id" binding:"required"`
+	UnitID      *string   `gorm:"not null;" json:"unit_id" form:"unit_id" binding:"required"`
 	DimWidth    float64   `json:"dim_width" form:"dim_width" default:"0"`
 	DimLength   float64   `json:"dim_length" form:"dim_length" default:"0"`
 	DimHeight   float64   `json:"dim_height" form:"dim_height" default:"0"`

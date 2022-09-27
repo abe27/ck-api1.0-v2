@@ -9,9 +9,9 @@ import (
 
 type User struct {
 	ID        string    `gorm:"primaryKey;size:21;" json:"id"`
-	UserName  string    `gorm:"column:username;index;unique;size:10" json:"user_name" form:"user_name"`
-	Email     string    `gorm:"unique;size:50;" json:"email" form:"email"`
-	Password  string    `gorm:"unique;size:60;" json:"-" form:"password"`
+	UserName  string    `gorm:"not null;column:username;index;unique;size:10" json:"user_name" form:"user_name"`
+	Email     string    `gorm:"not null;unique;size:50;" json:"email" form:"email"`
+	Password  string    `gorm:"not null;unique;size:60;" json:"-" form:"password"`
 	IsActive  bool      `gorm:"null" json:"is_active,omitempty" form:"is_active" default:"false"`
 	CreatedAt time.Time `json:"created_at" form:"created_at" default:"now"`
 	UpdatedAt time.Time `json:"updated_at" form:"updated_at" default:"now"`

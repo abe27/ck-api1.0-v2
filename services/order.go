@@ -17,12 +17,12 @@ func CreateOrder() {
 	var ord []models.OrderPlan
 	db.Model(&models.OrderPlan{}).
 		Order("etd_tap").
-		Select("order_zone_id,consignee_id,shipment_id,etd_tap,pc_id,commercial_id,bioabt,order_group,vendor,biac,bishpc,bisafn,sample_flg,carrier_code").
+		Select("order_zone_id,consignee_id,shipment_id,etd_tap,pc_id,commercial_id,bioabt,order_group,vendor,biac,bishpc,bisafn,'sample_flg',carrier_code").
 		Where("is_generate=?", false).
 		Where("is_revise_error=?", false).
 		Where("vendor=?", "INJ").
 		// Where("etd_tap >=?", etd).
-		Group("order_zone_id,consignee_id,shipment_id,etd_tap,pc_id,commercial_id,bioabt,order_group,vendor,biac,bishpc,bisafn,sample_flg,carrier_code").
+		Group("order_zone_id,consignee_id,shipment_id,etd_tap,pc_id,commercial_id,bioabt,order_group,vendor,biac,bishpc,bisafn,'sample_flg',carrier_code").
 		Find(&ord)
 
 	var orderTitle models.OrderTitle

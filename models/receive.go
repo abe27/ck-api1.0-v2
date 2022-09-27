@@ -9,10 +9,10 @@ import (
 
 type Receive struct {
 	ID            string      `gorm:"primaryKey;size:21" json:"id"`
-	FileEdiID     *string     `form:"file_edi_id" json:"file_edi_id"`
-	ReceiveTypeID *string     `form:"receive_type_id" json:"receive_type_id"`
+	FileEdiID     *string     `gorm:"not null;" form:"file_edi_id" json:"file_edi_id"`
+	ReceiveTypeID *string     `gorm:"not null;" form:"receive_type_id" json:"receive_type_id"`
 	ReceiveDate   time.Time   `json:"receive_date" form:"receive_date" binding:"required"`
-	TransferOutNo string      `gorm:"unique;size:15" json:"transfer_out_no" form:"transfer_out_no" binding:"required"`
+	TransferOutNo string      `gorm:"not null;unique;size:15" json:"transfer_out_no" form:"transfer_out_no" binding:"required"`
 	TexNo         string      `gorm:"size:15;" json:"tex_no" form:"tex_no"`
 	Item          int64       `json:"item" form:"item" default:"0"`
 	PlanCtn       int64       `json:"plan_ctn" form:"plan_ctn" default:"0"`
@@ -33,8 +33,8 @@ func (u *Receive) BeforeCreate(tx *gorm.DB) (err error) {
 
 type ReceiveDetail struct {
 	ID        string    `gorm:"primaryKey;size:21" json:"id"`
-	ReceiveID *string   `form:"receive_id" json:"receive_id"`
-	LedgerID  *string   `form:"ledger_id" json:"ledger_id"`
+	ReceiveID *string   `gorm:"not null;" form:"receive_id" json:"receive_id"`
+	LedgerID  *string   `gorm:"not null;" form:"ledger_id" json:"ledger_id"`
 	PlanQty   int64     `json:"plan_qty" form:"plan_qty"`
 	PlanCtn   int64     `json:"plan_ctn" form:"plan_ctn"`
 	IsActive  bool      `json:"is_active" form:"is_active" binding:"required"`
