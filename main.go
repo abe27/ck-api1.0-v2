@@ -99,6 +99,10 @@ func init() {
 	configs.Store.AutoMigrate(&models.OrderPlan{})
 	configs.Store.AutoMigrate(&models.OrderGroupType{})
 	configs.Store.AutoMigrate(&models.OrderGroup{})
+	configs.Store.AutoMigrate(&models.OrderTitle{})
+	configs.Store.AutoMigrate(&models.OrderLoadingArea{})
+	configs.Store.AutoMigrate(&models.Order{})
+	configs.Store.AutoMigrate(&models.OrderDetail{})
 }
 
 func main() {
