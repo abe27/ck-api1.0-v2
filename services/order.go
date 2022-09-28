@@ -7,7 +7,7 @@ import (
 	"github.com/abe27/api/models"
 )
 
-func CreateOrder() {
+func CreateOrder(factory string) {
 	// Group Order to create order ent
 	db := configs.Store
 	// etd := (time.Now()).Format("2006-01-02")
@@ -18,7 +18,7 @@ func CreateOrder() {
 		Select("order_zone_id,consignee_id,shipment_id,etd_tap,pc_id,commercial_id,bioabt,order_group,vendor,biac,bishpc,bisafn,sample_flg_id,carrier_code").
 		Where("is_generate=?", false).
 		Where("is_revise_error=?", false).
-		Where("vendor=?", "INJ").
+		Where("vendor=?", &factory).
 		Group("order_zone_id,consignee_id,shipment_id,etd_tap,pc_id,commercial_id,bioabt,order_group,vendor,biac,bishpc,bisafn,sample_flg_id,carrier_code").
 		Find(&ord).Error
 	if err != nil {
@@ -62,7 +62,7 @@ func CreateOrder() {
 		}
 
 		// Check LoadingArea
-		fmt.Printf("Check LoadingArea %s\n", ord[x].OrderGroup[:1])
+		// fmt.Printf("Check LoadingArea %s\n", ord[x].OrderGroup[:1])
 		prefixOrder := "-"
 		if ord[x].OrderGroup[:1] == "@" {
 			prefixOrder = "@"
@@ -80,7 +80,7 @@ func CreateOrder() {
 			FactoryID:   &factoryEnt.ID,
 			AffcodeID:   &affcodeData.ID,
 			OnYear:      ConvertInt((etd)[:4]),
-			LastRunning: 1,
+			LastRunning: 0,
 		}
 		db.FirstOrCreate(&invSeq, &models.LastInvoice{
 			FactoryID: &factoryEnt.ID,

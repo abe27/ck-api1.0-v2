@@ -8,7 +8,11 @@ import (
 
 func GenerateOrder(c *fiber.Ctx) error {
 	var r models.Response
-	go services.CreateOrder()
+	factory := c.Query("factory")
+	if factory == "" {
+		factory = "INJ"
+	}
+	go services.CreateOrder(factory)
 	r.Message = "Auto Generate Order"
 	r.Data = nil
 	return c.Status(fiber.StatusCreated).JSON(&r)
