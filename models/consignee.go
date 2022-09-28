@@ -99,6 +99,7 @@ type LastInvoice struct {
 	ID          string    `gorm:"primaryKey;size:21" json:"id"`
 	FactoryID   *string   `gorm:"not null;" json:"factory_id" form:"factory_id" binding:"required"`
 	AffcodeID   *string   `gorm:"not null;" json:"affcode_id" form:"affcode_id" binding:"required"`
+	OnYear      int64     `gorm:"not null;" json:"on_year" form:"on_year" binding:"required"`
 	LastRunning int64     `json:"last_running" form:"last_running" binding:"required"`
 	IsActive    bool      `json:"is_active" form:"is_active" binding:"required"`
 	CreatedAt   time.Time `json:"created_at" form:"created_at" default:"now"`

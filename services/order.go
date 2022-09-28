@@ -79,11 +79,13 @@ func CreateOrder() {
 		invSeq := models.LastInvoice{
 			FactoryID:   &factoryEnt.ID,
 			AffcodeID:   &affcodeData.ID,
+			OnYear:      ConvertInt((etd)[:4]),
 			LastRunning: 1,
 		}
 		db.FirstOrCreate(&invSeq, &models.LastInvoice{
 			FactoryID: &factoryEnt.ID,
 			AffcodeID: &affcodeData.ID,
+			OnYear:    ConvertInt((etd)[:4]),
 		})
 
 		order := models.Order{
