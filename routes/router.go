@@ -161,6 +161,7 @@ func SetUpRouter(c *fiber.App) {
 	fileEdi.Get("/:id", controllers.ShowFileEdiByID)
 	fileEdi.Put("/:id", controllers.UpdateFileEdiByID)
 	fileEdi.Delete("/:id", controllers.DeleteFileEdiByID)
+	fileEdi.Patch("", controllers.CheckFileEdiByID)
 	// Receive Type
 	receive := app.Group("receive")
 	receiveType := receive.Group("type")

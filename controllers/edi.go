@@ -212,3 +212,9 @@ func DeleteFileEdiByID(c *fiber.Ctx) error {
 	r.Data = &obj
 	return c.Status(fiber.StatusAccepted).JSON(&r)
 }
+
+func CheckFileEdiByID(c *fiber.Ctx) error {
+	var r models.Response
+	r.Message = "Check EDI Not Download"
+	return c.Status(fiber.StatusOK).JSON(&r)
+}
