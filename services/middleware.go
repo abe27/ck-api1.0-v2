@@ -41,9 +41,16 @@ func CreateToken(user models.User) models.AuthSession {
 		Preload("PrefixName").
 		Where("user_id=?", &user.ID).
 		First(&profile)
-	// As variable
+		// As variable
+	profile.AvatarURL = "emp/user01.png"
 	obj.Profile = &profile
 	obj.User = &user
+	obj.IsAdmin = false
+	var admin models.Administrator
+	db.First(&admin, "user_id=?", &user.ID)
+	if admin.ID != "" {
+		obj.IsAdmin = true
+	}
 	obj.Header = "Authorization"
 	obj.JwtType = "Bearer"
 	obj.JwtToken, _ = g.New(60)
