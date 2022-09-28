@@ -2,7 +2,6 @@ package services
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/abe27/api/configs"
 	"github.com/abe27/api/models"
@@ -11,9 +10,8 @@ import (
 func CreateOrder() {
 	// Group Order to create order ent
 	db := configs.Store
-	// dt := time.Now()
-	etd := (time.Now()).Format("2006-01-02")
-	fmt.Printf("Create Order: %v\n", etd)
+	// etd := (time.Now()).Format("2006-01-02")
+	// fmt.Printf("Create Order: %v\n", etd)
 	var ord []models.OrderPlan
 	err := db.
 		Order("etd_tap").
@@ -32,7 +30,7 @@ func CreateOrder() {
 		panic(err)
 	}
 
-	fmt.Printf("Fetch Order Title: 000\n")
+	// fmt.Printf("Fetch Order Title: 000\n")
 
 	var orderTitle models.OrderTitle
 	err = db.Select("id,title").Where("title=?", "000").First(&orderTitle).Error
@@ -45,7 +43,7 @@ func CreateOrder() {
 		panic(err)
 	}
 
-	fmt.Printf("Fetch Order Title: %s\n", orderTitle.ID)
+	// fmt.Printf("Fetch Order Title: %s\n", orderTitle.ID)
 
 	x := 0
 	for x < len(ord) {
