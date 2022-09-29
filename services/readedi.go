@@ -203,9 +203,10 @@ func ReadGediFile(fileEdi *models.FileEdi) {
 		rnd := 1
 		for scanner.Scan() {
 			line := scanner.Text()
+			etd := strings.ReplaceAll(line[28:(28+8)], " ", "")
 			Upddte, _ := time.Parse("20060102150405", strings.ReplaceAll(line[141:(141+14)], " ", ""))  //, "%Y%m%d%H%M%S"),
 			Updtime, _ := time.Parse("20060102150405", strings.ReplaceAll(line[141:(141+14)], " ", "")) // "%Y%m%d%H%M%S"),
-			EtdDte, _ := time.Parse("20060102", strings.ReplaceAll(line[28:(28+8)], " ", ""))
+			EtdDte, _ := time.Parse("20060102", etd)
 			OrderMonth, _ := time.Parse("20060102", strings.ReplaceAll(line[118:(118+8)], " ", ""))
 			obj := models.OrderPlan{
 				Seq:              int64(rnd),
@@ -276,10 +277,12 @@ func ReadGediFile(fileEdi *models.FileEdi) {
 			lastInv := models.LastInvoice{
 				FactoryID: &fileEdi.Factory.ID,
 				AffcodeID: &affcode.ID,
+				OnYear:    ConvertInt(etd[:4]),
 			}
 			db.FirstOrCreate(&lastInv, &models.LastInvoice{
 				FactoryID: &fileEdi.Factory.ID,
 				AffcodeID: &affcode.ID,
+				OnYear:    ConvertInt(etd[:4]),
 			})
 
 			customer := models.Customer{
