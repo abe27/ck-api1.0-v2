@@ -380,37 +380,48 @@ func ReadGediFile(fileEdi *models.FileEdi) {
 			/// Check Order Group
 			var orderGroup models.OrderGroup
 			db.Preload("OrderGroupType").First(&orderGroup, "consignee_id=?", &obj.ConsigneeID)
-			txtOrderGroup := "NONE" // For not group order
+			txtOrderGroup := "N" // For not group order
 			if orderGroup.ID != "" {
-				switch orderGroup.OrderGroupType.Title {
-				case "N":
+				txtOrderGroup = orderGroup.OrderGroupType.Title
+			} else {
+				// Not Found Order Group
+				logData := models.SyncLogger{
+					Title:       "not found order group",
+					Description: fmt.Sprintf("%v not found, %s", &obj.ConsigneeID, err),
+					IsSuccess:   false,
+				}
+				db.Create(&logData)
+			}
+
+			switch txtOrderGroup {
+			case "N":
+				txtOrderGroup = "ALL"
+
+			case "S":
+				txtOrderGroup = obj.Pono
+
+			case "E":
+				txtOrderGroup = obj.Pono[len(obj.Pono)-3:]
+				var chkGroup models.OrderGroup
+				db.Where("consignee_id=?", &obj.ConsigneeID).Where("sub_order=?", strings.TrimSpace(txtOrderGroup)).First(&chkGroup)
+				if chkGroup.ID == "" {
 					txtOrderGroup = "ALL"
+				}
 
-				case "S":
-					txtOrderGroup = obj.Pono
+			case "F":
+				txtOrderGroup = obj.Pono[:3]
+				switch orderZone.Description {
+				case "NESC", "ICAM":
+					txtOrderGroup = obj.Pono[:4]
+				}
 
-				case "E":
-					txtOrderGroup = obj.Pono[len(obj.Pono)-3:]
-					var chkGroup models.OrderGroup
-					db.Where("consignee_id=?", &obj.ConsigneeID).Where("sub_order=?", strings.TrimSpace(txtOrderGroup)).First(&chkGroup)
-					if chkGroup.ID == "" {
-						txtOrderGroup = "ALL"
-					}
-
-				case "F":
-					txtOrderGroup = obj.Pono[:3]
-					switch orderZone.Description {
-					case "NESC", "ICAM":
-						txtOrderGroup = obj.Pono[:4]
-					}
-
-					var chkGroup models.OrderGroup
-					db.Where("consignee_id=?", &obj.ConsigneeID).Where("sub_order=?", strings.TrimSpace(txtOrderGroup)).First(&chkGroup)
-					if chkGroup.ID == "" {
-						txtOrderGroup = "ALL"
-					}
+				var chkGroup models.OrderGroup
+				db.Where("consignee_id=?", &obj.ConsigneeID).Where("sub_order=?", strings.TrimSpace(txtOrderGroup)).First(&chkGroup)
+				if chkGroup.ID == "" {
+					txtOrderGroup = "ALL"
 				}
 			}
+
 			obj.OrderGroup = txtOrderGroup
 			obj.SampleFlgID = &sampleFlg.ID
 			err := db.Create(&obj).Error

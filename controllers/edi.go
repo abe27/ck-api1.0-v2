@@ -100,27 +100,31 @@ func CreateFileEdi(c *fiber.Ctx) error {
 	obj.Size = file.Size
 	obj.BatchName = file.Filename
 
-	err = db.FirstOrCreate(&obj, models.FileEdi{BatchNo: obj.BatchNo}).Error
+	err = db.Create(&obj).Error
 	if err != nil {
 		r.Message = services.MessageSystemError
 		r.Data = err
 		return c.Status(fiber.StatusInternalServerError).JSON(&r)
 	}
 
+	// fmt.Printf("Upload %s with size: %d", obj.BatchNo, obj.Size)
+
 	// Goroutines Read GEDI files
 	obj.Factory = factory
 	obj.Mailbox = mailbox
 	obj.FileType = filetype
 	// // Create upload log
+
+	r.Message = services.MessageCreatedData(&obj.ID)
+	r.Data = &obj
+	response := c.Status(fiber.StatusCreated).JSON(&r)
+
+	// Create Log
 	logData := models.SyncLogger{
 		Title:       "upload gedi file",
 		Description: fmt.Sprintf("Uploaded %s is completed", obj.BatchNo),
 		IsSuccess:   true,
 	}
-
-	r.Message = services.MessageCreatedData(&obj.ID)
-	r.Data = &obj
-	response := c.Status(fiber.StatusCreated).JSON(&r)
 	if objDup.BatchNo != "" {
 		logData = models.SyncLogger{
 			Title:       "upload gedi file",
@@ -132,7 +136,8 @@ func CreateFileEdi(c *fiber.Ctx) error {
 
 	// Read Text files
 	if objDup.BatchNo == "" {
-		go services.ReadGediFile(&obj)
+		// go services.ReadGediFile(&obj)
+		services.ReadGediFile(&obj)
 	}
 	db.Create(&logData)
 	return response

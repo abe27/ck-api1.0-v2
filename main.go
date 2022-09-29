@@ -113,6 +113,7 @@ func main() {
 		StrictRouting: true,
 		ServerHeader:  "SPL Server API Service", // add custom server header
 		AppName:       "API Version 1.0",
+		BodyLimit:     10 * 1024 * 1024, // this is the default limit of 4MB
 	}
 
 	app := fiber.New(config)
