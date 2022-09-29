@@ -14,7 +14,7 @@ func CreateOrder(factory string) {
 	// fmt.Printf("Create Order: %v\n", etd)
 	var ord []models.OrderPlan
 	err := db.
-		Order("etd_tap").
+		Order("etd_tap,shipment_id").
 		Select("order_zone_id,consignee_id,shipment_id,etd_tap,pc_id,commercial_id,bioabt,order_group,vendor,biac,bishpc,bisafn,sample_flg_id,carrier_code").
 		Where("is_generate=?", false).
 		Where("is_revise_error=?", false).
