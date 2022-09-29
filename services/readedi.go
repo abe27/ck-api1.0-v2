@@ -387,7 +387,7 @@ func ReadGediFile(fileEdi *models.FileEdi) {
 				// Not Found Order Group
 				logData := models.SyncLogger{
 					Title:       "not found order group",
-					Description: fmt.Sprintf("%v not found, %s", &obj.ConsigneeID, err),
+					Description: fmt.Sprintf("%s not found", *obj.ConsigneeID),
 					IsSuccess:   false,
 				}
 				db.Create(&logData)
