@@ -117,6 +117,13 @@ func SetUpRouter(c *fiber.App) {
 	shipment.Put("/:id", controllers.UpdateShipmentByID)
 	shipment.Delete("/:id", controllers.DeleteShipmentByID)
 
+	location := app.Group("location")
+	location.Get("", controllers.GetAllLocation)
+	location.Post("", controllers.CreateLocation)
+	location.Get("/:id", controllers.ShowLocationByID)
+	location.Put("/:id", controllers.UpdateLocationByID)
+	location.Delete("/:id", controllers.DeleteLocationByID)
+
 	// Part Type Router
 	partType := app.Group("parttype")
 	partType.Get("", controllers.GetAllPartType)

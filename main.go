@@ -103,6 +103,7 @@ func init() {
 	configs.Store.AutoMigrate(&models.OrderLoadingArea{})
 	configs.Store.AutoMigrate(&models.Order{})
 	configs.Store.AutoMigrate(&models.OrderDetail{})
+	configs.Store.AutoMigrate(&models.Location{})
 }
 
 func main() {
