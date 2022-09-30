@@ -9,7 +9,7 @@ import (
 
 type OrderPlan struct {
 	ID               string      `gorm:"primaryKey;size:21;" json:"id,omitempty"`
-	OrderId          string      `gorm:"not null;unique;size:21;index;,omitempty" form:"order_id" json:"order_id"`
+	OrderId          string      `gorm:"not null;unique;size:21;index" form:"order_id" json:"order_id"`
 	FileEdiID        *string     `gorm:"not null;" json:"file_edi_id,omitempty" form:"file_edi_id"`
 	WhsID            *string     `gorm:"not null;" json:"whs_id,omitempty" form:"whs_id"`
 	OrderZoneID      *string     `gorm:"not null;" json:"order_zone_id,omitempty" form:"order_type_id" binding:"required"`
