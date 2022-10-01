@@ -330,6 +330,7 @@ type Location struct {
 	ID          string    `gorm:"primaryKey,unique;size:21;" json:"id,omitempty"`
 	Title       string    `gorm:"not null;size:50;unique;" json:"title,omitempty" form:"title" binding:"required"`
 	Description string    `gorm:"null" json:"description,omitempty" form:"description"`
+	MaxLimit    int64     `gorm:"null" json:"max_limit,omitempty" form:"max_limit" binding:"required"`
 	IsActive    bool      `gorm:"null" json:"is_active,omitempty" form:"is_active" default:"true"`
 	CreatedAt   time.Time `json:"created_at,omitempty" form:"created_at" default:"now"`
 	UpdatedAt   time.Time `json:"updated_at,omitempty" form:"updated_at" default:"now"`
