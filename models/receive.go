@@ -69,3 +69,8 @@ type ReceiveIcam struct {
 	PartId    string `json:"part_id" binding:"required"`
 	Ctn       int    `json:"ctn" binding:"required"`
 }
+
+type ReceiveEntForm struct {
+	IsSync   bool `json:"is_sync,omitempty" form:"is_sync" default:"true"`
+	IsActive bool `form:"is_active" binding:"required"`
+}

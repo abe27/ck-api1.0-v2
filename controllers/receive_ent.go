@@ -12,7 +12,7 @@ func GetAllReceiveEnt(c *fiber.Ctx) error {
 	var obj []models.Receive
 	db := configs.Store
 	err := db.
-		Limit(2).
+		Limit(10).
 		Order("receive_date,transfer_out_no").
 		Preload("FileEdi.Factory").
 		Preload("FileEdi.Mailbox.Area").
@@ -46,6 +46,29 @@ func ShowReceiveEntByID(c *fiber.Ctx) error {
 
 func UpdateReceiveEntByID(c *fiber.Ctx) error {
 	var r models.Response
+	id := c.Params("id")
+	var frm models.ReceiveEntForm
+	err := c.BodyParser(&frm)
+	if err != nil {
+		r.Message = err.Error()
+		r.Data = &r
+		return c.Status(fiber.StatusInternalServerError).JSON(&r)
+	}
+
+	db := configs.Store
+	var receEnt models.Receive
+	err = db.First(&receEnt, "id=?", &id).Error
+	if err != nil {
+		r.Message = err.Error()
+		r.Data = &r
+		return c.Status(fiber.StatusInternalServerError).JSON(&r)
+	}
+
+	receEnt.IsSync = frm.IsSync
+	receEnt.IsActive = frm.IsActive
+	db.Save(&receEnt)
+	r.Message = services.MessageUpdateDataByID(&id)
+	r.Data = &receEnt
 	return c.Status(fiber.StatusOK).JSON(&r)
 }
 

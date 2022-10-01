@@ -182,8 +182,8 @@ func SetUpRouter(c *fiber.App) {
 	receiveEnt.Get("", controllers.GetAllReceiveEnt)
 	receiveEnt.Post("", controllers.CreateReceiveEnt)
 	receiveEnt.Get("/:id", controllers.ShowReceiveEntByID)
-	receiveType.Put("/:id", controllers.UpdateReceiveEntByID)
-	receiveType.Delete("/:id", controllers.DeleteReceiveEntByID)
+	receiveEnt.Put("/:id", controllers.UpdateReceiveEntByID)
+	receiveEnt.Delete("/:id", controllers.DeleteReceiveEntByID)
 
 	//ReviseOrder Router
 	orderGroup := app.Group("/order")
@@ -242,7 +242,7 @@ func SetUpRouter(c *fiber.App) {
 	orderEnt.Get("/:id", controllers.ShowOrderGroupByID)
 	orderEnt.Put("/:id", controllers.UpdateOrderGroupByID)
 	orderEnt.Delete("/:id", controllers.DeleteOrderGroupByID)
-	orderEnt.Patch("/generate", controllers.GenerateOrder)
+	orderEnt.Patch("", controllers.GenerateOrder)
 
 	orderDetail := orderGroup.Group("/detail")
 	orderDetail.Get("", controllers.GetAllOrderGroup)
