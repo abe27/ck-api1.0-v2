@@ -237,7 +237,7 @@ func SetUpRouter(c *fiber.App) {
 	orderLoadingArea.Delete("/:id", controllers.DeleteOrderLoadingAreaByID)
 
 	orderEnt := orderGroup.Group("/ent")
-	orderEnt.Get("", controllers.GetAllOrderGroup)
+	orderEnt.Get("", controllers.GetAllOrder)
 	orderEnt.Post("", controllers.CreateOrderGroup)
 	orderEnt.Get("/:id", controllers.ShowOrderGroupByID)
 	orderEnt.Put("/:id", controllers.UpdateOrderGroupByID)
