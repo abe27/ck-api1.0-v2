@@ -240,7 +240,7 @@ func SetUpRouter(c *fiber.App) {
 	orderEnt.Get("", controllers.GetAllOrder)
 	orderEnt.Post("", controllers.CreateOrderGroup)
 	orderEnt.Get("/:id", controllers.ShowOrderGroupByID)
-	orderEnt.Put("/:id", controllers.UpdateOrderGroupByID)
+	orderEnt.Put("/:id", controllers.UpdateOrderByID)
 	orderEnt.Delete("/:id", controllers.DeleteOrderGroupByID)
 	orderEnt.Patch("", controllers.GenerateOrder)
 
