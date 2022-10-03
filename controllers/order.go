@@ -12,7 +12,7 @@ func GetAllOrder(c *fiber.Ctx) error {
 	var obj []models.Order
 	// Fetch All Data
 	err := configs.Store.
-		Limit(50).
+		Limit(100).
 		Preload("Consignee.Whs").
 		Preload("Consignee.Factory").
 		Preload("Consignee.Affcode").
@@ -32,7 +32,7 @@ func GetAllOrder(c *fiber.Ctx) error {
 		Preload("OrderDetail.OrderPlan.FileEdi.FileType").
 		Preload("OrderDetail.OrderPlan.ReviseOrder").
 		Preload("OrderDetail.OrderPlan.OrderType").
-		Find(&obj).
+		Find(&obj, "is_sync=?", false).
 		Error
 	if err != nil {
 		r.Message = services.MessageNotFound("Order Ent")
