@@ -38,8 +38,8 @@ type ReceiveDetail struct {
 	RowID     string    `gorm:"null;size:18" json:"row_id,omitempty" form:"row_id"`
 	ReceiveID *string   `gorm:"not null;" form:"receive_id" json:"receive_id,omitempty"`
 	LedgerID  *string   `gorm:"not null;" form:"ledger_id" json:"ledger_id,omitempty"`
-	PlanQty   int64     `json:"plan_qty,omitempty" form:"plan_qty"`
-	PlanCtn   int64     `json:"plan_ctn,omitempty" form:"plan_ctn"`
+	PlanQty   int64     `json:"plan_qty" form:"plan_qty"`
+	PlanCtn   int64     `json:"plan_ctn" form:"plan_ctn"`
 	IsActive  bool      `json:"is_active,omitempty" form:"is_active" binding:"required"`
 	CreatedAt time.Time `json:"created_at,omitempty" form:"created_at" default:"now"`
 	UpdatedAt time.Time `json:"updated_at,omitempty" form:"updated_at" default:"now"`

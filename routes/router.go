@@ -14,6 +14,12 @@ func SetUpRouter(c *fiber.App) {
 	// User
 	r.Post("/register", controllers.Register)
 	r.Post("/login", controllers.Login)
+	log := r.Group("/logs")
+	log.Get("", controllers.GetAllSyncLogger)
+	log.Post("", controllers.CreateSyncLogger)
+	log.Get("/:id", controllers.ShowSyncLoggerByID)
+	log.Put("/:id", controllers.UpdateSyncLoggerByID)
+	log.Delete("/:id", controllers.DeleteSyncLoggerByID)
 	// Use Router Middleware
 	app := r.Use(services.AuthorizationRequired)
 	auth := app.Group("auth")
