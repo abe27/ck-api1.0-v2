@@ -16,7 +16,7 @@ type Receive struct {
 	TransferOutNo string          `gorm:"not null;unique;size:15" json:"transfer_out_no,omitempty" form:"transfer_out_no" binding:"required"`
 	TexNo         string          `gorm:"size:15;" json:"tex_no,omitempty" form:"tex_no"`
 	Item          int64           `json:"item,omitempty" form:"item" default:"0"`
-	PlanCtn       int64           `json:"plan_ctn,omitempty" form:"plan_ctn" default:"0"`
+	PlanCtn       int64           `json:"plan_ctn" form:"plan_ctn" default:"0"`
 	ReceiveCtn    int64           `json:"receive_ctn,omitempty" form:"receive_ctn" default:"0"`
 	IsSync        bool            `json:"is_sync,omitempty" form:"is_sync" default:"true"`
 	IsActive      bool            `json:"is_active,omitempty" form:"is_active" binding:"required"`
