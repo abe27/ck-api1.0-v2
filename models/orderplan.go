@@ -9,7 +9,7 @@ import (
 
 type OrderPlan struct {
 	ID               string      `gorm:"primaryKey;size:21;" json:"id"`
-	OrderId          string      `gorm:"not null;unique;size:21;index" form:"order_id" json:"order_id"`
+	RowID            string      `gorm:"null;size:18" json:"row_id,omitempty" form:"row_id"`
 	FileEdiID        *string     `gorm:"not null;" json:"file_edi_id" form:"file_edi_id"`
 	WhsID            *string     `gorm:"not null;" json:"whs_id" form:"whs_id"`
 	OrderZoneID      *string     `gorm:"not null;" json:"order_zone_id" form:"order_type_id" binding:"required"`
@@ -94,8 +94,8 @@ type OrderPlan struct {
 func (u *OrderPlan) BeforeCreate(tx *gorm.DB) (err error) {
 	id, _ := g.New()
 	u.ID = id
-	OrderId, _ := g.New()
-	u.OrderId = OrderId
+	RowID, _ := g.New(18)
+	u.RowID = RowID
 	return nil
 }
 

@@ -24,6 +24,7 @@ func (obj *OrderTitle) BeforeCreate(tx *gorm.DB) (err error) {
 
 type Order struct {
 	ID           string         `gorm:"primaryKey;unique;index;size:21" json:"id,omitempty"`
+	RowID        string         `gorm:"null;size:18" json:"row_id,omitempty" form:"row_id"`
 	ConsigneeID  *string        `gorm:"not null" json:"consignee_id,omitempty" form:"consignee_id" binding:"required"`
 	ShipmentID   *string        `gorm:"not null" json:"shipment_id,omitempty" form:"shipment_id" binding:"required"`
 	EtdDate      *time.Time     `gorm:"not null;type:date;" json:"etd_date,omitempty" form:"etd_date" binding:"required"`
@@ -64,6 +65,7 @@ func (u *Order) BeforeCreate(tx *gorm.DB) (err error) {
 
 type OrderDetail struct {
 	ID            string    `gorm:"primaryKey;unique;index;size:21" json:"id,omitempty"`
+	RowID         string    `gorm:"null;size:18" json:"row_id,omitempty" form:"row_id"`
 	OrderID       *string   `gorm:"not null;" json:"order_id,omitempty" form:"order_id" binding:"required"`
 	Pono          *string   `gorm:"not null;size:25" json:"pono,omitempty" form:"pono" binding:"required"`
 	LedgerID      *string   `gorm:"not null;" json:"ledger_id,omitempty" form:"ledger_id" binding:"required"`
