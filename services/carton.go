@@ -61,8 +61,12 @@ func CreateCarton(obj *models.CartonHistory) {
 	var ledger models.Ledger
 	db.Where("whs_id=?", whs.ID).Where("part_id=?", part.ID).Where("factory_id=?", fac.ID).First(&ledger)
 
+	shelveTitle := strings.ReplaceAll(obj.Shelve, " ", "")
+	if len(shelveTitle) == 0 {
+		shelveTitle = "-"
+	}
 	var shelve models.Location
-	db.First(&shelve, "title=?", strings.ReplaceAll(obj.Shelve, " ", ""))
+	db.First(&shelve, "title=?", shelveTitle)
 
 	cartonData := models.Carton{
 		RowID:      obj.RowID,
