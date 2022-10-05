@@ -137,14 +137,7 @@ func CreateCarton(obj *models.CartonHistory) {
 		sysLog.IsSuccess = false
 		db.Create(&sysLog)
 
-		// Update Older Stock
-		var ctn int64
-		db.Select("id").Where("ledger_id=?", cartonData.LedgerID).Where("qty > ?", "0").Find(&models.Carton{}).Count(&ctn)
-		var olderLedger *models.Ledger
-		db.Select("id,ctn").First(&olderLedger, "id=?", cartonData.LedgerID)
-		olderLedger.Ctn = float64(ctn)
-		db.Save(&olderLedger)
-
+		olderID := &cartonData.LedgerID
 		// Save Carton New Ledger
 		cartonData.RowID = obj.RowID
 		cartonData.LedgerID = &ledger.ID
@@ -153,6 +146,14 @@ func CreateCarton(obj *models.CartonHistory) {
 		cartonData.PalletNo = obj.RefNo
 		cartonData.IsActive = true
 		db.Save(&cartonData)
+
+		// Update Older Stock
+		var ctn int64
+		db.Select("id").Where("ledger_id=?", &olderID).Where("qty > ?", "0").Find(&models.Carton{}).Count(&ctn)
+		var olderLedger *models.Ledger
+		db.Select("id,ctn").First(&olderLedger, "id=?", &olderID)
+		olderLedger.Ctn = float64(ctn)
+		db.Save(&olderLedger)
 	}
 
 	var ctn int64
