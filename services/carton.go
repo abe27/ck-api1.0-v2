@@ -48,15 +48,27 @@ func CreateCarton(obj *models.CartonHistory) {
 
 	var whs models.Whs
 	db.First(&whs, "title=?", whsTite)
-	var part models.Part
-	db.First(&part, "slug=?", strings.ReplaceAll(obj.PartNo, "-", ""))
+	part := models.Part{
+		Slug:        strings.ReplaceAll(obj.PartNo, "-", ""),
+		Title:       obj.PartNo,
+		Description: obj.PartNo,
+		IsActive:    true,
+	}
+	db.FirstOrCreate(&part, &models.Part{
+		Slug: strings.ReplaceAll(obj.PartNo, "-", ""),
+	})
 
 	facTitle := "INJ"
 	unitTitle := "BOX"
+	partType := "PART"
 	if obj.PartNo[:1] == "1" {
 		facTitle = "AW"
 		unitTitle = "COIL"
+		partType = "WIRE"
 	}
+
+	var partTypeData models.PartType
+	db.First(&partTypeData, "title=?", partType)
 
 	var unitData models.Unit
 	db.First(&unitData, "title=?", unitTitle)
@@ -67,6 +79,7 @@ func CreateCarton(obj *models.CartonHistory) {
 		WhsID:       &whs.ID,
 		PartID:      &part.ID,
 		FactoryID:   &fac.ID,
+		PartTypeID:  &partTypeData.ID,
 		UnitID:      &unitData.ID,
 		DimWidth:    0,
 		DimLength:   0,
