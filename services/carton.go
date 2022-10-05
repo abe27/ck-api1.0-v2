@@ -108,8 +108,14 @@ func CreateCarton(obj *models.CartonHistory) {
 	if len(shelveTitle) == 0 {
 		shelveTitle = "-"
 	}
-	var shelve models.Location
-	db.First(&shelve, "title=?", shelveTitle)
+	shelve := models.Location{
+		Title:       shelveTitle,
+		Description: shelveTitle,
+		IsActive:    true,
+	}
+	db.FirstOrCreate(&shelve, &models.Location{
+		Title: shelveTitle,
+	})
 
 	cartonData := models.Carton{
 		RowID:      obj.RowID,
