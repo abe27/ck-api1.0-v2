@@ -132,7 +132,7 @@ func CreateCarton(obj *models.CartonHistory) {
 	err = db.FirstOrCreate(&cartonData, &models.Carton{SerialNo: obj.SerialNo}).Error
 	if err != nil {
 		var sysLog models.SyncLogger
-		sysLog.Title = fmt.Sprintf("Create %s on {}is error", obj.SerialNo)
+		sysLog.Title = fmt.Sprintf("Create %s on %s is error", obj.SerialNo, whs.Title)
 		sysLog.Description = err.Error()
 		sysLog.IsSuccess = false
 		db.Create(&sysLog)
