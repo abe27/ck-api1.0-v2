@@ -90,11 +90,19 @@ func CreateCarton(obj *models.CartonHistory) {
 		Ctn:         0,
 	}
 
-	db.FirstOrCreate(&ledger, &models.Ledger{
+	err := db.FirstOrCreate(&ledger, &models.Ledger{
 		WhsID:     &whs.ID,
 		PartID:    &part.ID,
 		FactoryID: &fac.ID,
-	})
+	}).Error
+	if err != nil {
+		var sysLog models.SyncLogger
+		sysLog.Title = fmt.Sprintf("Create %s on ledger is error", obj.PartNo)
+		sysLog.Description = err.Error()
+		sysLog.IsSuccess = false
+		db.Create(&sysLog)
+		return
+	}
 
 	shelveTitle := strings.ReplaceAll(obj.Shelve, " ", "")
 	if len(shelveTitle) == 0 {
@@ -115,7 +123,7 @@ func CreateCarton(obj *models.CartonHistory) {
 		PalletNo:   obj.RefNo,
 		IsActive:   true,
 	}
-	err := db.FirstOrCreate(&cartonData, &models.Carton{SerialNo: obj.SerialNo}).Error
+	err = db.FirstOrCreate(&cartonData, &models.Carton{SerialNo: obj.SerialNo}).Error
 	if err != nil {
 		var sysLog models.SyncLogger
 		sysLog.Title = fmt.Sprintf("Create %s is error", obj.SerialNo)
