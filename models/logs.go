@@ -9,17 +9,18 @@ import (
 
 type CartonHistory struct {
 	ID          string    `gorm:"primaryKey;size:21" json:"id,omitempty"`
-	Whs         string    `json:"whs,omitempty" form:"whs" binding:"required"`
-	PartNo      string    `json:"part_no,omitempty" form:"part_no" binding:"required"`
-	LotNo       string    `gorm:"size:8;" json:"lot_no,omitempty" form:"lot_no" binding:"required"`
-	SerialNo    string    `gorm:"size:10;" json:"serial_no,omitempty" form:"serial_no" binding:"required"`
-	DieNo       string    `gorm:"size:10;" json:"die_no,omitempty" form:"die_no" binding:"required"`
-	RevisionNo  string    `gorm:"size:25;" json:"rev_no,omitempty" form:"rev_no" binding:"required"`
+	RowID       string    `gorm:"not null;size:18" json:"row_id,omitempty" form:"row_id"`
+	Whs         string    `gorm:"not null;" json:"whs,omitempty" form:"whs" binding:"required"`
+	PartNo      string    `gorm:"not null;" json:"part_no,omitempty" form:"part_no" binding:"required"`
+	LotNo       string    `gorm:"not null;size:8;" json:"lot_no,omitempty" form:"lot_no" binding:"required"`
+	SerialNo    string    `gorm:"not null;size:10;" json:"serial_no,omitempty" form:"serial_no" binding:"required"`
+	DieNo       string    `gorm:"null;size:10;" json:"die_no,omitempty" form:"die_no" binding:"required"`
+	RevisionNo  string    `gorm:"null;size:25;" json:"rev_no,omitempty" form:"rev_no" binding:"required"`
 	Qty         int64     `json:"qty,omitempty" form:"qty" binding:"required"`
-	Shelve      string    `gorm:"size:20;" json:"shelve,omitempty" form:"shelve" binding:"required"`
-	IpAddress   string    `gorm:"size:25" json:"ip_address,omitempty" form:"ip_address"`
-	EmpID       string    `gorm:"size:25" json:"emp_id,omitempty" form:"emp_id"`
-	RefNo       string    `gorm:"size:25" json:"ref_no,omitempty" form:"ref_no"`
+	Shelve      string    `gorm:"null;size:20;" json:"shelve,omitempty" form:"shelve" binding:"required"`
+	IpAddress   string    `gorm:"null;size:25" json:"ip_address,omitempty" form:"ip_address"`
+	EmpID       string    `gorm:"null;size:25" json:"emp_id,omitempty" form:"emp_id"`
+	RefNo       string    `gorm:"null;size:25" json:"ref_no,omitempty" form:"ref_no"`
 	Description string    `json:"description,omitempty" form:"description" binding:"required"`
 	CreatedAt   time.Time `json:"created_at,omitempty" form:"created_at" default:"now"`
 	UpdatedAt   time.Time `json:"updated_at,omitempty" form:"updated_at" default:"now"`

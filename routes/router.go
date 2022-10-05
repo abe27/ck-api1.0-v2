@@ -14,6 +14,10 @@ func SetUpRouter(c *fiber.App) {
 	// User
 	r.Post("/register", controllers.Register)
 	r.Post("/login", controllers.Login)
+	cartonHistory := r.Group("/carton/history")
+	cartonHistory.Post("", controllers.CreateCartonHistory)
+
+	// Start Group Router
 	log := r.Group("/logs")
 	log.Get("", controllers.GetAllSyncLogger)
 	log.Post("", controllers.CreateSyncLogger)
