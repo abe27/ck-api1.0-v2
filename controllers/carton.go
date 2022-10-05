@@ -23,6 +23,7 @@ func CreateCartonHistory(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(&r)
 	}
 	go services.CreateCartonHistoryData(&frm)
+	go services.CreateCarton(&frm)
 	r.Message = "Create Carton History"
 	r.Data = nil
 	return c.Status(fiber.StatusCreated).JSON(&r)
