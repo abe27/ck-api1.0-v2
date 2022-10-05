@@ -52,14 +52,36 @@ func CreateCarton(obj *models.CartonHistory) {
 	db.First(&part, "slug=?", strings.ReplaceAll(obj.PartNo, "-", ""))
 
 	facTitle := "INJ"
+	unitTitle := "BOX"
 	if obj.PartNo[:1] == "1" {
 		facTitle = "AW"
+		unitTitle = "COIL"
 	}
+
+	var unitData models.Unit
+	db.First(&unitData, "title=?", unitTitle)
 
 	var fac models.Factory
 	db.First(&fac, "title=?", facTitle)
-	var ledger models.Ledger
-	db.Where("whs_id=?", whs.ID).Where("part_id=?", part.ID).Where("factory_id=?", fac.ID).First(&ledger)
+	ledger := models.Ledger{
+		WhsID:       &whs.ID,
+		PartID:      &part.ID,
+		FactoryID:   &fac.ID,
+		UnitID:      &unitData.ID,
+		DimWidth:    0,
+		DimLength:   0,
+		DimHeight:   0,
+		GrossWeight: 0,
+		NetWeight:   0,
+		Qty:         0,
+		Ctn:         0,
+	}
+
+	db.FirstOrCreate(&ledger, &models.Ledger{
+		WhsID:     &whs.ID,
+		PartID:    &part.ID,
+		FactoryID: &fac.ID,
+	})
 
 	shelveTitle := strings.ReplaceAll(obj.Shelve, " ", "")
 	if len(shelveTitle) == 0 {
@@ -91,6 +113,9 @@ func CreateCarton(obj *models.CartonHistory) {
 
 	var ctn int64
 	db.Select("id").Where("ledger_id=?", ledger.ID).Where("qty > ?", "0").Find(&models.Carton{}).Count(&ctn)
+	if obj.Qty > 0 {
+		ledger.Qty = float64(obj.Qty)
+	}
 	ledger.Ctn = float64(ctn)
 	db.Save(&ledger)
 }
