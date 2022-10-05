@@ -79,11 +79,16 @@ func CreateCarton(obj *models.CartonHistory) {
 	cartonData.Qty = float64(obj.Qty)
 	cartonData.PalletNo = obj.RefNo
 	cartonData.IsActive = true
-	err := db.Create(&cartonData).Error
+	err := db.FirstOrCreate(&cartonData, &models.Carton{SerialNo: obj.SerialNo}).Error
 	if err != nil {
 		sysLog.Title = fmt.Sprintf("Create %s is error", obj.SerialNo)
 		sysLog.Description = err.Error()
 		sysLog.IsSuccess = false
 	}
+
+	var ctn int64
+	db.Select("id").Where("ledger_id=?", ledger.ID).Where("qty > ?", "0").Find(&models.Carton{}).Count(&ctn)
+	ledger.Ctn = float64(ctn)
+	db.Save(&ledger)
 	db.Create(&obj)
 }
