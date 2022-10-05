@@ -21,6 +21,7 @@ type CartonHistory struct {
 	IpAddress   string    `gorm:"null;size:25" json:"ip_address,omitempty" form:"ip_address"`
 	EmpID       string    `gorm:"null;size:25" json:"emp_id,omitempty" form:"emp_id"`
 	RefNo       string    `gorm:"null;size:25" json:"ref_no,omitempty" form:"ref_no"`
+	ReceiveNo   string    `gorm:"null;size:25" json:"receive_no,omitempty" form:"receive_no"`
 	Description string    `json:"description,omitempty" form:"description" binding:"required"`
 	CreatedAt   time.Time `json:"created_at,omitempty" form:"created_at" default:"now"`
 	UpdatedAt   time.Time `json:"updated_at,omitempty" form:"updated_at" default:"now"`
