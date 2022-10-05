@@ -137,7 +137,15 @@ func CreateCarton(obj *models.CartonHistory) {
 		sysLog.IsSuccess = false
 		db.Create(&sysLog)
 
-		// Save Ledger
+		// Update Older Stock
+		var ctn int64
+		db.Select("id").Where("ledger_id=?", cartonData.LedgerID).Where("qty > ?", "0").Find(&models.Carton{}).Count(&ctn)
+		var olderLedger *models.Ledger
+		db.Select("id,ctn").First(&olderLedger, "id=?", cartonData.LedgerID)
+		olderLedger.Ctn = float64(ctn)
+		db.Save(&olderLedger)
+
+		// Save Carton New Ledger
 		cartonData.RowID = obj.RowID
 		cartonData.LedgerID = &ledger.ID
 		cartonData.LocationID = &shelve.ID
