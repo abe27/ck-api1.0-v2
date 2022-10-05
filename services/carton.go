@@ -97,7 +97,7 @@ func CreateCarton(obj *models.CartonHistory) {
 	}).Error
 	if err != nil {
 		var sysLog models.SyncLogger
-		sysLog.Title = fmt.Sprintf("Create %s on ledger is error", obj.PartNo)
+		sysLog.Title = fmt.Sprintf("Create %s on %s ledger is error", obj.PartNo, whs.Title)
 		sysLog.Description = err.Error()
 		sysLog.IsSuccess = false
 		db.Create(&sysLog)
@@ -132,10 +132,19 @@ func CreateCarton(obj *models.CartonHistory) {
 	err = db.FirstOrCreate(&cartonData, &models.Carton{SerialNo: obj.SerialNo}).Error
 	if err != nil {
 		var sysLog models.SyncLogger
-		sysLog.Title = fmt.Sprintf("Create %s is error", obj.SerialNo)
+		sysLog.Title = fmt.Sprintf("Create %s on {}is error", obj.SerialNo)
 		sysLog.Description = err.Error()
 		sysLog.IsSuccess = false
 		db.Create(&sysLog)
+
+		// Save Ledger
+		cartonData.RowID = obj.RowID
+		cartonData.LedgerID = &ledger.ID
+		cartonData.LocationID = &shelve.ID
+		cartonData.Qty = float64(obj.Qty)
+		cartonData.PalletNo = obj.RefNo
+		cartonData.IsActive = true
+		db.Save(&cartonData)
 	}
 
 	var ctn int64
