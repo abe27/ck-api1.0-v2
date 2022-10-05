@@ -345,7 +345,7 @@ func (obj *Location) BeforeCreate(tx *gorm.DB) (err error) {
 type AutoGenerateInvoice struct {
 	ID         string    `gorm:"primaryKey,unique;size:21;" json:"id,omitempty"`
 	FactoryID  *string   `gorm:"not null;unique;" json:"factory_id,omitempty" form:"factory_id,omitempty"`
-	IsGenerate bool      `json:"is_generate,omitempty" form:"is_generate" default:"true"`
+	IsGenerate bool      `json:"is_generate" form:"is_generate" default:"true"`
 	IsActive   bool      `json:"is_active,omitempty" form:"is_active" default:"true"`
 	CreatedAt  time.Time `json:"created_at,omitempty" form:"created_at" default:"now"`
 	UpdatedAt  time.Time `json:"updated_at,omitempty" form:"updated_at" default:"now"`

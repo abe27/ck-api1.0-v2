@@ -85,6 +85,29 @@ func GenerateOrder(c *fiber.Ctx) error {
 	if factory == "" {
 		factory = "INJ"
 	}
+	db := configs.Store
+	var fac models.Factory
+	err := db.First(&fac, "title=?", factory).Error
+	if err != nil {
+		r.Message = services.MessageSystemError
+		r.Data = &err
+		return c.Status(fiber.StatusInternalServerError).JSON(&r)
+	}
+
+	var autoGen models.AutoGenerateInvoice
+	err = db.First(&autoGen, "factory_id=?", &fac.ID).Error
+	if err != nil {
+		r.Message = services.MessageSystemError
+		r.Data = &err
+		return c.Status(fiber.StatusInternalServerError).JSON(&r)
+	}
+
+	if !autoGen.IsGenerate {
+		r.Message = services.MessageShowNotAllow(fac.ID)
+		r.Data = &err
+		return c.Status(fiber.StatusInternalServerError).JSON(&r)
+	}
+
 	go services.CreateOrder(factory)
 	r.Message = "Auto Generate Order"
 	r.Data = nil

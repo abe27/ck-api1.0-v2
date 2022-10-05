@@ -11,7 +11,7 @@ func GetAllAutoGenerateInvoice(c *fiber.Ctx) error {
 	var r models.Response
 	var obj []models.AutoGenerateInvoice
 	// Fetch All Data
-	err := configs.Store.Find(&obj).Error
+	err := configs.Store.Preload("Factory").Find(&obj).Error
 	if err != nil {
 		r.Message = services.MessageNotFound("AutoGenerateInvoice")
 		r.Data = &err

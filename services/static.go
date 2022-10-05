@@ -28,7 +28,7 @@ var MessageNotFoundTokenKey = "Token key is not found!"
 var MessageTokenIsExpired = "Token is expired!"
 var MessageUserLeave = "User is logout!"
 var MessageUserNotActive = "User is not active!"
-
+var MessageShowNotAllow = func(title string) string { return fmt.Sprintf("This `%s` not allow!", title) }
 var MessageShowAllData = func(title string) string { return fmt.Sprintf("Show All `%s`!", title) }
 var MessageCreatedData = func(title *string) string { return fmt.Sprintf("Create Data `%s(%d)` is completed", *title, title) }
 var MessageShowDataByID = func(title *string) string { return fmt.Sprintf("Show Data by ID: `%s(%d)`", *title, title) }
