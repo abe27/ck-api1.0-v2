@@ -71,6 +71,13 @@ func SetUpRouter(c *fiber.App) {
 	factoryAutogen.Put("/:id", controllers.UpdateAutoGenerateInvoiceByID)
 	factoryAutogen.Delete("/:id", controllers.DeleteAutoGenerateInvoiceByID)
 
+	lineToken := app.Group("/notify")
+	lineToken.Get("", controllers.GetAllLineNotifyToken)
+	lineToken.Post("", controllers.CreateLineNotifyToken)
+	lineToken.Get("/:id", controllers.ShowLineNotifyTokenByID)
+	lineToken.Put("/:id", controllers.UpdateLineNotifyTokenByID)
+	lineToken.Delete("/:id", controllers.DeleteLineNotifyTokenByID)
+
 	// Prefix Name Router
 	prefixname := app.Group("/prefixname")
 	prefixname.Get("", controllers.GetAllPrefixName)

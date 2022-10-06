@@ -357,3 +357,21 @@ func (obj *AutoGenerateInvoice) BeforeCreate(tx *gorm.DB) (err error) {
 	obj.ID = id
 	return
 }
+
+type LineNotifyToken struct {
+	ID        string    `gorm:"primaryKey,unique;size:21;" json:"id,omitempty"`
+	WhsID     *string   `gorm:"not null;" json:"whs_id,omitempty" form:"whs_id,omitempty"`
+	FactoryID *string   `gorm:"not null;" json:"factory_id,omitempty" form:"factory_id,omitempty"`
+	Token     string    `gorm:"not null;unique;" json:"token,omitempty" form:"token"`
+	IsActive  bool      `json:"is_active,omitempty" form:"is_active" default:"true"`
+	CreatedAt time.Time `json:"created_at,omitempty" form:"created_at" default:"now"`
+	UpdatedAt time.Time `json:"updated_at,omitempty" form:"updated_at" default:"now"`
+	Whs       Whs       `gorm:"foreignKey:WhsID;references:ID" json:"whs,omitempty"`
+	Factory   Factory   `gorm:"foreignKey:FactoryID;references:ID" json:"factory,omitempty"`
+}
+
+func (obj *LineNotifyToken) BeforeCreate(tx *gorm.DB) (err error) {
+	id, _ := g.New()
+	obj.ID = id
+	return
+}

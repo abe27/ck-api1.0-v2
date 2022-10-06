@@ -106,7 +106,7 @@ func init() {
 	configs.Store.AutoMigrate(&models.Location{})
 	configs.Store.AutoMigrate(&models.Carton{})
 	configs.Store.AutoMigrate(&models.AutoGenerateInvoice{})
-	// configs.Store.AutoMigrate(&models.LocationAddress{})
+	configs.Store.AutoMigrate(&models.LineNotifyToken{})
 	// configs.Store.AutoMigrate(&models.LocationAreaType{})
 }
 
