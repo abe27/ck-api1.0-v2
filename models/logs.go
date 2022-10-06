@@ -9,7 +9,7 @@ import (
 
 type CartonHistory struct {
 	ID          string    `gorm:"primaryKey;size:21" json:"id,omitempty"`
-	RowID       string    `gorm:"not null;size:18" json:"row_id,omitempty" form:"row_id"`
+	RowID       string    `gorm:"not null;size:18" json:"row_id,omitempty" form:"row_id" binding:"required"`
 	Whs         string    `gorm:"not null;" json:"whs,omitempty" form:"whs" binding:"required"`
 	PartNo      string    `gorm:"not null;" json:"part_no,omitempty" form:"part_no" binding:"required"`
 	LotNo       string    `gorm:"not null;size:8;" json:"lot_no,omitempty" form:"lot_no" binding:"required"`

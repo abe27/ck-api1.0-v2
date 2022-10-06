@@ -55,7 +55,7 @@ func (u *Ledger) BeforeCreate(tx *gorm.DB) (err error) {
 
 type Carton struct {
 	ID              string        `gorm:"primaryKey;size:21" json:"id,omitempty"`
-	RowID           string        `gorm:"null;size:18" json:"row_id,omitempty" form:"row_id"`
+	RowID           string        `gorm:"not null;size:18" json:"row_id,omitempty" form:"row_id"`
 	LedgerID        *string       `gorm:"not null;" json:"ledger_id,omitempty" form:"ledger_id" binding:"required"`
 	LocationID      *string       `json:"location_id,omitempty" form:"location_id" binding:"required"`
 	ReceiveDetailID *string       `son:"receive_detail_id,omitempty" form:"receive_detail_id" binding:"required"`
