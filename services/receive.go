@@ -12,7 +12,7 @@ import (
 
 func CheckSerialIsReceived(serial_no string) bool {
 
-	url := fmt.Sprintf("127.0.0.1:4000/carton/search?serial_no=%s", serial_no)
+	url := fmt.Sprintf("http://127.0.0.1:4000/carton/search?serial_no=%s", serial_no)
 	method := "GET"
 
 	client := &http.Client{}

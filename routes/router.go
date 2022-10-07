@@ -17,6 +17,7 @@ func SetUpRouter(c *fiber.App) {
 	cartonHistory := r.Group("/carton/history")
 	cartonHistory.Post("", controllers.CreateCartonHistory)
 	r.Group("/notify").Get("", controllers.GetAllLineNotifyToken)
+	r.Group("/receive/notscan").Get("", controllers.GetAllCartonNotReceive)
 
 	// Start Group Router
 	log := r.Group("/logs")
