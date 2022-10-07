@@ -46,7 +46,7 @@ var MessageDeleteData = func(title *string) string {
 }
 
 var MessageUploadFileCompleted = func(title string) string {
-	return fmt.Sprintf("Upload File Error: `%s` is completed.", title)
+	return fmt.Sprintf("Upload File : `%s` is completed.", title)
 }
 var MessageUploadFileError = func(title string) string {
 	return fmt.Sprintf("Upload File Error: `%s` is completed.", title)
