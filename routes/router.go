@@ -16,6 +16,7 @@ func SetUpRouter(c *fiber.App) {
 	r.Post("/login", controllers.Login)
 	cartonHistory := r.Group("/carton/history")
 	cartonHistory.Post("", controllers.CreateCartonHistory)
+	r.Group("/notify").Get("", controllers.GetAllLineNotifyToken)
 
 	// Start Group Router
 	log := r.Group("/logs")
@@ -26,6 +27,12 @@ func SetUpRouter(c *fiber.App) {
 	log.Delete("/:id", controllers.DeleteSyncLoggerByID)
 	// Use Router Middleware
 	app := r.Use(services.AuthorizationRequired)
+
+	fileUpload := app.Group("upload")
+	fileUpload.Get("/receive", controllers.UploadReceiveExcel)
+	// fileUpload.Get("/stock", controllers.Verify)
+	// fileUpload.Get("/carton", controllers.Logout)
+
 	auth := app.Group("auth")
 	auth.Get("/me", controllers.Profile)
 	auth.Get("/verify", controllers.Verify)
@@ -72,7 +79,6 @@ func SetUpRouter(c *fiber.App) {
 	factoryAutogen.Delete("/:id", controllers.DeleteAutoGenerateInvoiceByID)
 
 	lineToken := app.Group("/notify")
-	lineToken.Get("", controllers.GetAllLineNotifyToken)
 	lineToken.Post("", controllers.CreateLineNotifyToken)
 	lineToken.Get("/:id", controllers.ShowLineNotifyTokenByID)
 	lineToken.Put("/:id", controllers.UpdateLineNotifyTokenByID)

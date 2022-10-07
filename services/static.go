@@ -44,6 +44,10 @@ var MessageDuplicateData = func(title *string) string {
 var MessageDeleteData = func(title *string) string {
 	return fmt.Sprintf("Delete Data by ID: `%s(%d)` is completed.", *title, title)
 }
+
+var MessageUploadFileCompleted = func(title string) string {
+	return fmt.Sprintf("Upload File Error: `%s` is completed.", title)
+}
 var MessageUploadFileError = func(title string) string {
 	return fmt.Sprintf("Upload File Error: `%s` is completed.", title)
 }
