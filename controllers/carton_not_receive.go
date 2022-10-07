@@ -10,7 +10,7 @@ import (
 func GetAllCartonNotReceive(c *fiber.Ctx) error {
 	var r models.Response
 	var obj []models.CartonNotReceive
-	err := configs.Store.Limit(100).Where("is_sync=?", false).Find(&obj).Error
+	err := configs.Store.Limit(100).Order("transfer_out_no,lot_no,serial_no").Where("is_sync=?", false).Find(&obj).Error
 	if err != nil {
 		r.Message = services.MessageSystemError
 		r.Data = &err
