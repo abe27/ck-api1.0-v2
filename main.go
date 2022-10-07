@@ -109,7 +109,7 @@ func init() {
 	configs.Store.AutoMigrate(&models.LineNotifyToken{})
 	configs.Store.AutoMigrate(&models.CartonNotReceive{})
 	configs.Store.AutoMigrate(&models.PalletType{})
-	// configs.Store.AutoMigrate(&models.OrderNotifyToken{})
+	configs.Store.AutoMigrate(&models.LastFticket{})
 	// configs.Store.AutoMigrate(&models.OrderNotifyToken{})
 	// configs.Store.AutoMigrate(&models.OrderNotifyToken{})
 }

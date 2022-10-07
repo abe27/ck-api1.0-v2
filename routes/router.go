@@ -202,6 +202,13 @@ func SetUpRouter(c *fiber.App) {
 	ledger.Put("/:id", controllers.UpdateLedgerByID)
 	ledger.Delete("/:id", controllers.DeleteLedgerByID)
 
+	lastFTicket := app.Group("last/fticket")
+	lastFTicket.Get("", controllers.GetAllLastFTicket)
+	lastFTicket.Post("", controllers.CreateLastFTicket)
+	lastFTicket.Get("/:id", controllers.ShowLastFTicketByID)
+	lastFTicket.Put("/:id", controllers.UpdateLastFTicketByID)
+	lastFTicket.Delete("/:id", controllers.DeleteLastFTicketByID)
+
 	fileEdi := edi.Group("file")
 	fileEdi.Get("", controllers.GetAllFileEdi)
 	fileEdi.Post("", controllers.CreateFileEdi)

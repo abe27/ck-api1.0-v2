@@ -394,3 +394,20 @@ func (obj *PalletType) BeforeCreate(tx *gorm.DB) (err error) {
 	obj.ID = id
 	return
 }
+
+type LastFticket struct {
+	ID          string    `gorm:"primaryKey;size:21" json:"id,omitempty"`
+	FactoryID   *string   `gorm:"not null;" json:"factory_id,omitempty" form:"factory_id" binding:"required"`
+	OnYear      string    `gorm:"not null;size:6;unique;" json:"on_year,omitempty" form:"on_year"`
+	LastRunning int64     `json:"last_running,omitempty" form:"last_running" binding:"required"`
+	IsActive    bool      `json:"is_active,omitempty" form:"is_active" binding:"required"`
+	CreatedAt   time.Time `json:"created_at,omitempty" form:"created_at" default:"now"`
+	UpdatedAt   time.Time `json:"updated_at,omitempty" form:"updated_at" default:"now"`
+	Factory     Factory   `gorm:"foreignKey:FactoryID;references:ID" json:"factory,omitempty"`
+}
+
+func (obj *LastFticket) BeforeCreate(tx *gorm.DB) (err error) {
+	id, _ := g.New()
+	obj.ID = id
+	return
+}
