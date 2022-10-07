@@ -375,3 +375,22 @@ func (obj *LineNotifyToken) BeforeCreate(tx *gorm.DB) (err error) {
 	obj.ID = id
 	return
 }
+
+type PalletType struct {
+	ID         string    `gorm:"primaryKey,unique;size:21;" json:"id,omitempty"`
+	Type       string    `gorm:"not null;unique;" json:"type,omitempty" form:"type"`
+	Floors     int64     `json:"floors,omitempty" form:"floors" default:"0"`
+	BoxSize    string    `json:"box_size,omitempty" form:"box_size" default:"0x0x0"`
+	PalletSize string    `json:"pallet_size,omitempty" form:"pallet_size" default:"0x0x0"`
+	LimitTotal int64     `json:"limit_total,omitempty" form:"limit_total" default:"0"`
+	IsActive   bool      `json:"is_active,omitempty" form:"is_active" default:"true"`
+	CreatedAt  time.Time `json:"created_at,omitempty" form:"created_at" default:"now"`
+	UpdatedAt  time.Time `json:"updated_at,omitempty" form:"updated_at" default:"now"`
+	// ชนดิ กลอ่ ง จ านวนชนั้ BOX SIZE PALLET SIZE BOX/PALLET
+}
+
+func (obj *PalletType) BeforeCreate(tx *gorm.DB) (err error) {
+	id, _ := g.New()
+	obj.ID = id
+	return
+}

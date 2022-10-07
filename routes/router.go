@@ -165,6 +165,13 @@ func SetUpRouter(c *fiber.App) {
 	partType.Put("/:id", controllers.UpdatePartTypeByID)
 	partType.Delete("/:id", controllers.DeletePartTypeByID)
 
+	palletType := app.Group("pallettype")
+	palletType.Get("", controllers.GetAllPalletType)
+	palletType.Post("", controllers.CreatePalletType)
+	palletType.Get("/:id", controllers.ShowPalletTypeByID)
+	palletType.Put("/:id", controllers.UpdatePalletTypeByID)
+	palletType.Delete("/:id", controllers.DeletePalletTypeByID)
+
 	// Part Type Router
 	edi := app.Group("edi")
 	ediType := edi.Group("type")
