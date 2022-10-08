@@ -49,22 +49,21 @@ func ImportInvoiceTap(fileName *string) {
 				bhcbmt, _ := r.GetCol(19)
 				if bhivno.GetString() != "" {
 					inv := bhivno.GetString()
-					fmt.Printf("bhivno: %s\n", inv)
+					inv_seq, _ := strconv.ParseInt(inv[5:len(inv)-1], 10, 64)
+					// fmt.Printf("bhivno: %s\n", inv)
 					d := bhivdt.GetString()
 					if len(d) <= 5 {
 						d = fmt.Sprintf("0%s", bhivdt.GetString())
 					}
 					dd := fmt.Sprintf("20%s%s%s", d[4:6], d[2:4], d[:2])
 					etd, _ := time.Parse("20060102", dd)
-					fmt.Printf("%d ==> ETD: %s\n", line, etd)
+					// fmt.Printf("%d ==> ETD: %s\n", line, etd)
 					var shipment models.Shipment
 					db.First(&shipment, "title=?", inv[len(inv)-1:])
 					var orderPlan models.OrderPlan
-					db.Order("created_at,seq").Select("id").Where("bisafn=?", bhsafn.GetString()).Where("etd_tap=?", etd).Where("part_no=?", bhypat.GetString()).Where("shipment_id=?", shipment.ID).Where("(bal_qty/bistdp)=?", bhctn.GetString()).Last(&orderPlan)
-					if orderPlan.ID != "" {
-						fmt.Printf("ID: %s\n", orderPlan.ID)
-					}
-
+					db.Order("created_at desc,seq desc").Select("id").Where("bisafn=?", bhsafn.GetString()).Where("etd_tap=?", etd.Format("2006-01-02")).Where("part_no=?", bhypat.GetString()).Where("shipment_id=?", shipment.ID).Where("(bal_qty/bistdp)=?", bhctn.GetString()).First(&orderPlan)
+					var intCountOrderPlan int64
+					db.Order("created_at,seq").Select("id").Where("bisafn=?", bhsafn.GetString()).Where("etd_tap=?", etd.Format("2006-01-02")).Where("part_no=?", bhypat.GetString()).Where("shipment_id=?", shipment.ID).Where("(bal_qty/bistdp)=?", bhctn.GetString()).Find(&models.OrderPlan{}).Count(&intCountOrderPlan)
 					Bhcon, _ := strconv.ParseInt(bhcon.GetString(), 10, 64)
 					Bhctn, _ := strconv.ParseInt(bhctn.GetString(), 10, 64)
 					Bhwidt, _ := strconv.ParseInt(bhwidt.GetString(), 10, 64)
@@ -94,11 +93,6 @@ func ImportInvoiceTap(fileName *string) {
 					invTap.Bhgrwt = Bhgrwt
 					invTap.Bhcbmt = Bhcbmt
 					invTap.IsMatched = false
-					if orderPlan.ID != "" {
-						invTap.OrderPlanID = &orderPlan.ID
-						invTap.IsMatched = true
-					}
-
 					db.FirstOrCreate(&invTap, &models.ImportInvoiceTap{
 						Bhivno: bhivno.GetString(),
 						Bhodpo: bhodpo.GetString(),
@@ -107,7 +101,25 @@ func ImportInvoiceTap(fileName *string) {
 						Bhypat: bhypat.GetString(),
 						Bhctn:  Bhctn,
 					})
-					// fmt.Printf(" bhivno: %s bhodpo: %s bhivdt: %s bhconn: %s bhconns: %s bhsven: %s bhshpf: %s bhafn: %s bhshpt: %s bhfrtn: %s bhcon: %s bhpaln: %s bhpnam: %s bhypat: %s bhctn: %s bhwidt: %s bhleng: %s bhhigh: %s bhgrwt: %s bhcbmt: %s\n", bhivno.GetString(), bhodpo.GetString(), d, bhconn.GetString(), bhconns.GetString(), bhsven.GetString(), bhshpf.GetString(), bhafn.GetString(), bhshpt.GetString(), bhfrtn.GetString(), bhcon.GetString(), bhpaln.GetString(), bhpnam.GetString(), bhypat.GetString(), bhctn.GetString(), bhwidt.GetString(), bhleng.GetString(), bhhigh.GetString(), bhgrwt.GetString(), bhcbmt.GetString())
+
+					// fmt.Printf("select * from tbt_order_plans where bisafn='%s' and etd_tap='%s' and part_no='%s' and shipment_id='%s' and (bal_qty/bistdp)=%s rows: %d\n", bhsafn.GetString(), etd.Format("2006-01-02"), bhypat.GetString(), shipment.ID, bhctn.GetString(), intCountOrderPlan)
+					if orderPlan.ID != "" {
+						invTap.OrderPlanID = &orderPlan.ID
+						invTap.IsMatched = true
+						var orderDetail models.OrderDetail
+						db.Select("id,order_id").First(&orderDetail, "order_plan_id=?", orderPlan.ID)
+						if orderDetail.ID != "" {
+							var order models.Order
+							if db.First(&order, "id=?", orderDetail.OrderID).Error == nil {
+								// fmt.Printf("OrderID: %s SEQ: %d\n", order.ID, inv_seq)
+								order.RunningSeq = inv_seq
+								order.IsChecked = true
+								db.Save(&order)
+							}
+						}
+						db.Save(&invTap)
+					}
+					fmt.Printf("%d ==> bhivno: %s bhodpo: %s bhivdt: %sbhafn: %s bhshpt: %s bhypat: %s bhctn: %s\n", line, bhivno.GetString(), bhodpo.GetString(), d, bhsafn.GetString(), bhshpt.GetString(), bhypat.GetString(), bhctn.GetString())
 				}
 			}
 		}

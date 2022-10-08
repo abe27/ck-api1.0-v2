@@ -27,7 +27,7 @@ func ImportInvoiceTap(c *fiber.Ctx) error {
 	}
 
 	//// Read Excel
-	services.ImportInvoiceTap(&fName)
+	go services.ImportInvoiceTap(&fName)
 
 	r.Message = services.MessageUploadFileCompleted(fName)
 	return c.Status(fiber.StatusCreated).JSON(&r)
