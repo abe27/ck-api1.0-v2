@@ -32,6 +32,7 @@ func SetUpRouter(c *fiber.App) {
 
 	fileUpload := app.Group("upload")
 	fileUpload.Post("/receive", controllers.UploadReceiveExcel)
+	fileUpload.Post("/invoice/tap", controllers.ImportInvoiceTap)
 	// fileUpload.Get("/stock", controllers.Verify)
 	// fileUpload.Get("/carton", controllers.Logout)
 

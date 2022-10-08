@@ -39,3 +39,5 @@ tmp
 public/edi/*.TXT
 public/excels/*.xls
 public/excels/*.XLS
+public/invoices/*.xls
+public/invoices/*.XLS

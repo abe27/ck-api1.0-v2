@@ -8,7 +8,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func UploadReceiveExcel(c *fiber.Ctx) error {
+func ImportInvoiceTap(c *fiber.Ctx) error {
 	var r models.Response
 	// Upload GEDI File To Directory
 	file, err := c.FormFile("file")
@@ -18,7 +18,7 @@ func UploadReceiveExcel(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(&r)
 	}
 
-	fName := fmt.Sprintf("./public/excels/%s", file.Filename)
+	fName := fmt.Sprintf("./public/invoices/%s", file.Filename)
 	err = c.SaveFile(file, fName)
 	if err != nil {
 		r.Message = services.MessageSystemErrorNotSaveFile
@@ -27,7 +27,7 @@ func UploadReceiveExcel(c *fiber.Ctx) error {
 	}
 
 	//// Read Excel
-	services.ImportReceiveCarton(fName)
+	services.ImportInvoiceTap(&fName)
 
 	r.Message = services.MessageUploadFileCompleted(fName)
 	return c.Status(fiber.StatusCreated).JSON(&r)

@@ -87,3 +87,22 @@ func (u *OrderDetail) BeforeCreate(tx *gorm.DB) (err error) {
 	u.ID = id
 	return
 }
+
+type OrderPrepare struct {
+	ID             string       `gorm:"primaryKey;unique;index;size:21" json:"id,omitempty"`
+	PalletDetailID *string      `gorm:"not null;" json:"pallet_detail_id,omitempty" form:"pallet_detail_id" binding:"required"`
+	CartonID       *string      `gorm:"not null;" json:"carton_id,omitempty" form:"carton_id" binding:"required"`
+	PalletOutNo    *string      `gorm:"not null;size:25" json:"pallet_out_no,omitempty" form:"pallet_out_no" binding:"required"`
+	IsSync         bool         `json:"is_sync,omitempty" form:"is_sync"`
+	IsActive       bool         `json:"is_active,omitempty" form:"is_active"`
+	CreatedAt      time.Time    `json:"created_at,omitempty" form:"created_at"`
+	UpdatedAt      time.Time    `json:"updated_at,omitempty" form:"updated_at"`
+	PalletDetail   PalletDetail `gorm:"foreignKey:PalletDetailID;references:ID" json:"pallet_detail,omitempty"`
+	Carton         Carton       `gorm:"foreignKey:CartonID;references:ID" json:"carton,omitempty"`
+}
+
+func (u *OrderPrepare) BeforeCreate(tx *gorm.DB) (err error) {
+	id, _ := g.New()
+	u.ID = id
+	return
+}

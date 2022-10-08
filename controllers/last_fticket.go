@@ -11,7 +11,7 @@ func GetAllLastFTicket(c *fiber.Ctx) error {
 	var r models.Response
 	var obj []models.LastFticket
 	// Fetch All Data
-	err := configs.Store.Find(&obj).Error
+	err := configs.Store.Preload("Factory").Find(&obj).Error
 	if err != nil {
 		r.Message = services.MessageNotFound("LastFTicket")
 		r.Data = &err
@@ -31,8 +31,13 @@ func CreateLastFTicket(c *fiber.Ctx) error {
 		r.Data = &err
 		return c.Status(fiber.StatusNotAcceptable).JSON(&r)
 	}
+
+	db := configs.Store
+	var fac models.Factory
+	db.First(&fac, "title=?", obj.FactoryID)
 	// Fetch All Data
-	err = configs.Store.Create(&obj).Error
+	obj.FactoryID = &fac.ID
+	err = db.Create(&obj).Error
 	if err != nil {
 		r.Message = services.MessageDuplicateData(&obj.ID)
 		r.Data = &err
@@ -47,7 +52,7 @@ func ShowLastFTicketByID(c *fiber.Ctx) error {
 	var r models.Response
 	id := c.Params("id")
 	var obj models.LastFticket
-	err := configs.Store.First(&obj, &id).Error
+	err := configs.Store.Preload("Factory").First(&obj, &id).Error
 	if err != nil {
 		r.Message = services.MessageNotFoundData(&id)
 		r.Data = &err
@@ -78,10 +83,8 @@ func UpdateLastFTicketByID(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusNotFound).JSON(&r)
 	}
 	/// Save Data
-	// data.Floors = obj.Floors
-	// data.BoxSize = obj.BoxSize
-	// data.PalletSize = obj.PalletSize
-	// data.LimitTotal = obj.LimitTotal
+	data.OnYear = obj.OnYear
+	data.LastRunning = obj.LastRunning
 	data.IsActive = obj.IsActive
 	////
 	err = db.Save(&data).Error
