@@ -27,7 +27,7 @@ func UploadReceiveExcel(c *fiber.Ctx) error {
 	}
 
 	//// Read Excel
-	services.ImportReceiveCarton(fName)
+	go services.ImportReceiveCarton(fName)
 
 	r.Message = services.MessageUploadFileCompleted(fName)
 	return c.Status(fiber.StatusCreated).JSON(&r)
