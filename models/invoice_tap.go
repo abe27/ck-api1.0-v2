@@ -9,21 +9,22 @@ import (
 
 type ImportInvoiceTap struct {
 	ID          string    `gorm:"primaryKey;size:21" json:"id,omitempty"`
+	Biseq       int64     `json:"biseq,omitempty" form:"biseq" binding:"required"`
 	Bhivno      string    `gorm:"not null;size:10" json:"bhivno,omitempty" form:"bhivno" binding:"required"`
 	Bhodpo      string    `gorm:"not null;size:25" json:"bhodpo,omitempty" form:"bhodpo" binding:"required"`
-	Bhivdt      time.Time `gorm:"not null;" json:"bhivdt,omitempty" form:"bhivdt" binding:"required"`
+	Bhivdt      time.Time `gorm:"not null;type:date;" json:"bhivdt,omitempty" form:"bhivdt" binding:"required"`
 	Bhconn      string    `gorm:"size:50;" json:"bhconn,omitempty" form:"bhconn"`
 	Bhcons      string    `gorm:"size:50" json:"bhconns,omitempty" form:"bhconns"`
 	Bhsven      string    `gorm:"size:50" json:"bhsven,omitempty" form:"bhsven"`
 	Bhshpf      string    `gorm:"size:50" json:"bhshpf,omitempty" form:"bhshpf"`
-	Bhsafn      string    `gorm:"size:50" json:"bhafn,omitempty" form:"bhafn" binding:"required"`
+	Bhsafn      string    `gorm:"not null;size:50" json:"bhsafn,omitempty" form:"bhsafn" binding:"required"`
 	Bhshpt      string    `gorm:"size:50" json:"bhshpt,omitempty" form:"bhshpt"`
 	Bhfrtn      string    `gorm:"size:50" json:"bhfrtn,omitempty" form:"bhfrtn"`
 	Bhcon       int64     `json:"bhcon,omitempty" form:"bhcon"`
 	Bhpaln      string    `json:"bhpaln,omitempty" form:"bhpaln"`
 	Bhpnam      string    `json:"bhpnam,omitempty" form:"bhpnam"`
-	Bhypat      string    `json:"bhypat,omitempty" form:"bhypat" binding:"required"`
-	Bhctn       int64     `json:"bhctn,omitempty" form:"bhctn" binding:"required"`
+	Bhypat      string    `gorm:"not null;" json:"bhypat,omitempty" form:"bhypat" binding:"required"`
+	Bhctn       int64     `gorm:"not null;" json:"bhctn,omitempty" form:"bhctn" binding:"required"`
 	Bhwidt      int64     `json:"bhwidt,omitempty" form:"bhwidt"`
 	Bhleng      int64     `json:"bhleng,omitempty" form:"bhleng"`
 	Bhhigh      int64     `json:"bhhigh,omitempty" form:"bhhigh"`

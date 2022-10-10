@@ -105,6 +105,7 @@ func CreateOrder(factory string) {
 			SampleFlg:    ord[x].SampleFlg,   // sample_flg,
 			CarrierCode:  ord[x].CarrierCode, // carriercode
 			RunningSeq:   (invSeq.LastRunning + 1),
+			IsSync:       true,
 		}
 
 		err := db.FirstOrCreate(&order, &models.Order{
@@ -183,6 +184,7 @@ func CreateOrder(factory string) {
 				// Confirm Data After Create
 				ordDetail.OrderPlanID = &r.ID
 				ordDetail.OrderCtn = int64(ctn)
+				ordDetail.IsSync = true
 				db.Save(&ordDetail)
 
 				// Update Order Plan Set Status Generated
