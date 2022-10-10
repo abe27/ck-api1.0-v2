@@ -9,7 +9,7 @@ import (
 
 type Pallet struct {
 	ID           string     `gorm:"primaryKey;size:21" json:"id,omitempty"`
-	OrderID      *string    `gorm:"not null;unique;" json:"order_id,omitempty" form:"order_id" binding:"required"`
+	OrderID      *string    `gorm:"not null;" json:"order_id,omitempty" form:"order_id" binding:"required"`
 	PalletTypeID *string    `gorm:"not null;" json:"pallet_type_id,omitempty" form:"pallet_type_id" binding:"required"`
 	PalletPrefix string     `gorm:"not null;size:1;" json:"pallet_prefix,omitempty" form:"pallet_prefix" default:"P"`
 	PalletNo     int64      `gorm:"not null;" json:"pallet_no,omitempty" form:"pallet_no" binding:"required"`
