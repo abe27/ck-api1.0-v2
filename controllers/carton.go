@@ -23,7 +23,7 @@ func CreateCartonHistory(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(&r)
 	}
 
-	if frm.SerialNo != "" {
+	if len(frm.SerialNo) == 0 {
 		sysLog.Title = "Carton history body parser not allow!"
 		sysLog.Description = "Serail No is null!"
 		sysLog.IsSuccess = false
