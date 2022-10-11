@@ -12,7 +12,7 @@ func GetAllOrder(c *fiber.Ctx) error {
 	var obj []models.Order
 	// Fetch All Data
 	err := configs.Store.
-		Limit(100).
+		Limit(10).
 		Preload("Consignee.Whs").
 		Preload("Consignee.Factory").
 		Preload("Consignee.Affcode").
@@ -23,6 +23,8 @@ func GetAllOrder(c *fiber.Ctx) error {
 		Preload("Commercial").
 		Preload("SampleFlg").
 		Preload("OrderTitle").
+		Preload("Pallet.PalletType").
+		Preload("Pallet.PalletDetail").
 		Preload("OrderDetail.Ledger.Part").
 		Preload("OrderDetail.Ledger.PartType").
 		Preload("OrderDetail.Ledger.Unit").

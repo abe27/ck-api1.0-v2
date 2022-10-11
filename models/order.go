@@ -55,6 +55,7 @@ type Order struct {
 	SampleFlg    SampleFlg      `gorm:"foreignKey:SampleFlgID;references:ID" json:"sample_flg,omitempty"`
 	OrderTitle   OrderTitle     `gorm:"foreignKey:OrderTitleID;references:ID" json:"order_title,omitempty"`
 	OrderDetail  []*OrderDetail `json:"order_detail,omitempty"`
+	Pallet       []*Pallet      `json:"pallet,omitempty"`
 }
 
 func (u *Order) BeforeCreate(tx *gorm.DB) (err error) {
