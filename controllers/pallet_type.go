@@ -38,7 +38,7 @@ func CreatePalletType(c *fiber.Ctx) error {
 		r.Data = &err
 		return c.Status(fiber.StatusBadRequest).JSON(&r)
 	}
-	r.Message = services.MessageCreatedData(&obj.PalletSize)
+	r.Message = services.MessageCreatedData(&obj.ID)
 	r.Data = &obj
 	return c.Status(fiber.StatusCreated).JSON(&r)
 }
@@ -79,8 +79,12 @@ func UpdatePalletTypeByID(c *fiber.Ctx) error {
 	}
 	/// Save Data
 	data.Floors = obj.Floors
-	data.BoxSize = obj.BoxSize
-	data.PalletSize = obj.PalletSize
+	data.BoxSizeWidth = obj.BoxSizeWidth
+	data.BoxSizeLength = obj.BoxSizeLength
+	data.BoxSizeHight = obj.BoxSizeHight
+	data.PalletSizeWidth = obj.PalletSizeWidth
+	data.PalletSizeLength = obj.PalletSizeLength
+	data.PalletSizeHight = obj.PalletSizeHight
 	data.LimitTotal = obj.LimitTotal
 	data.IsActive = obj.IsActive
 	////
