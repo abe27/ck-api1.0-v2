@@ -10,9 +10,46 @@ import (
 func GetAllOrder(c *fiber.Ctx) error {
 	var r models.Response
 	var obj []models.Order
+	etd := c.Query("etd")
+	if etd != "" {
+		err := configs.Store.
+			Order("etd_date").
+			Preload("Consignee.Whs").
+			Preload("Consignee.Factory").
+			Preload("Consignee.Affcode").
+			Preload("Consignee.Customer").
+			Preload("Consignee.CustomerAddress").
+			Preload("Shipment").
+			Preload("Pc").
+			Preload("Commercial").
+			Preload("SampleFlg").
+			Preload("OrderTitle").
+			Preload("Pallet.PalletType").
+			Preload("Pallet.PalletDetail").
+			Preload("OrderDetail.Ledger.Part").
+			Preload("OrderDetail.Ledger.PartType").
+			Preload("OrderDetail.Ledger.Unit").
+			Preload("OrderDetail.OrderPlan.FileEdi.Factory").
+			Preload("OrderDetail.OrderPlan.FileEdi.Mailbox.Area").
+			Preload("OrderDetail.OrderPlan.FileEdi.FileType").
+			Preload("OrderDetail.OrderPlan.FileEdi.FileType").
+			Preload("OrderDetail.OrderPlan.ReviseOrder").
+			Preload("OrderDetail.OrderPlan.OrderType").
+			Where("etd_date=?", etd).
+			Find(&obj, "is_sync=?", false).
+			Error
+		if err != nil {
+			r.Message = services.MessageNotFound("Order Ent")
+			r.Data = &err
+			return c.Status(fiber.StatusNotFound).JSON(&r)
+		}
+		r.Message = services.MessageShowAll("Order Ent")
+		r.Data = &obj
+		return c.Status(fiber.StatusOK).JSON(&r)
+	}
 	// Fetch All Data
 	err := configs.Store.
-		Limit(100).
+		Limit(10).
 		Order("etd_date").
 		Preload("Consignee.Whs").
 		Preload("Consignee.Factory").
