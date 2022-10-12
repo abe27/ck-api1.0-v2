@@ -379,17 +379,17 @@ func (obj *LineNotifyToken) BeforeCreate(tx *gorm.DB) (err error) {
 type PalletType struct {
 	ID               string    `gorm:"primaryKey,unique;size:21;" json:"id,omitempty"`
 	Type             string    `gorm:"not null;unique;" json:"type,omitempty" form:"type"`
-	Floors           int64     `json:"floors,omitempty" form:"floors" default:"0"`
-	BoxSizeWidth     float64   `json:"box_size_width,omitempty" form:"box_size_width" default:"0"`
-	BoxSizeLength    float64   `json:"box_size_length,omitempty" form:"box_size_length" default:"0"`
-	BoxSizeHight     float64   `json:"box_size_hight,omitempty" form:"box_size_hight" default:"0"`
-	PalletSizeWidth  float64   `json:"pallet_size_width,omitempty" form:"pallet_size_width" default:"0"`
-	PalletSizeLength float64   `json:"pallet_size_length,omitempty" form:"pallet_size_length" default:"0"`
-	PalletSizeHight  float64   `json:"pallet_size_hight,omitempty" form:"pallet_size_hight" default:"0"`
-	LimitTotal       int64     `json:"limit_total,omitempty" form:"limit_total" default:"0"`
-	IsActive         bool      `json:"is_active,omitempty" form:"is_active" default:"true"`
-	CreatedAt        time.Time `json:"created_at,omitempty" form:"created_at" default:"now"`
-	UpdatedAt        time.Time `json:"updated_at,omitempty" form:"updated_at" default:"now"`
+	Floors           int64     `json:"floors" form:"floors" default:"0"`
+	BoxSizeWidth     float64   `json:"box_size_width" form:"box_size_width" default:"0"`
+	BoxSizeLength    float64   `json:"box_size_length" form:"box_size_length" default:"0"`
+	BoxSizeHight     float64   `json:"box_size_hight" form:"box_size_hight" default:"0"`
+	PalletSizeWidth  float64   `json:"pallet_size_width" form:"pallet_size_width" default:"0"`
+	PalletSizeLength float64   `json:"pallet_size_length" form:"pallet_size_length" default:"0"`
+	PalletSizeHight  float64   `json:"pallet_size_hight" form:"pallet_size_hight" default:"0"`
+	LimitTotal       int64     `json:"limit_total" form:"limit_total" default:"0"`
+	IsActive         bool      `json:"is_activey" form:"is_active" default:"true"`
+	CreatedAt        time.Time `json:"created_at" form:"created_at" default:"now"`
+	UpdatedAt        time.Time `json:"updated_at" form:"updated_at" default:"now"`
 	// ชนดิ กลอ่ ง จ านวนชนั้ BOX SIZE PALLET SIZE BOX/PALLET
 }
 
