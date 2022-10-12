@@ -134,11 +134,20 @@ func ImportInvoiceTap(fileName *string) {
 									db.Save(&order)
 								}
 								db.Save(&invTap)
-								boxDimensions := fmt.Sprintf("%sx%sx%s", bhwidt.GetString(), bhleng.GetString(), bhhigh.GetString())
 								var dimData models.PalletType
-								err := db.Select("id,type,box_size,pallet_size").First(&dimData, "box_size=?", boxDimensions).Error
+								err := db.
+									Select("id,type,box_size_width,box_size_length,box_size_hight,pallet_size_width,pallet_size_length,pallet_size_hight").
+									Where("box_size_width=?", bhwidt.GetString()).
+									Where("box_size_length=?", bhleng.GetString()).
+									Where("box_size_hight=?", bhhigh.GetString()).
+									First(&dimData).Error
 								if err != nil {
-									db.Select("id,type,box_size,pallet_size").First(&dimData, "box_size=?", "0x0x0")
+									db.
+										Select("id,type,box_size_width,box_size_length,box_size_hight,pallet_size_width,pallet_size_length,pallet_size_hight").
+										Where("box_size_width=?", "0").
+										Where("box_size_length=?", "0").
+										Where("box_size_hight=?", "0").
+										First(&dimData)
 								}
 
 								txtType := "C"
@@ -185,7 +194,7 @@ func ImportInvoiceTap(fileName *string) {
 									if checkPlDuplicate < int64(ctnRnd) {
 										var lastFticket models.LastFticket
 										db.Select("id,last_running").Where("factory_id=?", &facData.ID).Where("on_year=?", y[:4]).First(&lastFticket)
-										seqNo := lastFticket.LastRunning
+										seqNo := (lastFticket.LastRunning + 1)
 										fmt.Printf("%s:  %d != %d SEQ: %d PLID: %s\n", orderDetail.ID, ctnRnd, checkPlDuplicate, seqNo, plData.ID)
 										//Create PlletDetails
 										plDetailData := models.PalletDetail{
@@ -196,7 +205,7 @@ func ImportInvoiceTap(fileName *string) {
 										}
 
 										if db.Create(&plDetailData).Error == nil {
-											lastFticket.LastRunning = seqNo + 1
+											lastFticket.LastRunning = (seqNo + 1)
 											lastFticket.OnYear, _ = strconv.ParseInt(y[:4], 10, 64)
 											lastFticket.FactoryID = &facData.ID
 											lastFticket.IsActive = true
