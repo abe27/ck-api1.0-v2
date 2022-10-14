@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"strconv"
+
 	"github.com/abe27/api/configs"
 	"github.com/abe27/api/models"
 	"github.com/abe27/api/services"
@@ -11,6 +13,10 @@ func GetAllOrder(c *fiber.Ctx) error {
 	var r models.Response
 	var obj []models.Order
 	etd := c.Query("etd")
+	isDownload, err := strconv.ParseBool(c.Query("status"))
+	if err != nil {
+		isDownload = false
+	}
 	if etd != "" {
 		err := configs.Store.
 			Order("etd_date").
@@ -36,7 +42,7 @@ func GetAllOrder(c *fiber.Ctx) error {
 			Preload("OrderDetail.OrderPlan.ReviseOrder").
 			Preload("OrderDetail.OrderPlan.OrderType").
 			Where("etd_date=?", etd).
-			Find(&obj, "is_sync=?", false).
+			Find(&obj, "is_sync=?", isDownload).
 			Error
 		if err != nil {
 			r.Message = services.MessageNotFound("Order Ent")
@@ -48,7 +54,7 @@ func GetAllOrder(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusOK).JSON(&r)
 	}
 	// Fetch All Data
-	err := configs.Store.
+	err = configs.Store.
 		Limit(10).
 		Order("etd_date").
 		Preload("Consignee.Whs").
@@ -72,7 +78,7 @@ func GetAllOrder(c *fiber.Ctx) error {
 		Preload("OrderDetail.OrderPlan.FileEdi.FileType").
 		Preload("OrderDetail.OrderPlan.ReviseOrder").
 		Preload("OrderDetail.OrderPlan.OrderType").
-		Find(&obj, "is_sync=?", false).
+		Find(&obj, "is_sync=?", isDownload).
 		Error
 	if err != nil {
 		r.Message = services.MessageNotFound("Order Ent")
