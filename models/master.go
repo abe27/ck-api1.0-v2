@@ -294,18 +294,18 @@ func (obj *OrderGroupType) BeforeCreate(tx *gorm.DB) (err error) {
 }
 
 type OrderGroup struct {
-	ID               string         `gorm:"primaryKey;size:21" json:"id,omitempty"`
-	UserID           *string        `gorm:"not null;" json:"user_id,omitempty" form:"user_id" binding:"required"`
-	ConsigneeID      *string        `gorm:"not null;" json:"consignee_id,omitempty" form:"consignee_id" binding:"required"`
-	OrderGroupTypeID *string        `gorm:"not null;" json:"order_group_type_id,omitempty" form:"order_group_type_id" binding:"required"`
-	SubOrder         string         `gorm:"not null;size:15" json:"sub_order,omitempty" form:"sub_order" binding:"required"`
-	Description      string         `json:"description,omitempty" form:"description" binding:"required"`
-	IsActive         bool           `json:"is_active,omitempty" form:"is_active" binding:"required"`
-	CreatedAt        time.Time      `json:"created_at,omitempty" form:"created_at" default:"now"`
-	UpdatedAt        time.Time      `json:"updated_at,omitempty" form:"updated_at" default:"now"`
-	User             User           `gorm:"foreignKey:UserID;references:ID" json:"user,omitempty"`
-	Consignee        Consignee      `gorm:"foreignKey:ConsigneeID;references:ID" json:"consignee,omitempty"`
-	OrderGroupType   OrderGroupType `gorm:"foreignKey:OrderGroupTypeID;references:ID" json:"order_group_type,omitempty"`
+	ID               string          `gorm:"primaryKey;size:21" json:"id,omitempty"`
+	UserID           *string         `gorm:"not null;" json:"user_id,omitempty" form:"user_id" binding:"required"`
+	ConsigneeID      *string         `gorm:"not null;" json:"consignee_id,omitempty" form:"consignee_id" binding:"required"`
+	OrderGroupTypeID *string         `gorm:"not null;" json:"order_group_type_id,omitempty" form:"order_group_type_id" binding:"required"`
+	SubOrder         string          `gorm:"not null;size:15" json:"sub_order,omitempty" form:"sub_order" binding:"required"`
+	Description      string          `json:"description,omitempty" form:"description" binding:"required"`
+	IsActive         bool            `json:"is_active,omitempty" form:"is_active" binding:"required"`
+	CreatedAt        time.Time       `json:"created_at,omitempty" form:"created_at" default:"now"`
+	UpdatedAt        time.Time       `json:"updated_at,omitempty" form:"updated_at" default:"now"`
+	User             *User           `gorm:"foreignKey:UserID;references:ID" json:"user,omitempty"`
+	Consignee        *Consignee      `gorm:"foreignKey:ConsigneeID;references:ID" json:"consignee,omitempty"`
+	OrderGroupType   *OrderGroupType `gorm:"foreignKey:OrderGroupTypeID;references:ID" json:"order_group_type,omitempty"`
 }
 
 func (obj *OrderGroup) BeforeCreate(tx *gorm.DB) (err error) {

@@ -42,8 +42,8 @@ type Order struct {
 	Privilege    string         `gorm:"size:50;" json:"privilege,omitempty" form:"privilege" binding:"required"`
 	ZoneCode     string         `gorm:"size:10;unique;" json:"zone_code,omitempty" form:"zone_code" binding:"required"`
 	RunningSeq   int64          `json:"running_seq,omitempty" form:"running_seq" binding:"required"`
-	IsChecked    bool           `json:"is_checked,omitempty" form:"is_checked"`
-	IsInvoice    bool           `json:"is_invoice,omitempty" form:"is_invoice"`
+	IsChecked    bool           `json:"is_checked" form:"is_checked"`
+	IsInvoice    bool           `json:"is_invoice" form:"is_invoice"`
 	IsSync       bool           `json:"is_sync,omitempty" form:"is_sync"`
 	IsActive     bool           `json:"is_active,omitempty" form:"is_active"`
 	CreatedAt    time.Time      `json:"created_at,omitempty" form:"created_at"`
@@ -71,9 +71,9 @@ type OrderDetail struct {
 	Pono          *string   `gorm:"not null;size:25" json:"pono,omitempty" form:"pono" binding:"required"`
 	LedgerID      *string   `gorm:"not null;" json:"ledger_id,omitempty" form:"ledger_id" binding:"required"`
 	OrderPlanID   *string   `gorm:"not null;unique;" json:"order_plan_id,omitempty" form:"order_plan_id" binding:"required"`
-	OrderCtn      int64     `json:"order_ctn,omitempty" form:"order_ctn" binding:"required"`
+	OrderCtn      int64     `json:"order_ctn" form:"order_ctn" binding:"required"`
 	TotalOnPallet int64     `json:"total_on_pallet,omitempty" form:"total_on_pallet" binding:"required"`
-	IsMatched     bool      `json:"is_matched,omitempty" form:"is_matched"`
+	IsMatched     bool      `json:"is_matched" form:"is_matched"`
 	IsSync        bool      `json:"is_sync,omitempty" form:"is_sync"`
 	IsActive      bool      `json:"is_active,omitempty" form:"is_active"`
 	CreatedAt     time.Time `json:"created_at,omitempty" form:"created_at"`

@@ -81,7 +81,7 @@ type OrderPlan struct {
 	FileEdi          FileEdi     `gorm:"foreignKey:FileEdiID;references:ID;" json:"file_edi"`
 	Whs              Whs         `gorm:"foreignKey:WhsID;references:ID;" json:"whs"`
 	Consignee        Consignee   `gorm:"foreignKey:ConsigneeID;references:ID" json:"consignee"`
-	ReviseOrder      ReviseOrder `gorm:"foreignKey:ReviseOrderID;references:ID" json:"reviseOrder"`
+	ReviseOrder      ReviseOrder `gorm:"foreignKey:ReviseOrderID;references:ID" json:"revise_order"`
 	Ledger           Ledger      `gorm:"foreignKey:LedgerID;references:ID" json:"ledger"`
 	Pc               Pc          `gorm:"foreignKey:PcID;references:ID" json:"pc"`
 	Commercial       Commercial  `gorm:"foreignKey:CommercialID;references:ID" json:"commercial"`

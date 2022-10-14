@@ -68,6 +68,7 @@ type Consignee struct {
 	Affcode           Affcode         `gorm:"foreignKey:AffcodeID;references:ID" json:"affcode,omitempty"`
 	Customer          Customer        `gorm:"foreignKey:CustomerID;references:ID" json:"customer,omitempty"`
 	CustomerAddress   CustomerAddress `gorm:"foreignKey:CustomerAddressID;references:ID" json:"customer_address,omitempty"`
+	OrderGroup        []*OrderGroup   `json:"order_group,omitempty"`
 }
 
 func (obj *Consignee) BeforeCreate(tx *gorm.DB) (err error) {
