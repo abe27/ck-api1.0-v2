@@ -103,7 +103,7 @@ type AuthSession struct {
 	Profile  interface{} `json:"profile,omitempty"`
 	JwtType  string      `json:"jwt_type,omitempty"`
 	JwtToken string      `json:"jwt_token,omitempty"`
-	IsAdmin  bool        `json:"is_admin,omitempty"`
+	IsAdmin  bool        `json:"is_admin"`
 }
 
 type UserForm struct {
