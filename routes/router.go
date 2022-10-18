@@ -37,6 +37,7 @@ func SetUpRouter(c *fiber.App) {
 
 	auth := app.Group("auth")
 	auth.Get("/me", controllers.Profile)
+	auth.Put("/me", controllers.UpdateProfile)
 	auth.Get("/verify", controllers.Verify)
 	auth.Get("/logout", controllers.Logout)
 

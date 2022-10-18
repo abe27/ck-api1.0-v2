@@ -84,6 +84,19 @@ func (obj *Profile) BeforeCreate(tx *gorm.DB) (err error) {
 	return
 }
 
+type FrmProfile struct {
+	PrefixNameID    string `json:"prefix_name_id,omitempty" form:"prefix_name_id"`
+	FirstName       string `gorm:"not null;size:50;" json:"first_name,omitempty" form:"first_name"`
+	LastName        string `gorm:"not null;size:50;" json:"last_name,omitempty" form:"last_name"`
+	PositionID      string `json:"position_id,omitempty" form:"position_id"`
+	DepartmentID    string `json:"department_id,omitempty" form:"department_id"`
+	AreaID          string `json:"area_id,omitempty" form:"area_id"`
+	WhsID           string `json:"whs_id,omitempty" form:"whs_id"`
+	FactoryID       string `json:"factory_id,omitempty" form:"factory_id"`
+	IsAdministrator bool   `json:"is_administrator,omitempty" form:"is_administrator"`
+	IsActive        bool   `gorm:"null" json:"is_active,omitempty" form:"is_active" default:"false"`
+}
+
 type AuthSession struct {
 	Header   string      `json:"header"`
 	User     interface{} `json:"user_id,omitempty"`
