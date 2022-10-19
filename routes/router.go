@@ -119,6 +119,15 @@ func SetUpRouter(c *fiber.App) {
 	unit.Put("/:id", controllers.UpdateUnitByID)
 	unit.Delete("/:id", controllers.DeleteUnitByID)
 
+	// Unit Router
+	asset := app.Group("/asset")
+	assetType := asset.Group("/type")
+	assetType.Get("", controllers.GetAllAssetType)
+	assetType.Post("", controllers.CreateAssetType)
+	assetType.Get("/:id", controllers.ShowAssetTypeByID)
+	assetType.Put("/:id", controllers.UpdateAssetTypeByID)
+	assetType.Delete("/:id", controllers.DeleteAssetTypeByID)
+
 	// Pc Router
 	pc := app.Group("/pc")
 	pc.Get("", controllers.GetAllPc)

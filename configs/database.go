@@ -168,4 +168,8 @@ func SetDB() {
 	}
 	// db.AutoMigrate(&models.Pallets{})
 	// db.AutoMigrate(&models.Pallet{})
+
+	if !Store.Migrator().HasTable(&models.AssetType{}) {
+		Store.AutoMigrate(&models.AssetType{})
+	}
 }
