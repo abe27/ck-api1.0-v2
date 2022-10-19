@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/abe27/api/configs"
-	"github.com/abe27/api/models"
 	"github.com/abe27/api/routes"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -52,60 +51,7 @@ func init() {
 	}
 
 	// Auto Migration DB
-	configs.Store.AutoMigrate(&models.User{})
-	configs.Store.AutoMigrate(&models.JwtToken{})
-	configs.Store.AutoMigrate(&models.Administrator{})
-	configs.Store.AutoMigrate(&models.Area{})
-	configs.Store.AutoMigrate(&models.Whs{})
-	configs.Store.AutoMigrate(&models.Factory{})
-	configs.Store.AutoMigrate(&models.ReceiveType{})
-	configs.Store.AutoMigrate(&models.Unit{})
-	configs.Store.AutoMigrate(&models.PartType{})
-	configs.Store.AutoMigrate(&models.FileType{})
-	configs.Store.AutoMigrate(&models.Position{})
-	configs.Store.AutoMigrate(&models.Department{})
-	configs.Store.AutoMigrate(&models.PrefixName{})
-	configs.Store.AutoMigrate(&models.Profile{})
-	configs.Store.AutoMigrate(&models.Mailbox{})
-	configs.Store.AutoMigrate(&models.FileEdi{})
-	configs.Store.AutoMigrate(&models.CartonHistory{})
-	configs.Store.AutoMigrate(&models.SyncLogger{})
-	configs.Store.AutoMigrate(&models.Part{})
-	configs.Store.AutoMigrate(&models.Ledger{})
-	configs.Store.AutoMigrate(&models.Receive{})
-	configs.Store.AutoMigrate(&models.ReceiveDetail{})
-	configs.Store.AutoMigrate(&models.Pc{})
-	configs.Store.AutoMigrate(&models.Commercial{})
-	configs.Store.AutoMigrate(&models.SampleFlg{})
-	configs.Store.AutoMigrate(&models.ReviseOrder{})
-	configs.Store.AutoMigrate(&models.Shipment{})
-	configs.Store.AutoMigrate(&models.OrderZone{})
-	configs.Store.AutoMigrate(&models.OrderType{})
-	configs.Store.AutoMigrate(&models.Affcode{})
-	configs.Store.AutoMigrate(&models.Customer{})
-	configs.Store.AutoMigrate(&models.CustomerAddress{})
-	configs.Store.AutoMigrate(&models.Consignee{})
-	configs.Store.AutoMigrate(&models.LastInvoice{})
-	configs.Store.AutoMigrate(&models.OrderPlan{})
-	configs.Store.AutoMigrate(&models.OrderGroupType{})
-	configs.Store.AutoMigrate(&models.OrderGroup{})
-	configs.Store.AutoMigrate(&models.OrderTitle{})
-	configs.Store.AutoMigrate(&models.OrderLoadingArea{})
-	configs.Store.AutoMigrate(&models.Order{})
-	configs.Store.AutoMigrate(&models.OrderDetail{})
-	configs.Store.AutoMigrate(&models.Location{})
-	configs.Store.AutoMigrate(&models.Carton{})
-	configs.Store.AutoMigrate(&models.AutoGenerateInvoice{})
-	configs.Store.AutoMigrate(&models.LineNotifyToken{})
-	configs.Store.AutoMigrate(&models.CartonNotReceive{})
-	configs.Store.AutoMigrate(&models.PalletType{})
-	configs.Store.AutoMigrate(&models.LastFticket{})
-	configs.Store.AutoMigrate(&models.Pallet{})
-	configs.Store.AutoMigrate(&models.PalletDetail{})
-	configs.Store.AutoMigrate(&models.OrderPrepare{})
-	configs.Store.AutoMigrate(&models.ImportInvoiceTap{})
-	// configs.Store.AutoMigrate(&models.Pallets{})
-	// configs.Store.AutoMigrate(&models.Pallet{})
+	configs.SetDB()
 }
 
 func main() {
