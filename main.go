@@ -26,26 +26,16 @@ func init() {
 	}
 
 	// initial database
-	dns := "host=" + os.Getenv("DBHOST") +
-		" user=" + os.Getenv("DBUSER") +
-		" dbname=" + os.Getenv("DBNAME") +
-		" port=" + os.Getenv("DBPORT") +
-		" sslmode=" + os.Getenv("SSLMODE") +
-		" TimeZone=" + os.Getenv("TZNAME") + ""
+	dns := fmt.Sprintf("host=%s user=%s dbname=%s port=%s sslmode=%s TimeZone=%s", os.Getenv("DBHOST"), os.Getenv("DBUSER"), os.Getenv("DBNAME"), os.Getenv("DBPORT"), os.Getenv("SSLMODE"), os.Getenv("TZNAME"))
 	if len(os.Getenv("DBPASSWORD")) > 0 {
-		dns = "host=" + os.Getenv("DBHOST") +
-			" user=" + os.Getenv("DBUSER") +
-			" password=" + os.Getenv("DBPASSWORD") +
-			" dbname=" + os.Getenv("DBNAME") +
-			" port=" + os.Getenv("DBPORT") +
-			" sslmode=" + os.Getenv("SSLMODE") +
-			" TimeZone=" + os.Getenv("TZNAME") + ""
+		dns = fmt.Sprintf("host=%s user=%s dbname=%s port=%s password=%s sslmode=%s TimeZone=%s", os.Getenv("DBHOST"), os.Getenv("DBUSER"), os.Getenv("DBNAME"), os.Getenv("DBPORT"), os.Getenv("DBPASSWORD"), os.Getenv("SSLMODE"), os.Getenv("TZNAME"))
 	}
-
 	// fmt.Printf("DNS: %s\n", dns)
 	configs.Store, err = gorm.Open(postgres.Open(dns), &gorm.Config{
-		// DisableForeignKeyConstraintWhenMigrating: true,
-		SkipDefaultTransaction: true,
+		DisableAutomaticPing:                     true,
+		DisableForeignKeyConstraintWhenMigrating: false,
+		QueryFields:                              true,
+		SkipDefaultTransaction:                   true,
 		NowFunc: func() time.Time {
 			return time.Now().Local()
 		},
