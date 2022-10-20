@@ -74,12 +74,12 @@ func SetUpRouter(c *fiber.App) {
 	factory.Delete("/:id", controllers.DeleteFactoryByID)
 
 	// Factory Router
-	factoryAutogen := app.Group("/generate/invoice")
-	factoryAutogen.Get("", controllers.GetAllAutoGenerateInvoice)
-	factoryAutogen.Post("", controllers.CreateAutoGenerateInvoice)
-	factoryAutogen.Get("/:id", controllers.ShowAutoGenerateInvoiceByID)
-	factoryAutogen.Put("/:id", controllers.UpdateAutoGenerateInvoiceByID)
-	factoryAutogen.Delete("/:id", controllers.DeleteAutoGenerateInvoiceByID)
+	factoryAutoGen := app.Group("/generate/invoice")
+	factoryAutoGen.Get("", controllers.GetAllAutoGenerateInvoice)
+	factoryAutoGen.Post("", controllers.CreateAutoGenerateInvoice)
+	factoryAutoGen.Get("/:id", controllers.ShowAutoGenerateInvoiceByID)
+	factoryAutoGen.Put("/:id", controllers.UpdateAutoGenerateInvoiceByID)
+	factoryAutoGen.Delete("/:id", controllers.DeleteAutoGenerateInvoiceByID)
 
 	lineToken := app.Group("/notify")
 	lineToken.Post("", controllers.CreateLineNotifyToken)

@@ -11,7 +11,7 @@ func GetAllFactory(c *fiber.Ctx) error {
 	var r models.Response
 	var obj []models.Factory
 	// Fetch All Data
-	err := configs.Store.Find(&obj).Error
+	err := configs.Store.Order("title").Find(&obj).Error
 	if err != nil {
 		r.Message = services.MessageNotFound("Factory")
 		r.Data = &err

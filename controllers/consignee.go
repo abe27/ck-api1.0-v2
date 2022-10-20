@@ -1,6 +1,9 @@
 package controllers
 
 import (
+	"fmt"
+	"strings"
+
 	"github.com/abe27/api/configs"
 	"github.com/abe27/api/models"
 	"github.com/abe27/api/services"
@@ -11,7 +14,56 @@ func GetAllConsignee(c *fiber.Ctx) error {
 	var r models.Response
 	var obj []models.Consignee
 	// Fetch All Data
-	err := configs.Store.
+	db := configs.Store
+	if c.Query("factory") != "" {
+		var facData models.Factory
+		db.First(&facData, "title=?", c.Query("factory"))
+		if c.Query("custname") != "" {
+			var custData []models.Customer
+			db.Select("id").Where("description like ?", "%"+strings.ToUpper(c.Query("custname"))+"%").Find(&custData)
+			custID := []string{}
+			for _, v := range custData {
+				custID = append(custID, v.ID)
+			}
+
+			err := db.
+				Where("factory_id=?", &facData.ID).
+				Where("customer_id in ?", custID).
+				Preload("Whs").
+				Preload("Factory").
+				Preload("Affcode").
+				Preload("Customer").
+				Preload("CustomerAddress").
+				Find(&obj).Error
+			if err != nil {
+				r.Message = services.MessageNotFound("Consignee")
+				r.Data = &err
+				return c.Status(fiber.StatusNotFound).JSON(&r)
+			}
+			r.Message = services.MessageShowAll(fmt.Sprintf("Consignee By %s", strings.ToUpper(c.Query("custname"))))
+			r.Data = &obj
+			return c.Status(fiber.StatusOK).JSON(&r)
+		}
+
+		err := db.
+			Where("factory_id=?", &facData.ID).
+			Preload("Whs").
+			Preload("Factory").
+			Preload("Affcode").
+			Preload("Customer").
+			Preload("CustomerAddress").
+			Find(&obj).Error
+		if err != nil {
+			r.Message = services.MessageNotFound("Consignee")
+			r.Data = &err
+			return c.Status(fiber.StatusNotFound).JSON(&r)
+		}
+		r.Message = services.MessageShowAll("Consignee")
+		r.Data = &obj
+		return c.Status(fiber.StatusOK).JSON(&r)
+	}
+
+	err := db.
 		Preload("Whs").
 		Preload("Factory").
 		Preload("Affcode").

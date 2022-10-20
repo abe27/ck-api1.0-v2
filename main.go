@@ -33,7 +33,6 @@ func init() {
 	configs.Store, err = gorm.Open(postgres.Open(dns), &gorm.Config{
 		DisableAutomaticPing:                     true,
 		DisableForeignKeyConstraintWhenMigrating: false,
-		QueryFields:                              true,
 		SkipDefaultTransaction:                   true,
 		NowFunc: func() time.Time {
 			return time.Now().Local()
