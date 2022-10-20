@@ -88,12 +88,12 @@ func SetUpRouter(c *fiber.App) {
 	lineToken.Delete("/:id", controllers.DeleteLineNotifyTokenByID)
 
 	// Prefix Name Router
-	prefixname := app.Group("/prefixname")
-	prefixname.Get("", controllers.GetAllPrefixName)
-	prefixname.Post("", controllers.CreatePrefixName)
-	prefixname.Get("/:id", controllers.ShowPrefixNameByID)
-	prefixname.Put("/:id", controllers.UpdatePrefixNameByID)
-	prefixname.Delete("/:id", controllers.DeletePrefixNameByID)
+	prefixName := app.Group("/prefixname")
+	prefixName.Get("", controllers.GetAllPrefixName)
+	prefixName.Post("", controllers.CreatePrefixName)
+	prefixName.Get("/:id", controllers.ShowPrefixNameByID)
+	prefixName.Put("/:id", controllers.UpdatePrefixNameByID)
+	prefixName.Delete("/:id", controllers.DeletePrefixNameByID)
 
 	// Position Router
 	position := app.Group("/position")
