@@ -134,3 +134,14 @@ func AuthorizationRequired(c *fiber.Ctx) error {
 	}
 	return c.Next()
 }
+
+func IsAdmin(c *fiber.Ctx) bool {
+	db := configs.Store
+	s := c.Get("Authorization")
+	token := strings.TrimPrefix(s, "Bearer ")
+	var userID string
+	db.Select("user_id").First(&models.JwtToken{}, "id=?", token).Scan(&userID)
+	var isAdmin int64 = 0
+	db.First(&models.Administrator{}, "user_id=?", userID).Count(&isAdmin)
+	return isAdmin > 0
+}

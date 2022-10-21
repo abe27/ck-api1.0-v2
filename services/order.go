@@ -2,9 +2,11 @@ package services
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/abe27/api/configs"
 	"github.com/abe27/api/models"
+	"github.com/gofiber/fiber/v2"
 )
 
 func CreateOrder(factory string) {
@@ -196,4 +198,22 @@ func CreateOrder(factory string) {
 		}
 		x++
 	}
+}
+
+func GetOrderGroup(c *fiber.Ctx) []string {
+	db := configs.Store
+	s := c.Get("Authorization")
+	token := strings.TrimPrefix(s, "Bearer ")
+	var userID string
+	err := db.Select("user_id").First(&models.JwtToken{}, "id=?", token).Scan(&userID).Error
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	var orderGroup []models.OrderGroup
+	db.Find(&orderGroup, "user_id=?", &userID)
+	conID := []string{}
+	for _, v := range orderGroup {
+		conID = append(conID, *v.ConsigneeID)
+	}
+	return conID
 }
