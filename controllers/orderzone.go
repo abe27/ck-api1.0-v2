@@ -8,10 +8,26 @@ import (
 )
 
 func GetAllOrderZone(c *fiber.Ctx) error {
+	db := configs.Store
 	var r models.Response
 	var obj []models.OrderZone
+	fac := c.Query("factory")
+	if fac == "" {
+		err := db.Order("description").Preload("Factory").Preload("Whs").Find(&obj).Error
+		if err != nil {
+			r.Message = services.MessageNotFound("OrderZone")
+			r.Data = &err
+			return c.Status(fiber.StatusNotFound).JSON(&r)
+		}
+
+		r.Message = services.MessageShowAll("OrderZone")
+		r.Data = &obj
+		return c.Status(fiber.StatusOK).JSON(&r)
+	}
 	// Fetch All Data
-	err := configs.Store.Preload("Factory").Preload("Whs").Find(&obj).Error
+	var facData models.Factory
+	db.First(&facData, "title=?", fac)
+	err := db.Order("description").Where("factory_id=?", &facData.ID).Preload("Factory").Preload("Whs").Find(&obj).Error
 	if err != nil {
 		r.Message = services.MessageNotFound("OrderZone")
 		r.Data = &err
