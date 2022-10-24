@@ -3,7 +3,7 @@ module github.com/abe27/api
 go 1.19
 
 require (
-	github.com/gofiber/fiber/v2 v2.38.1
+	github.com/gofiber/fiber/v2 v2.39.0
 	github.com/golang-jwt/jwt/v4 v4.4.2
 	github.com/joho/godotenv v1.4.0
 	github.com/matoous/go-nanoid/v2 v2.0.0
@@ -22,7 +22,11 @@ require (
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/lib/pq v1.10.7 // indirect
+	github.com/mattn/go-colorable v0.1.13 // indirect
+	github.com/mattn/go-isatty v0.0.16 // indirect
+	github.com/mattn/go-runewidth v0.0.14 // indirect
 	github.com/metakeule/fmtdate v1.1.2 // indirect
+	github.com/rivo/uniseg v0.4.2 // indirect
 	golang.org/x/text v0.4.0 // indirect
 )
 
