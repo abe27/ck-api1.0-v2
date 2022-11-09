@@ -78,6 +78,7 @@ func UpdateCartonNotReceiveByID(c *fiber.Ctx) error {
 		r.Data = &err
 		return c.Status(fiber.StatusInternalServerError).JSON(&r)
 	}
-	go services.SummaryReceive(&recEnt.ID)
+	// go services.SummaryReceive(&recEnt.ID)
+	services.SummaryReceive(&recEnt.ID)
 	return c.Status(fiber.StatusOK).JSON(&r)
 }
