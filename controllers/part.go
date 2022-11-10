@@ -50,7 +50,7 @@ func ShowPartByID(c *fiber.Ctx) error {
 	var r models.Response
 	id := c.Params("id")
 	var obj models.Part
-	err := configs.Store.First(&obj, &id).Error
+	err := configs.Store.Where("slug like ?", "%"+id+"%").First(&obj).Error
 	if err != nil {
 		r.Message = services.MessageNotFoundData(&id)
 		r.Data = &err
