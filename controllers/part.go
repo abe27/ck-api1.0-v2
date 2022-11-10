@@ -58,7 +58,7 @@ func ShowPartByID(c *fiber.Ctx) error {
 	}
 	r.Message = services.MessageShowDataByID(&id)
 	r.Data = &obj
-	return c.Status(fiber.StatusFound).JSON(&r)
+	return c.Status(fiber.StatusOK).JSON(&r)
 }
 
 func UpdatePartByID(c *fiber.Ctx) error {
