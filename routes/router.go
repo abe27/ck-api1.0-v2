@@ -308,6 +308,13 @@ func SetUpRouter(c *fiber.App) {
 	orderDetail.Put("/:id", controllers.UpdateOrderGroupByID)
 	orderDetail.Delete("/:id", controllers.DeleteOrderGroupByID)
 
+	orderPallet := orderGroup.Group("/pallet")
+	orderPallet.Get("", controllers.GetAllOrderPallet)
+	orderPallet.Post("", controllers.CreateOrderPallet)
+	orderPallet.Get("/:id", controllers.ShowOrderPalletByID)
+	orderPallet.Put("/:id", controllers.UpdateOrderPalletByID)
+	orderPallet.Delete("/:id", controllers.DeleteOrderPalletByID)
+
 	affcode := app.Group("affcode")
 	affcode.Get("", controllers.GetAllAffcode)
 	affcode.Post("", controllers.CreateAffcode)
