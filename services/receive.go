@@ -42,10 +42,10 @@ func SummaryReceive(transferOutNo *string) {
 		ctn += countReceive
 	}
 	// fmt.Printf("TransferOutNo: %s Total: %d\n", *transferOutNo, ctn)
-	var receEnt models.Receive
-	db.First(&receEnt, transferOutNo)
-	receEnt.ReceiveCtn = ctn
-	db.Save(&receEnt)
+	var recEnt models.Receive
+	db.First(&recEnt, transferOutNo)
+	recEnt.ReceiveCtn = ctn
+	db.Save(&recEnt)
 }
 
 func ImportReceiveCarton(path string) (err error) {

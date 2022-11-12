@@ -35,6 +35,8 @@ func GetAllOrder(c *fiber.Ctx) error {
 				Preload("OrderTitle").
 				Preload("Pallet.PalletType").
 				Preload("Pallet.PalletDetail").
+				Preload("OrderDetail.Ledger.Whs").
+				Preload("OrderDetail.Ledger.Factory").
 				Preload("OrderDetail.Ledger.Part").
 				Preload("OrderDetail.Ledger.PartType").
 				Preload("OrderDetail.Ledger.Unit").
@@ -44,6 +46,12 @@ func GetAllOrder(c *fiber.Ctx) error {
 				Preload("OrderDetail.OrderPlan.FileEdi.FileType").
 				Preload("OrderDetail.OrderPlan.ReviseOrder").
 				Preload("OrderDetail.OrderPlan.OrderType").
+				Preload("OrderDetail.OrderPlan.FileEdi.Factory").
+				Preload("OrderDetail.OrderPlan.FileEdi.Mailbox.Area").
+				Preload("OrderDetail.OrderPlan.FileEdi.FileType").
+				Preload("OrderDetail.OrderPlan.Whs").
+				Preload("OrderDetail.OrderPlan.OrderZone").
+				Preload("OrderDetail.OrderPlan.SampleFlg").
 				Find(&obj).
 				Error
 			if err != nil {
@@ -89,6 +97,8 @@ func GetAllOrder(c *fiber.Ctx) error {
 			Preload("OrderTitle").
 			Preload("Pallet.PalletType").
 			Preload("Pallet.PalletDetail").
+			Preload("OrderDetail.Ledger.Whs").
+			Preload("OrderDetail.Ledger.Factory").
 			Preload("OrderDetail.Ledger.Part").
 			Preload("OrderDetail.Ledger.PartType").
 			Preload("OrderDetail.Ledger.Unit").
@@ -98,6 +108,12 @@ func GetAllOrder(c *fiber.Ctx) error {
 			Preload("OrderDetail.OrderPlan.FileEdi.FileType").
 			Preload("OrderDetail.OrderPlan.ReviseOrder").
 			Preload("OrderDetail.OrderPlan.OrderType").
+			Preload("OrderDetail.OrderPlan.FileEdi.Factory").
+			Preload("OrderDetail.OrderPlan.FileEdi.Mailbox.Area").
+			Preload("OrderDetail.OrderPlan.FileEdi.FileType").
+			Preload("OrderDetail.OrderPlan.Whs").
+			Preload("OrderDetail.OrderPlan.OrderZone").
+			Preload("OrderDetail.OrderPlan.SampleFlg").
 			Find(&obj).
 			Error
 		if err != nil {
@@ -149,6 +165,8 @@ func GetAllOrder(c *fiber.Ctx) error {
 		Preload("OrderTitle").
 		Preload("Pallet.PalletType").
 		Preload("Pallet.PalletDetail").
+		Preload("OrderDetail.Ledger.Whs").
+		Preload("OrderDetail.Ledger.Factory").
 		Preload("OrderDetail.Ledger.Part").
 		Preload("OrderDetail.Ledger.PartType").
 		Preload("OrderDetail.Ledger.Unit").
@@ -158,6 +176,12 @@ func GetAllOrder(c *fiber.Ctx) error {
 		Preload("OrderDetail.OrderPlan.FileEdi.FileType").
 		Preload("OrderDetail.OrderPlan.ReviseOrder").
 		Preload("OrderDetail.OrderPlan.OrderType").
+		Preload("OrderDetail.OrderPlan.FileEdi.Factory").
+		Preload("OrderDetail.OrderPlan.FileEdi.Mailbox.Area").
+		Preload("OrderDetail.OrderPlan.FileEdi.FileType").
+		Preload("OrderDetail.OrderPlan.Whs").
+		Preload("OrderDetail.OrderPlan.OrderZone").
+		Preload("OrderDetail.OrderPlan.SampleFlg").
 		Find(&obj, "is_sync=?", isDownload).
 		Error
 	if err != nil {
@@ -189,6 +213,8 @@ func ShowOrderByID(c *fiber.Ctx) error {
 		Preload("OrderTitle").
 		Preload("Pallet.PalletType").
 		Preload("Pallet.PalletDetail").
+		Preload("OrderDetail.Ledger.Whs").
+		Preload("OrderDetail.Ledger.Factory").
 		Preload("OrderDetail.Ledger.Part").
 		Preload("OrderDetail.Ledger.PartType").
 		Preload("OrderDetail.Ledger.Unit").
@@ -198,6 +224,12 @@ func ShowOrderByID(c *fiber.Ctx) error {
 		Preload("OrderDetail.OrderPlan.FileEdi.FileType").
 		Preload("OrderDetail.OrderPlan.ReviseOrder").
 		Preload("OrderDetail.OrderPlan.OrderType").
+		Preload("OrderDetail.OrderPlan.FileEdi.Factory").
+		Preload("OrderDetail.OrderPlan.FileEdi.Mailbox.Area").
+		Preload("OrderDetail.OrderPlan.FileEdi.FileType").
+		Preload("OrderDetail.OrderPlan.Whs").
+		Preload("OrderDetail.OrderPlan.OrderZone").
+		Preload("OrderDetail.OrderPlan.SampleFlg").
 		Find(&obj, &id).
 		Error
 	if err != nil {

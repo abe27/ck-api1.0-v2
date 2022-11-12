@@ -115,6 +115,9 @@ func SetDB() {
 	if !Store.Migrator().HasTable(&models.OrderPlan{}) {
 		Store.AutoMigrate(&models.OrderPlan{})
 	}
+	if !Store.Migrator().HasTable(&models.HistoryOrderPlan{}) {
+		Store.AutoMigrate(&models.HistoryOrderPlan{})
+	}
 	if !Store.Migrator().HasTable(&models.OrderGroupType{}) {
 		Store.AutoMigrate(&models.OrderGroupType{})
 	}
@@ -166,10 +169,62 @@ func SetDB() {
 	if !Store.Migrator().HasTable(&models.ImportInvoiceTap{}) {
 		Store.AutoMigrate(&models.ImportInvoiceTap{})
 	}
-	// db.AutoMigrate(&models.Pallets{})
-	// db.AutoMigrate(&models.Pallet{})
 
 	if !Store.Migrator().HasTable(&models.AssetType{}) {
 		Store.AutoMigrate(&models.AssetType{})
 	}
+
+	// Store.AutoMigrate(&models.User{})
+	// Store.AutoMigrate(&models.JwtToken{})
+	// Store.AutoMigrate(&models.Administrator{})
+	// Store.AutoMigrate(&models.Area{})
+	// Store.AutoMigrate(&models.Whs{})
+	// Store.AutoMigrate(&models.Factory{})
+	// Store.AutoMigrate(&models.ReceiveType{})
+	// Store.AutoMigrate(&models.Unit{})
+	// Store.AutoMigrate(&models.PartType{})
+	// Store.AutoMigrate(&models.FileType{})
+	// Store.AutoMigrate(&models.Position{})
+	// Store.AutoMigrate(&models.Department{})
+	// Store.AutoMigrate(&models.PrefixName{})
+	// Store.AutoMigrate(&models.Profile{})
+	// Store.AutoMigrate(&models.Mailbox{})
+	// Store.AutoMigrate(&models.FileEdi{})
+	// Store.AutoMigrate(&models.CartonHistory{})
+	// Store.AutoMigrate(&models.SyncLogger{})
+	// Store.AutoMigrate(&models.Part{})
+	// Store.AutoMigrate(&models.Ledger{})
+	// Store.AutoMigrate(&models.Receive{})
+	// Store.AutoMigrate(&models.ReceiveDetail{})
+	// Store.AutoMigrate(&models.Pc{})
+	// Store.AutoMigrate(&models.Commercial{})
+	// Store.AutoMigrate(&models.SampleFlg{})
+	// Store.AutoMigrate(&models.ReviseOrder{})
+	// Store.AutoMigrate(&models.Shipment{})
+	// Store.AutoMigrate(&models.OrderZone{})
+	// Store.AutoMigrate(&models.OrderType{})
+	// Store.AutoMigrate(&models.Affcode{})
+	// Store.AutoMigrate(&models.Customer{})
+	// Store.AutoMigrate(&models.CustomerAddress{})
+	// Store.AutoMigrate(&models.Consignee{})
+	// Store.AutoMigrate(&models.LastInvoice{})
+	// Store.AutoMigrate(&models.OrderPlan{})
+	// Store.AutoMigrate(&models.OrderGroupType{})
+	// Store.AutoMigrate(&models.OrderGroup{})
+	// Store.AutoMigrate(&models.OrderTitle{})
+	// Store.AutoMigrate(&models.OrderLoadingArea{})
+	// Store.AutoMigrate(&models.Order{})
+	// Store.AutoMigrate(&models.OrderDetail{})
+	// Store.AutoMigrate(&models.Location{})
+	// Store.AutoMigrate(&models.Carton{})
+	// Store.AutoMigrate(&models.AutoGenerateInvoice{})
+	// Store.AutoMigrate(&models.LineNotifyToken{})
+	// Store.AutoMigrate(&models.CartonNotReceive{})
+	// Store.AutoMigrate(&models.PalletType{})
+	// Store.AutoMigrate(&models.LastFticket{})
+	// Store.AutoMigrate(&models.Pallet{})
+	// Store.AutoMigrate(&models.PalletDetail{})
+	// Store.AutoMigrate(&models.OrderPrepare{})
+	// Store.AutoMigrate(&models.ImportInvoiceTap{})
+	// Store.AutoMigrate(&models.AssetType{})
 }

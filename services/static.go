@@ -15,6 +15,10 @@ func MessageNotFound(txt string) string {
 	return fmt.Sprintf("Not found, %s", txt)
 }
 
+func MessageRequireField(txt string) string {
+	return fmt.Sprintf("Require Field, %s", txt)
+}
+
 var MessageRegister = func(msg string) string { return "Register " + msg + " is completed!" }
 var MessageInputValidationError = "Invalid value!"
 var MessagePasswordNotMatched = "Password is valid!"
@@ -33,16 +37,16 @@ var MessageShowAllData = func(title string) string { return fmt.Sprintf("Show Al
 var MessageCreatedData = func(title *string) string { return fmt.Sprintf("Create Data `%s(%d)` is completed", *title, title) }
 var MessageShowDataByID = func(title *string) string { return fmt.Sprintf("Show Data by ID: `%s(%d)`", *title, title) }
 var MessageUpdateDataByID = func(title *string) string {
-	return fmt.Sprintf("Update Data by ID: `%s(%d)` is completed!", *title, title)
+	return fmt.Sprintf("อัพเดทข้อมูล `%d` เรียบร้อยแล้ว!", title)
 }
 var MessageNotFoundData = func(title *string) string {
-	return fmt.Sprintf("Not found `%s(%d)`!", *title, title)
+	return fmt.Sprintf("ไม่พบข้อมูล `%d`!", title)
 }
 var MessageDuplicateData = func(title *string) string {
-	return fmt.Sprintf("`%v(%d)` is Duplicate!", *title, title)
+	return fmt.Sprintf("`%d` ข้อมูลซ้ำ", title)
 }
 var MessageDeleteData = func(title *string) string {
-	return fmt.Sprintf("Delete Data by ID: `%s(%d)` is completed.", *title, title)
+	return fmt.Sprintf("ลบข้อมูล: `%d` เรียบร้อยแล้ว", title)
 }
 
 var MessageUploadFileCompleted = func(title string) string {

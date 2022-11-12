@@ -302,11 +302,11 @@ func SetUpRouter(c *fiber.App) {
 	orderEnt.Patch("", controllers.GenerateOrder)
 
 	orderDetail := orderGroup.Group("/detail")
-	orderDetail.Get("", controllers.GetAllOrderGroup)
-	orderDetail.Post("", controllers.CreateOrderGroup)
-	orderDetail.Get("/:id", controllers.ShowOrderGroupByID)
-	orderDetail.Put("/:id", controllers.UpdateOrderGroupByID)
-	orderDetail.Delete("/:id", controllers.DeleteOrderGroupByID)
+	orderDetail.Get("", controllers.GetAllOrderDetail)
+	orderDetail.Post("", controllers.CreateOrderDetail)
+	orderDetail.Get("/:id", controllers.ShowOrderDetailByID)
+	orderDetail.Put("/:id", controllers.UpdateOrderDetailByID)
+	orderDetail.Delete("/:id", controllers.DeleteOrderDetailByID)
 
 	orderPallet := orderGroup.Group("/pallet")
 	orderPallet.Get("", controllers.GetAllOrderPallet)

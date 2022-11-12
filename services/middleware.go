@@ -135,6 +135,17 @@ func AuthorizationRequired(c *fiber.Ctx) error {
 	return c.Next()
 }
 
+func GetUserID(c *fiber.Ctx) models.User {
+	db := configs.Store
+	s := c.Get("Authorization")
+	token := strings.TrimPrefix(s, "Bearer ")
+	var userID string
+	db.Select("user_id").First(&models.JwtToken{}, "id=?", token).Scan(&userID)
+	var userData models.User
+	db.Where("id=?", userID).First(&userData)
+	return userData
+}
+
 func IsAdmin(c *fiber.Ctx) bool {
 	db := configs.Store
 	s := c.Get("Authorization")
