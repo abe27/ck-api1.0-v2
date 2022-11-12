@@ -416,16 +416,6 @@ func UpdateOrderDetailByID(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(&r)
 	}
 
-	// orderPlan.BalQty = float64(frm.OrderCtn) * orderPlan.Bistdp
-	// orderPlan.Reasoncd = frm.ReviseID
-	// orderPlan.ReviseOrderID = &reviseData.ID
-	// err = db.Save(&orderPlan).Error
-	// if err != nil {
-	// 	r.Message = services.MessageSystemError
-	// 	r.Data = err.Error()
-	// 	return c.Status(fiber.StatusInternalServerError).JSON(&r)
-	// }
-
 	/// Save OrderDetail
 	var orderDetail models.OrderDetail
 	err = db.First(&orderDetail, &id).Error
