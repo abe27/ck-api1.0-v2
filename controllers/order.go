@@ -18,7 +18,8 @@ func GetAllOrder(c *fiber.Ctx) error {
 	if etd != "" {
 		var facData models.Factory
 		db.First(&facData, "title=?", c.Query("factory"))
-		if services.IsAdmin(c) {
+		isAdmin := services.IsAdmin(c)
+		if isAdmin {
 			err := db.
 				Order("etd_date,updated_at").
 				Where("etd_date=?", etd).
@@ -34,7 +35,8 @@ func GetAllOrder(c *fiber.Ctx) error {
 				Preload("SampleFlg").
 				Preload("OrderTitle").
 				Preload("Pallet.PalletType").
-				Preload("Pallet.PalletDetail").
+				Preload("Pallet.PalletDetail.OrderDetail.Ledger.Factory").
+				Preload("Pallet.PalletDetail.OrderDetail.Ledger.Part").
 				Preload("OrderDetail.Ledger.Whs").
 				Preload("OrderDetail.Ledger.Factory").
 				Preload("OrderDetail.Ledger.Part").
@@ -96,7 +98,8 @@ func GetAllOrder(c *fiber.Ctx) error {
 			Preload("SampleFlg").
 			Preload("OrderTitle").
 			Preload("Pallet.PalletType").
-			Preload("Pallet.PalletDetail").
+			Preload("Pallet.PalletDetail.OrderDetail.Ledger.Factory").
+			Preload("Pallet.PalletDetail.OrderDetail.Ledger.Part").
 			Preload("OrderDetail.Ledger.Whs").
 			Preload("OrderDetail.Ledger.Factory").
 			Preload("OrderDetail.Ledger.Part").
@@ -164,7 +167,8 @@ func GetAllOrder(c *fiber.Ctx) error {
 		Preload("SampleFlg").
 		Preload("OrderTitle").
 		Preload("Pallet.PalletType").
-		Preload("Pallet.PalletDetail").
+		Preload("Pallet.PalletDetail.OrderDetail.Ledger.Factory").
+		Preload("Pallet.PalletDetail.OrderDetail.Ledger.Part").
 		Preload("OrderDetail.Ledger.Whs").
 		Preload("OrderDetail.Ledger.Factory").
 		Preload("OrderDetail.Ledger.Part").

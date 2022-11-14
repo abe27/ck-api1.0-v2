@@ -110,10 +110,19 @@ func DeleteOrderPalletByID(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusNotFound).JSON(&r)
 	}
 
-	err := configs.Store.Where("id=?", id).Delete(&models.Pallet{}).Error
+	db := configs.Store
+	err := db.Where("pallet_id=?", id).Delete(&models.PalletDetail{}).Error
 	if err != nil {
 		r.Message = services.MessageSystemError
 		r.Data = &err
+		return c.Status(fiber.StatusInternalServerError).JSON(&r)
+	}
+
+	err = db.Where("id=?", id).Delete(&models.Pallet{}).Error
+	if err != nil {
+		r.Message = services.MessageSystemError
+		r.Data = &err
+		return c.Status(fiber.StatusInternalServerError).JSON(&r)
 	}
 	return c.Status(fiber.StatusOK).JSON(&r)
 }

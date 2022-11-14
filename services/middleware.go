@@ -154,5 +154,6 @@ func IsAdmin(c *fiber.Ctx) bool {
 	db.Select("user_id").First(&models.JwtToken{}, "id=?", token).Scan(&userID)
 	var isAdmin int64 = 0
 	db.First(&models.Administrator{}, "user_id=?", userID).Count(&isAdmin)
+	fmt.Println(isAdmin > 0)
 	return isAdmin > 0
 }
