@@ -197,6 +197,10 @@ func GetAllOrder(c *fiber.Ctx) error {
 func ShowOrderByID(c *fiber.Ctx) error {
 	var r models.Response
 	id := c.Params("id")
+	if id == "" {
+		r.Message = services.MessageRequireField("order id")
+		return c.Status(fiber.StatusInternalServerError).JSON(&r)
+	}
 	var obj models.Order
 	err := configs.Store.
 		Order("etd_date,updated_at").
@@ -212,7 +216,8 @@ func ShowOrderByID(c *fiber.Ctx) error {
 		Preload("SampleFlg").
 		Preload("OrderTitle").
 		Preload("Pallet.PalletType").
-		Preload("Pallet.PalletDetail").
+		Preload("Pallet.PalletDetail.OrderDetail.Ledger.Factory").
+		Preload("Pallet.PalletDetail.OrderDetail.Ledger.Part").
 		Preload("OrderDetail.Ledger.Whs").
 		Preload("OrderDetail.Ledger.Factory").
 		Preload("OrderDetail.Ledger.Part").
