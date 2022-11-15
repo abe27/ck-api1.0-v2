@@ -154,7 +154,7 @@ func CreateOrder(factory string) {
 			if err != nil {
 				// Create log if Create Order is Error!
 				sysLogger := models.SyncLogger{
-					Title:       "fetchg order plan",
+					Title:       "fetch order plan",
 					Description: fmt.Sprintf("Error fetch order: %v", err),
 				}
 				db.Create(&sysLogger)
