@@ -216,7 +216,6 @@ func ReadGediFile(fileEdi *models.FileEdi) {
 				Sortg2:           fileEdi.Factory.Sortg2,
 				Sortg3:           fileEdi.Factory.Sortg3,
 				Tagrp:            "C",
-				WhsID:            &whs.ID,
 				PlanType:         "ORDERPLAN",
 				Pono:             strings.ReplaceAll(line[13:(13+15)], " ", ""),
 				RecId:            strings.ReplaceAll(line[0:4], " ", ""),
@@ -267,6 +266,7 @@ func ReadGediFile(fileEdi *models.FileEdi) {
 			var orderZone models.OrderZone
 			db.Preload("Whs").Where("value=?", obj.Bioabt).Where("factory_id=?", fileEdi.Factory.ID).First(&orderZone)
 			obj.OrderZoneID = &orderZone.ID
+			obj.WhsID = &orderZone.Whs.ID
 			// For Consignee
 			affcode := models.Affcode{
 				Title:       obj.Biac,
