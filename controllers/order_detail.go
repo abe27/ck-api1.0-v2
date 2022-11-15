@@ -604,3 +604,38 @@ func DeleteOrderDetailByID(c *fiber.Ctx) error {
 	r.Message = services.MessageDeleteData(&id)
 	return c.Status(fiber.StatusOK).JSON(&r)
 }
+
+func UpdateSyncOrderDetailByID(c *fiber.Ctx) error {
+	var r models.Response
+	id := c.Params("id")
+	if id == "" {
+		r.Message = services.MessageInputValidationError
+		return c.Status(fiber.StatusNotFound).JSON(&r)
+	}
+
+	db := configs.Store
+	var data models.Order
+	err := db.First(&data, &id).Error
+	if err != nil {
+		r.Message = err.Error()
+		return c.Status(fiber.StatusInternalServerError).JSON(&r)
+	}
+
+	err = db.Model(&models.OrderDetail{}).Where("order_id = ?", &id).Update("is_sync", false).Error
+	if err != nil {
+		r.Message = err.Error()
+		return c.Status(fiber.StatusInternalServerError).JSON(&r)
+	}
+
+	data.IsActive = true
+	data.IsSync = false
+	err = db.Save(&data).Error
+	if err != nil {
+		r.Message = err.Error()
+		return c.Status(fiber.StatusInternalServerError).JSON(&r)
+	}
+
+	r.Message = services.MessageUpdateDataByID(&id)
+	r.Data = &data
+	return c.Status(fiber.StatusOK).JSON(&r)
+}

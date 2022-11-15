@@ -107,6 +107,7 @@ func CreateOrder(factory string) {
 			SampleFlg:    ord[x].SampleFlg,   // sample_flg,
 			CarrierCode:  ord[x].CarrierCode, // carriercode
 			RunningSeq:   (invSeq.LastRunning + 1),
+			IsActive:     false,
 			IsSync:       true,
 		}
 
@@ -118,7 +119,6 @@ func CreateOrder(factory string) {
 			CommercialID: ord[x].CommercialID,
 			SampleFlgID:  ord[x].SampleFlgID,
 			Bioat:        ord[x].Bioabt,
-			IsInvoice:    false,
 		}).Error
 
 		if err != nil {
