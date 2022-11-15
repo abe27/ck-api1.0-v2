@@ -126,7 +126,7 @@ func ImportInvoiceTap(fileName *string) {
 										order.RunningSeq = inv_seq
 										order.IsChecked = true
 										order.IsInvoice = true
-										order.IsSync = false
+										order.IsSync = true
 										db.Save(&order)
 									}
 									db.Save(&invTap)
@@ -210,7 +210,7 @@ func ImportInvoiceTap(fileName *string) {
 										}
 									}
 									// Update Status OrderDetail
-									db.Model(&orderDetail).Select("total_on_pallet", "order_ctn", "is_matched", "is_sync").Updates(models.OrderDetail{TotalOnPallet: orderDetail.TotalOnPallet + int64(ctnRnd), OrderCtn: int64(orderPlan.BalQty) / int64(orderPlan.Bistdp), IsMatched: true, IsSync: false})
+									db.Model(&orderDetail).Select("total_on_pallet", "order_ctn", "is_matched", "is_sync").Updates(models.OrderDetail{TotalOnPallet: orderDetail.TotalOnPallet + int64(ctnRnd), OrderCtn: int64(orderPlan.BalQty) / int64(orderPlan.Bistdp), IsMatched: true, IsSync: true})
 								}
 								// fmt.Printf("Type: %s Pallet No.: %s DIM: %s(%s) PALLET SIZE: %s\n", txtType, bhpaln.GetString(), boxDimensions, dimData.Type, dimData.PalletSize)
 							}
