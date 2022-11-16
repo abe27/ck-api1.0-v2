@@ -9,7 +9,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func CreateOrder(factory string) {
+func CreateOrder(factory, start_etd, end_etd string) {
 	// Group Order to create order ent
 	db := configs.Store
 	// etd := (time.Now()).Format("2006-01-02")
@@ -21,6 +21,7 @@ func CreateOrder(factory string) {
 		Where("is_generate=?", false).
 		Where("is_revise_error=?", false).
 		Where("vendor=?", &factory).
+		Where("etd_tap BETWEEN ? AND ?", start_etd, end_etd).
 		Group("order_zone_id,consignee_id,shipment_id,etd_tap,pc_id,commercial_id,bioabt,order_group,vendor,biac,bishpc,bisafn,sample_flg_id,carrier_code").
 		Find(&ord).Error
 	if err != nil {
@@ -84,6 +85,7 @@ func CreateOrder(factory string) {
 			OnYear:      ConvertInt((etd)[:4]),
 			LastRunning: 0,
 		}
+
 		db.FirstOrCreate(&invSeq, &models.LastInvoice{
 			FactoryID: &factoryEnt.ID,
 			AffcodeID: &affcodeData.ID,

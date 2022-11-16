@@ -351,4 +351,12 @@ func SetUpRouter(c *fiber.App) {
 	consignee.Get("/:id", controllers.ShowConsigneeByID)
 	consignee.Put("/:id", controllers.UpdateConsigneeByID)
 	consignee.Delete("/:id", controllers.DeleteConsigneeByID)
+
+	invoiceGroup := app.Group("invoice")
+	fticketGroup := invoiceGroup.Group("/shipping_label")
+	fticketGroup.Get("", controllers.GetAllShippingLabel)
+	fticketGroup.Post("", controllers.CreateShippingLabel)
+	fticketGroup.Get("/:id", controllers.ShowShippingLabelByID)
+	fticketGroup.Put("/:id", controllers.UpdateShippingLabelByID)
+	fticketGroup.Delete("/:id", controllers.DeleteShippingLabelByID)
 }

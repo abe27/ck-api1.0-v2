@@ -39,6 +39,11 @@ var MessageShowDataByID = func(title *string) string { return fmt.Sprintf("Show 
 var MessageUpdateDataByID = func(title *string) string {
 	return fmt.Sprintf("อัพเดทข้อมูล `%d` เรียบร้อยแล้ว!", title)
 }
+
+var MessageSystemErrorWith = func(title string) string {
+	return fmt.Sprintf("ไม่พบข้อมูล `%s`!", title)
+}
+
 var MessageNotFoundData = func(title *string) string {
 	return fmt.Sprintf("ไม่พบข้อมูล `%d`!", title)
 }

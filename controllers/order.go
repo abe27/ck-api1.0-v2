@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -292,11 +293,24 @@ func GenerateOrder(c *fiber.Ctx) error {
 	if factory == "" {
 		factory = "INJ"
 	}
+
+	start_etd := c.Query("start_etd")
+	if start_etd == "" {
+		r.Message = "กรุณาระบุวันที่เริ่ม"
+		return c.Status(fiber.StatusInternalServerError).JSON(&r)
+	}
+
+	end_date := c.Query("end_date")
+	if end_date == "" {
+		r.Message = "กรุณาระบุวันที่สิ้นสุด"
+		return c.Status(fiber.StatusInternalServerError).JSON(&r)
+	}
+
 	db := configs.Store
 	var fac models.Factory
 	err := db.First(&fac, "title=?", factory).Error
 	if err != nil {
-		r.Message = services.MessageSystemError
+		r.Message = services.MessageSystemErrorWith(factory)
 		r.Data = &err
 		return c.Status(fiber.StatusInternalServerError).JSON(&r)
 	}
@@ -304,7 +318,7 @@ func GenerateOrder(c *fiber.Ctx) error {
 	var autoGen models.AutoGenerateInvoice
 	err = db.First(&autoGen, "factory_id=?", &fac.ID).Error
 	if err != nil {
-		r.Message = services.MessageSystemError
+		r.Message = services.MessageSystemErrorWith(factory)
 		r.Data = &err
 		return c.Status(fiber.StatusInternalServerError).JSON(&r)
 	}
@@ -315,8 +329,8 @@ func GenerateOrder(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(&r)
 	}
 
-	go services.CreateOrder(factory)
-	r.Message = "Auto Generate Order"
+	// go services.CreateOrder(factory, start_etd, end_date)
+	r.Message = fmt.Sprintf("Auto Generate Order %s Start: %s End: %s", factory, start_etd, end_date)
 	r.Data = nil
 	return c.Status(fiber.StatusCreated).JSON(&r)
 }
