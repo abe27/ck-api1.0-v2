@@ -22,7 +22,7 @@ type PrintShippingLabel struct {
 	CustCode     string    `gorm:"not null;size:25" json:"cust_code" form:"cust_code"`
 	CustName     string    `gorm:"not null;size:25" json:"cust_name" form:"cust_name"`
 	PalletNo     string    `gorm:"not null;size:5" json:"pallet_no" form:"pallet_no"`
-	PrintDate    time.Time `gorm:"not null;type:date;" json:"print_date" form:"print_date"`
+	PrintDate    string    `gorm:"not null;size:25;" json:"print_date" form:"print_date"`
 	QrCode       string    `json:"qr_code" form:"qr_code"`
 	BarCode      string    `gorm:"unique;" json:"bar_code" form:"bar_code"`
 	LabelBarCode string    `json:"label_bar_code" form:"label_bar_code"`
