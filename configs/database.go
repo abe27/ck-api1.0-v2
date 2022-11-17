@@ -174,6 +174,10 @@ func SetDB() {
 		Store.AutoMigrate(&models.AssetType{})
 	}
 
+	if !Store.Migrator().HasTable(&models.PrintShippingLabel{}) {
+		Store.AutoMigrate(&models.PrintShippingLabel{})
+	}
+
 	// Store.AutoMigrate(&models.User{})
 	// Store.AutoMigrate(&models.JwtToken{})
 	// Store.AutoMigrate(&models.Administrator{})
