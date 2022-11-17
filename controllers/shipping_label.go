@@ -62,7 +62,7 @@ func CreatePrintLabel(c *fiber.Ctx) error {
 		CustName:     frm.CustName,
 		PalletNo:     frm.PalletNo,
 		PrintDate:    frm.PrintDate,
-		QrCode:       frm.QrCode,
+		QrCode:       fmt.Sprintf("06P%s;17Q%d;30T%s;32T%s;", frm.PartNo, frm.Qty, frm.OrderNo, frm.BarCode),
 		BarCode:      frm.BarCode,
 		LabelBarCode: fmt.Sprintf("*%s*", frm.BarCode),
 		IsPrint:      frm.IsPrint,
