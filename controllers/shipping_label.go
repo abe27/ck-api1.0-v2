@@ -64,6 +64,7 @@ func CreatePrintLabel(c *fiber.Ctx) error {
 		CustName:     frm.CustName,
 		PalletNo:     frm.PalletNo,
 		PrintDate:    frm.PrintDate,
+		Qty:          frm.Qty,
 		QrCode:       fmt.Sprintf("06P%s;17Q%d;30T%s;32T%s;", frm.PartNo, frm.Qty, frm.OrderNo, frm.BarCode),
 		BarCode:      frm.BarCode,
 		LabelBarCode: fmt.Sprintf("*%s*", frm.BarCode),
@@ -76,6 +77,7 @@ func CreatePrintLabel(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(&r)
 	}
 
+	obj.Qty = frm.Qty
 	obj.QrCode = fmt.Sprintf("06P%s;17Q%d;30T%s;32T%s;", frm.PartNo, frm.Qty, frm.OrderNo, frm.BarCode)
 	obj.IsPrint = 0
 	err = db.Save(&obj).Error
@@ -84,7 +86,7 @@ func CreatePrintLabel(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(&r)
 	}
 
-	r.Message = services.MessageCreatedData(&frm.BarCode)
+	r.Message = services.MessagePrintShippingLabel(frm.BarCode)
 	r.Data = &obj
 	return c.Status(fiber.StatusOK).JSON(&r)
 }

@@ -223,6 +223,7 @@ func ShowOrderByID(c *fiber.Ctx) error {
 		Preload("Pallet.PalletType").
 		Preload("Pallet.PalletDetail.OrderDetail.Ledger.Factory").
 		Preload("Pallet.PalletDetail.OrderDetail.Ledger.Part").
+		Preload("Pallet.PalletDetail.OrderDetail.OrderPlan").
 		Preload("OrderDetail.Ledger.Whs").
 		Preload("OrderDetail.Ledger.Factory").
 		Preload("OrderDetail.Ledger.Part").

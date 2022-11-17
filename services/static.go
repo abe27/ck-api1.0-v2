@@ -60,3 +60,7 @@ var MessageUploadFileCompleted = func(title string) string {
 var MessageUploadFileError = func(title string) string {
 	return fmt.Sprintf("Upload File Error: `%s` is completed.", title)
 }
+
+var MessagePrintShippingLabel = func(title string) string {
+	return fmt.Sprintf("ส่งคำสั่งปริ้น `%s` เรียบร้อยแล้ว", title)
+}
