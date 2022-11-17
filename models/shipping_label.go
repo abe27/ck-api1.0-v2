@@ -24,7 +24,7 @@ type PrintShippingLabel struct {
 	PalletNo     string    `gorm:"not null;size:5" json:"pallet_no" form:"pallet_no"`
 	PrintDate    time.Time `gorm:"not null;type:date;" json:"print_date" form:"print_date"`
 	QrCode       string    `json:"qr_code" form:"qr_code"`
-	BarCode      string    `json:"bar_code" form:"bar_code"`
+	BarCode      string    `gorm:"unique;" json:"bar_code" form:"bar_code"`
 	LabelBarCode string    `json:"label_bar_code" form:"label_bar_code"`
 	IsPrint      int64     `json:"is_print" form:"is_print" binding:"required" default:"1"`
 	CreatedAt    time.Time `json:"created_at" form:"created_at" default:"now"`

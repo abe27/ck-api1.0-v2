@@ -54,6 +54,8 @@ func CreatePrintLabel(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(&r)
 	}
 
+	db := configs.Store
+
 	obj := models.PrintShippingLabel{
 		InvoiceNo:    frm.InvoiceNo,
 		OrderNo:      frm.OrderNo,
@@ -68,7 +70,15 @@ func CreatePrintLabel(c *fiber.Ctx) error {
 		IsPrint:      frm.IsPrint,
 	}
 
-	err = configs.Store.FirstOrCreate(&obj, &models.PrintShippingLabel{BarCode: frm.BarCode}).Error
+	err = db.FirstOrCreate(&obj, &models.PrintShippingLabel{BarCode: frm.BarCode}).Error
+	if err != nil {
+		r.Message = err.Error()
+		return c.Status(fiber.StatusInternalServerError).JSON(&r)
+	}
+
+	obj.QrCode = fmt.Sprintf("06P%s;17Q%d;30T%s;32T%s;", frm.PartNo, frm.Qty, frm.OrderNo, frm.BarCode)
+	obj.IsPrint = 0
+	err = db.Save(&obj).Error
 	if err != nil {
 		r.Message = err.Error()
 		return c.Status(fiber.StatusInternalServerError).JSON(&r)
