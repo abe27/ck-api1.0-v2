@@ -55,17 +55,17 @@ func CreatePrintLabel(c *fiber.Ctx) error {
 	}
 
 	obj := models.PrintShippingLabel{
-		Seq:       frm.Seq,
-		InvoiceNo: frm.InvoiceNo,
-		OrderNo:   frm.OrderNo,
-		PartNo:    frm.PartNo,
-		CustCode:  frm.CustCode,
-		CustName:  frm.CustName,
-		PalletNo:  frm.PalletNo,
-		PrintDate: frm.PrintDate,
-		QrCode:    frm.QrCode,
-		BarCode:   frm.BarCode,
-		IsPrint:   frm.IsPrint,
+		InvoiceNo:    frm.InvoiceNo,
+		OrderNo:      frm.OrderNo,
+		PartNo:       frm.PartNo,
+		CustCode:     frm.CustCode,
+		CustName:     frm.CustName,
+		PalletNo:     frm.PalletNo,
+		PrintDate:    frm.PrintDate,
+		QrCode:       frm.QrCode,
+		BarCode:      frm.BarCode,
+		LabelBarCode: fmt.Sprintf("*%s*", frm.BarCode),
+		IsPrint:      frm.IsPrint,
 	}
 
 	err = configs.Store.FirstOrCreate(&obj, &models.PrintShippingLabel{BarCode: frm.BarCode}).Error
