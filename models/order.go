@@ -124,3 +124,9 @@ func (u *OrderPrepare) BeforeCreate(tx *gorm.DB) (err error) {
 	u.ID = id
 	return
 }
+
+type OrderShort struct {
+	OrderDetailID string `json:"order_detail_id" form:"order_detail_id"`
+	OrderPlanID   string `json:"order_plan_id" form:"order_plan_id"`
+	Ctn           int64  `json:"ctn" form:"ctn"`
+}

@@ -327,6 +327,13 @@ func SetUpRouter(c *fiber.App) {
 	printLabel := orderGroup.Group("/label")
 	printLabel.Post("", controllers.CreatePrintLabel)
 
+	orderShort := orderGroup.Group("/short")
+	orderShort.Get("", controllers.ShowAllOrderShort)
+	orderShort.Post("", controllers.CreateOrderShort)
+	orderShort.Get("/:id", controllers.ShowOrderShortByID)
+	orderShort.Put("/:id", controllers.UpdateOrderShortByID)
+	orderShort.Delete("/:id", controllers.DeleteOrderShortByID)
+
 	affcode := app.Group("affcode")
 	affcode.Get("", controllers.GetAllAffcode)
 	affcode.Post("", controllers.CreateAffcode)
