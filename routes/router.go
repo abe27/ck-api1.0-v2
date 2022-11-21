@@ -184,6 +184,28 @@ func SetUpRouter(c *fiber.App) {
 	palletType.Delete("/:id", controllers.DeletePalletTypeByID)
 
 	// Part Type Router
+	part := app.Group("part")
+	part.Get("", controllers.GetAllPart)
+	part.Post("", controllers.CreatePart)
+	part.Get("/:id", controllers.ShowPartByID)
+	part.Put("/:id", controllers.UpdatePartByID)
+	part.Delete("/:id", controllers.DeletePartByID)
+
+	ledger := app.Group("ledger")
+	ledger.Get("", controllers.GetAllLedger)
+	ledger.Post("", controllers.CreateLedger)
+	ledger.Get("/:id", controllers.ShowLedgerByID)
+	ledger.Put("/:id", controllers.UpdateLedgerByID)
+	ledger.Delete("/:id", controllers.DeleteLedgerByID)
+
+	// Planning Day Router
+	planning := app.Group("planning_day")
+	planning.Get("", controllers.GetAllPlanningDay)
+	planning.Post("", controllers.CreatePlanningDay)
+	planning.Get("/:id", controllers.ShowPlanningDayByID)
+	planning.Put("/:id", controllers.UpdatePlanningDayByID)
+	planning.Delete("/:id", controllers.DeletePlanningDayByID)
+
 	edi := app.Group("edi")
 	ediType := edi.Group("type")
 	ediType.Get("", controllers.GetAllFileType)
@@ -198,20 +220,6 @@ func SetUpRouter(c *fiber.App) {
 	mailbox.Get("/:id", controllers.ShowMailboxByID)
 	mailbox.Put("/:id", controllers.UpdateMailboxByID)
 	mailbox.Delete("/:id", controllers.DeleteMailboxByID)
-
-	part := app.Group("part")
-	part.Get("", controllers.GetAllPart)
-	part.Post("", controllers.CreatePart)
-	part.Get("/:id", controllers.ShowPartByID)
-	part.Put("/:id", controllers.UpdatePartByID)
-	part.Delete("/:id", controllers.DeletePartByID)
-
-	ledger := app.Group("ledger")
-	ledger.Get("", controllers.GetAllLedger)
-	ledger.Post("", controllers.CreateLedger)
-	ledger.Get("/:id", controllers.ShowLedgerByID)
-	ledger.Put("/:id", controllers.UpdateLedgerByID)
-	ledger.Delete("/:id", controllers.DeleteLedgerByID)
 
 	lastFTicket := app.Group("last/fticket")
 	lastFTicket.Get("", controllers.GetAllLastFTicket)

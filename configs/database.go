@@ -178,6 +178,14 @@ func SetDB() {
 		Store.AutoMigrate(&models.PrintShippingLabel{})
 	}
 
+	if !Store.Migrator().HasTable(&models.PlanningDay{}) {
+		Store.AutoMigrate(&models.PlanningDay{})
+	}
+
+	if !Store.Migrator().HasTable(&models.SchedulePlan{}) {
+		Store.AutoMigrate(&models.SchedulePlan{})
+	}
+
 	// Store.AutoMigrate(&models.User{})
 	// Store.AutoMigrate(&models.JwtToken{})
 	// Store.AutoMigrate(&models.Administrator{})
