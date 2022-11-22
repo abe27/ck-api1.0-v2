@@ -53,7 +53,9 @@ var MessageDuplicateData = func(title *string) string {
 var MessageDeleteData = func(title *string) string {
 	return fmt.Sprintf("ลบข้อมูล: `%d` เรียบร้อยแล้ว", title)
 }
-
+var MessageUpdateData = func(title *string) string {
+	return fmt.Sprintf("บันทึกข้อมูล: `%d` เรียบร้อยแล้ว", title)
+}
 var MessageUploadFileCompleted = func(title string) string {
 	return fmt.Sprintf("อัพโหลด : `%s` เรียบร้อยแล้ว", title)
 }

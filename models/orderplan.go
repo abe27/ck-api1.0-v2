@@ -50,7 +50,7 @@ type OrderPlan struct {
 	Upddte           time.Time   `gorm:"type:date;" form:"upddte" json:"upddte"`
 	Updtime          time.Time   `gorm:"type:Time;" form:"updtime" json:"updtime"`
 	CarrierCode      string      `gorm:"size:5" form:"carrier_code" json:"carrier_code"`
-	Bioabt           int64       `form:"bioat" json:"bioat"`
+	Bioabt           int64       `form:"bioabt" json:"bioabt"`
 	Bicomd           string      `gorm:"size:2" form:"bicomd" json:"bicomd"`
 	Bistdp           float64     `form:"bistdp" json:"bistdp"`
 	Binewt           float64     `form:"binewt" json:"binewt"`

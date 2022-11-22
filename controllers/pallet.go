@@ -28,7 +28,13 @@ func GetAllOrderPallet(c *fiber.Ctx) error {
 		Preload("Order.SampleFlg").
 		Preload("Order.OrderTitle").
 		Preload("PalletType").
-		Preload("PalletDetail").
+		Preload("PalletDetail.OrderDetail.Order").
+		Preload("PalletDetail.OrderDetail.Ledger.Whs").
+		Preload("PalletDetail.OrderDetail.Ledger.Factory").
+		Preload("PalletDetail.OrderDetail.Ledger.Part").
+		Preload("PalletDetail.OrderDetail.Ledger.PartType").
+		Preload("PalletDetail.OrderDetail.Ledger.Unit").
+		Preload("PalletDetail.OrderDetail.OrderPlan").
 		Find(&data).Error
 	if err != nil {
 		r.Message = services.MessageSystemError
@@ -84,7 +90,13 @@ func ShowOrderPalletByID(c *fiber.Ctx) error {
 		Preload("Order.SampleFlg").
 		Preload("Order.OrderTitle").
 		Preload("PalletType").
-		Preload("PalletDetail").
+		Preload("PalletDetail.OrderDetail.Order").
+		Preload("PalletDetail.OrderDetail.Ledger.Whs").
+		Preload("PalletDetail.OrderDetail.Ledger.Factory").
+		Preload("PalletDetail.OrderDetail.Ledger.Part").
+		Preload("PalletDetail.OrderDetail.Ledger.PartType").
+		Preload("PalletDetail.OrderDetail.Ledger.Unit").
+		Preload("PalletDetail.OrderDetail.OrderPlan").
 		First(&data).Error
 	if err != nil {
 		r.Message = services.MessageSystemError
