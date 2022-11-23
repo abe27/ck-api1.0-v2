@@ -54,7 +54,7 @@ func CreateOrder(factory, start_etd, end_etd string) {
 		x++
 	}
 
-	CreateOrderWithRevise(factory, start_etd, end_etd)
+	// CreateOrderWithRevise(factory, start_etd, end_etd)
 }
 
 func CreateOrderWithRevise(factory, start_etd, end_etd string) {
@@ -94,11 +94,15 @@ func CreateOrderWithRevise(factory, start_etd, end_etd string) {
 		// GenerateOrderDetailWithRevise(ord[i], orderTitle)
 		if obj.Reasoncd[:1] != "D" && obj.Reasoncd[:1] != "M" {
 			GenerateOrderDetailWithRevise(ord[i], orderTitle)
-		} else {
-			fmt.Printf("%d::: %d ==> %s\n", i, obj.Seq, obj.Reasoncd[:1])
+		} else if obj.Reasoncd[:1] == "M" {
+			GenerateOrderDetailWithReviseChangeMode(ord[i], orderTitle)
 		}
 		i++
 	}
+}
+
+func GenerateOrderDetailWithReviseChangeMode(ord models.OrderPlan, orderTitle models.OrderTitle) {
+	// db := configs.Store
 }
 
 func GenerateOrderDetail(ord models.OrderPlan, orderTitle models.OrderTitle) {
@@ -253,153 +257,6 @@ func GenerateOrderDetail(ord models.OrderPlan, orderTitle models.OrderTitle) {
 		// update lastinvoice no
 		invSeq.LastRunning += 1
 		db.Save(&invSeq)
-	}
-}
-
-func GenerateOrderDetailWithReviseChangeMode(ord models.OrderPlan, orderTitle models.OrderTitle) {
-	db := configs.Store
-	etd := ord.EtdTap.Format("20060102")
-	var ship models.Shipment
-	db.Select("id,title").First(&ship, "id=?", ord.ShipmentID)
-	/// Generate ZoneCode
-	var ordCount int64
-	db.Select("id").Where("etd_date=?", ord.EtdTap).Find(&models.Order{}).Count(&ordCount)
-	sum := ordCount + 1
-	keyCode := fmt.Sprintf("%s%s%03d", etd[2:], ship.Title, sum)
-	var sumOrder models.Order
-	db.Select("id").First(&sumOrder, "zone_code=?", keyCode)
-	for !(len(sumOrder.ID) == 0) {
-		keyCode = fmt.Sprintf("%s%s%03d", etd[2:], ship.Title, sum)
-	}
-
-	// Check LoadingArea
-	// fmt.Printf("Check LoadingArea %s\n", ord[x].OrderGroup[:1])
-	prefixOrder := "-"
-	if ord.OrderGroup[:1] == "@" {
-		prefixOrder = "@"
-	}
-	var loadingData models.OrderLoadingArea
-	db.Select("prefix,loading_area,privilege").Where("order_zone_id=?", ord.OrderZoneID).Where("prefix=?", prefixOrder).First(&loadingData)
-
-	var factoryEnt models.Factory
-	db.Select("id,title").Where("title=?", ord.Vendor).First(&factoryEnt)
-	var affcodeData models.Affcode
-	db.Select("id,title,description").Where("title=?", ord.Biac).First(&affcodeData)
-
-	// Get LastInvoiceNo
-	invSeq := models.LastInvoice{
-		FactoryID:   &factoryEnt.ID,
-		AffcodeID:   &affcodeData.ID,
-		OnYear:      ConvertInt((etd)[:4]),
-		LastRunning: 0,
-	}
-
-	db.FirstOrCreate(&invSeq, &models.LastInvoice{
-		FactoryID: &factoryEnt.ID,
-		AffcodeID: &affcodeData.ID,
-		OnYear:    ConvertInt((etd)[:4]),
-	})
-
-	var checkOrderDuplicate int64
-	db.Select("id").Where(&models.Order{
-		ConsigneeID:  ord.ConsigneeID,
-		ShipmentID:   ord.ShipmentID,
-		EtdDate:      &ord.EtdTap,
-		PcID:         ord.PcID,
-		CommercialID: ord.CommercialID,
-		SampleFlgID:  ord.SampleFlgID,
-		Bioat:        ord.Bioabt,
-	}).Find(&models.Order{}).Count(&checkOrderDuplicate)
-	if checkOrderDuplicate == 0 {
-		// update lastinvoice no
-		invSeq.LastRunning += 1
-		db.Save(&invSeq)
-	}
-
-	order := models.Order{
-		ConsigneeID:  ord.ConsigneeID,
-		ShipmentID:   ord.ShipmentID,
-		EtdDate:      &ord.EtdTap,
-		PcID:         ord.PcID,
-		CommercialID: ord.CommercialID,
-		SampleFlgID:  ord.SampleFlgID,
-		OrderTitleID: &orderTitle.ID,
-		Bioat:        ord.Bioabt,
-		ZoneCode:     keyCode,
-		LoadingArea:  loadingData.LoadingArea,
-		Privilege:    loadingData.Privilege,
-		ShipForm:     ord.Bishpc,      // bishpc,
-		ShipTo:       ord.Bisafn,      // bisafn,
-		SampleFlg:    ord.SampleFlg,   // sample_flg,
-		CarrierCode:  ord.CarrierCode, // carriercode
-		RunningSeq:   (invSeq.LastRunning + 1),
-		IsActive:     false,
-		IsSync:       true,
-	}
-
-	if err := db.FirstOrCreate(&order, &models.Order{
-		ConsigneeID:  ord.ConsigneeID,
-		ShipmentID:   ord.ShipmentID,
-		EtdDate:      &ord.EtdTap,
-		PcID:         ord.PcID,
-		CommercialID: ord.CommercialID,
-		SampleFlgID:  ord.SampleFlgID,
-		Bioat:        ord.Bioabt,
-	}).Error; err != nil {
-		sysLogger := models.SyncLogger{
-			Title:       fmt.Sprintf("creating order %v", ord.ConsigneeID),
-			Description: fmt.Sprintf("Error creating order: %v", err),
-		}
-		db.Create(&sysLogger)
-		panic(err)
-	}
-
-	if order.ID != "" {
-		r := ord
-		ctn := 0
-		if r.BalQty > 0 {
-			ctn = int(r.BalQty) / int(r.Bistdp)
-		}
-
-		ordDetail := models.OrderDetail{
-			OrderID:       &order.ID,
-			Pono:          &r.Pono,
-			LedgerID:      r.LedgerID,
-			OrderPlanID:   &r.ID,
-			OrderCtn:      int64(ctn),
-			TotalOnPallet: 0,
-		}
-
-		// OrderPlan Duplicate Data
-		if err := db.FirstOrCreate(&ordDetail, &models.OrderDetail{
-			Pono:     &r.Pono,
-			LedgerID: r.LedgerID,
-		}).Error; err != nil {
-			sysLogger := models.SyncLogger{
-				Title:       fmt.Sprintf("creating order detail %v", ord.ID),
-				Description: fmt.Sprintf("%v", err),
-			}
-			db.Save(sysLogger)
-			panic(err)
-		}
-		// Confirm Data After Create
-		ordDetail.OrderPlanID = &r.ID
-		ordDetail.OrderID = &order.ID
-		ordDetail.OrderCtn = int64(ctn)
-		ordDetail.IsSync = true
-		if err := db.Save(&ordDetail).Error; err != nil {
-			sysLogger := models.SyncLogger{
-				Title:       fmt.Sprintf("update status order detail %v", ord.ID),
-				Description: fmt.Sprintf("%v", err),
-			}
-			db.Save(sysLogger)
-			panic(err)
-		}
-
-		// Update Order Plan Set Status Generated
-		ordPlan := &r
-		ordPlan.IsGenerate = true
-		db.Save(&ordPlan)
 	}
 }
 
