@@ -194,7 +194,6 @@ func GenerateOrderDetail(ord models.OrderPlan, orderTitle models.OrderTitle) {
 		// Create Order Detail
 		var orderPlan []models.OrderPlan
 		err = db.Order("etd_tap,created_at,seq").
-			Where("substring(reasoncd, 1, 1) in (?)", []string{"", "0", "-", "H"}).
 			Where("is_revise_error=?", false).
 			Where("is_generate=?", false).
 			Where("order_zone_id=?", ord.OrderZoneID).
@@ -206,6 +205,7 @@ func GenerateOrderDetail(ord models.OrderPlan, orderTitle models.OrderTitle) {
 			Where("sample_flg_id=?", ord.SampleFlgID).
 			Where("bioabt=?", ord.Bioabt).
 			Where("order_group=?", ord.OrderGroup).
+			Where("substring(reasoncd, 1, 1) in (?)", []string{"", "0", "-", "H"}).
 			Find(&orderPlan).Error
 		if err != nil {
 			// Create log if Create Order is Error!
