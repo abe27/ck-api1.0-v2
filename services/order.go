@@ -54,7 +54,7 @@ func CreateOrder(factory, start_etd, end_etd string) {
 		x++
 	}
 
-	// CreateOrderWithRevise(factory, start_etd, end_etd)
+	CreateOrderWithRevise(factory, start_etd, end_etd)
 }
 
 func CreateOrderWithRevise(factory, start_etd, end_etd string) {
@@ -102,7 +102,46 @@ func CreateOrderWithRevise(factory, start_etd, end_etd string) {
 }
 
 func GenerateOrderDetailWithReviseChangeMode(ord models.OrderPlan, orderTitle models.OrderTitle) {
-	// db := configs.Store
+	db := configs.Store
+	etd := ord.EtdTap.Format("20060102")
+	var ship models.Shipment
+	db.Select("id,title").First(&ship, "id=?", ord.ShipmentID)
+	/// Generate ZoneCode
+	var ordCount int64
+	db.Select("id").Where("etd_date=?", ord.EtdTap).Find(&models.Order{}).Count(&ordCount)
+	sum := ordCount + 1
+	keyCode := fmt.Sprintf("%s%s%03d", etd[2:], ship.Title, sum)
+	var sumOrder models.Order
+	db.Select("id").First(&sumOrder, "zone_code=?", keyCode)
+	for !(len(sumOrder.ID) == 0) {
+		keyCode = fmt.Sprintf("%s%s%03d", etd[2:], ship.Title, sum)
+	}
+
+	// Check LoadingArea
+	// fmt.Printf("Check LoadingArea %s\n", ord[x].OrderGroup[:1])
+	prefixOrder := "-"
+	if ord.OrderGroup[:1] == "@" {
+		prefixOrder = "@"
+	}
+	var loadingData models.OrderLoadingArea
+	db.Select("prefix,loading_area,privilege").Where("order_zone_id=?", ord.OrderZoneID).Where("prefix=?", prefixOrder).First(&loadingData)
+
+	var factoryEnt models.Factory
+	db.Select("id,title").Where("title=?", ord.Vendor).First(&factoryEnt)
+	var affcodeData models.Affcode
+	db.Select("id,title,description").Where("title=?", ord.Biac).First(&affcodeData)
+
+	var order models.Order
+	db.
+		Where("consignee_id=?", ord.ConsigneeID).
+		Where("etd_date=?", &ord.EtdTap).
+		Where("pc_id=?", ord.PcID).
+		Where("commercial_id=?", ord.CommercialID).
+		Where("sample_flg_id=?", ord.SampleFlgID).
+		Where("bioat=?", ord.Bioabt).
+		Find(&order)
+
+	fmt.Printf("OrderID: %s Code: %s\n", order.ID, keyCode)
 }
 
 func GenerateOrderDetail(ord models.OrderPlan, orderTitle models.OrderTitle) {
