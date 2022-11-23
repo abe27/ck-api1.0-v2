@@ -330,7 +330,8 @@ func GenerateOrder(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(&r)
 	}
 
-	go services.CreateOrder(factory, start_etd, end_date)
+	// go services.CreateOrder(factory, start_etd, end_date)
+	services.CreateOrder(factory, start_etd, end_date)
 	r.Message = fmt.Sprintf("Auto Generate Order %s Start: %s End: %s", factory, start_etd, end_date)
 	r.Data = nil
 	return c.Status(fiber.StatusCreated).JSON(&r)

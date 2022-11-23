@@ -18,6 +18,7 @@ func CreateOrder(factory, start_etd, end_etd string) {
 	err := db.
 		Order("etd_tap,shipment_id").
 		Select("order_zone_id,consignee_id,shipment_id,etd_tap,pc_id,commercial_id,bioabt,order_group,vendor,biac,bishpc,bisafn,sample_flg_id,carrier_code").
+		Where("substring(reasoncd, 1, 1) in (?)", []string{"", "0", "-", "H"}).
 		Where("is_generate=?", false).
 		Where("is_revise_error=?", false).
 		Where("vendor=?", &factory).
@@ -199,6 +200,42 @@ func CreateOrder(factory, start_etd, end_etd string) {
 			}
 		}
 		x++
+	}
+
+	CreateOrderWithRevise(factory, start_etd, end_etd, "D")
+}
+
+func CreateOrderWithRevise(factory, start_etd, end_etd, revise string) {
+	db := configs.Store
+	var ord []models.OrderPlan
+	if err := db.
+		Order("etd_tap,shipment_id").
+		Select("order_zone_id,consignee_id,shipment_id,etd_tap,pc_id,commercial_id,bioabt,order_group,vendor,biac,bishpc,bisafn,sample_flg_id,carrier_code,reasoncd").
+		Where("substring(reasoncd, 1, 1) not in (?)", []string{"", "0", "-", "H"}).
+		Where("is_generate=?", false).
+		Where("is_revise_error=?", false).
+		Where("vendor=?", &factory).
+		Where("etd_tap BETWEEN ? AND ?", start_etd, end_etd).
+		Group("order_zone_id,consignee_id,shipment_id,etd_tap,pc_id,commercial_id,bioabt,order_group,vendor,biac,bishpc,bisafn,sample_flg_id,carrier_code, reasoncd").
+		Find(&ord).Error; err != nil {
+		sysLogger := models.SyncLogger{
+			Title:       "generate order ent",
+			Description: fmt.Sprintf("Error fetch order: %v", err),
+		}
+		db.Create(&sysLogger)
+		panic(err)
+	}
+
+	// fmt.Printf("Fetch Order Title: 000\n")
+
+	var orderTitle models.OrderTitle
+	if err := db.Select("id,title").Where("title=?", "000").First(&orderTitle).Error; err != nil {
+		sysLogger := models.SyncLogger{
+			Title:       "get order title",
+			Description: fmt.Sprintf("Error fetch order title: %v", err),
+		}
+		db.Create(&sysLogger)
+		panic(err)
 	}
 }
 
