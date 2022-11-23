@@ -103,19 +103,20 @@ func CreateOrderWithRevise(factory, start_etd, end_etd string) {
 
 func GenerateOrderDetailWithReviseChangeMode(ord models.OrderPlan, orderTitle models.OrderTitle) {
 	db := configs.Store
-	etd := ord.EtdTap.Format("20060102")
 	var ship models.Shipment
 	db.Select("id,title").First(&ship, "id=?", ord.ShipmentID)
-	/// Generate ZoneCode
-	var ordCount int64
-	db.Select("id").Where("etd_date=?", ord.EtdTap).Find(&models.Order{}).Count(&ordCount)
-	sum := ordCount + 1
-	keyCode := fmt.Sprintf("%s%s%03d", etd[2:], ship.Title, sum)
-	var sumOrder models.Order
-	db.Select("id").First(&sumOrder, "zone_code=?", keyCode)
-	for !(len(sumOrder.ID) == 0) {
-		keyCode = fmt.Sprintf("%s%s%03d", etd[2:], ship.Title, sum)
-	}
+
+	// /// Generate ZoneCode
+	// etd := ord.EtdTap.Format("20060102")
+	// var ordCount int64
+	// db.Select("id").Where("etd_date=?", ord.EtdTap).Find(&models.Order{}).Count(&ordCount)
+	// sum := ordCount + 1
+	// keyCode := fmt.Sprintf("%s%s%03d", etd[2:], ship.Title, sum)
+	// var sumOrder models.Order
+	// db.Select("id").First(&sumOrder, "zone_code=?", keyCode)
+	// for !(len(sumOrder.ID) == 0) {
+	// 	keyCode = fmt.Sprintf("%s%s%03d", etd[2:], ship.Title, sum)
+	// }
 
 	// Check LoadingArea
 	// fmt.Printf("Check LoadingArea %s\n", ord[x].OrderGroup[:1])
@@ -141,7 +142,47 @@ func GenerateOrderDetailWithReviseChangeMode(ord models.OrderPlan, orderTitle mo
 		Where("bioat=?", ord.Bioabt).
 		Find(&order)
 
-	fmt.Printf("OrderID: %s Code: %s\n", order.ID, keyCode)
+	if order.ID != "" {
+		r := ord
+		ctn := 0
+		if r.BalQty > 0 {
+			ctn = int(r.BalQty) / int(r.Bistdp)
+		}
+
+		ordDetail := models.OrderDetail{
+			OrderID:       &order.ID,
+			Pono:          &r.Pono,
+			LedgerID:      r.LedgerID,
+			OrderPlanID:   &r.ID,
+			OrderCtn:      int64(ctn),
+			TotalOnPallet: 0,
+		}
+
+		if err := db.FirstOrCreate(&ordDetail, &models.OrderDetail{
+			OrderID:  &order.ID,
+			Pono:     &r.Pono,
+			LedgerID: r.LedgerID,
+		}).Error; err != nil {
+			panic(err)
+		}
+
+		// Confirm Data After Create
+		ordDetail.OrderPlanID = &r.ID
+		ordDetail.OrderCtn = int64(ctn)
+		ordDetail.IsSync = true
+		db.Save(&ordDetail)
+
+		// update change mode
+		if err := db.Model(&models.Order{}).Where("id = ?", order.ID).Update("shipment_id = ?", r.ShipmentID).Error; err != nil {
+			panic(err)
+		}
+
+		// Update Order Plan Set Status Generated
+		ordPlan := &r
+		ordPlan.IsGenerate = true
+		db.Save(&ordPlan)
+		fmt.Printf("OrderID: %s Mode: %s Revise: %s\n", order.ID, *r.ShipmentID, r.Reasoncd)
+	}
 }
 
 func GenerateOrderDetail(ord models.OrderPlan, orderTitle models.OrderTitle) {
