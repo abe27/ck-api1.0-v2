@@ -66,12 +66,11 @@ func ImportInvoiceTap(fileName *string) {
 							Where("bhctn=?", bhctn.GetString()).
 							Find(&models.ImportInvoiceTap{}).Count(&invCount)
 						fmt.Printf("Inv Row: %v\n", invCount)
-						if invCount <= 1 {
+						if invCount < 1 {
 							// fmt.Printf("%d ==> ETD: %s\n", line, etd)
 							var shipment models.Shipment
 							db.First(&shipment, "title=?", inv[len(inv)-1:])
 							var orderPlan models.OrderPlan
-							// db.Order("created_at desc,seq desc").Select("id,bal_qty,bistdp").Where("bisafn=?", bhsafn.GetString()).Where("etd_tap=?", etd.Format("2006-01-02")).Where("part_no=?", bhypat.GetString()).Where("shipment_id=?", shipment.ID).Where("(bal_qty/bistdp)=?", bhctn.GetString()).First(&orderPlan)
 							db.Order("created_at desc,seq desc").Select("id,bal_qty,bistdp").Where("bisafn=?", bhsafn.GetString()).Where("etd_tap=?", etd.Format("2006-01-02")).Where("part_no=?", bhypat.GetString()).Where("shipment_id=?", shipment.ID).Where("pono=?", bhodpo.GetString()).First(&orderPlan)
 							var intCountOrderPlan int64
 							db.Order("created_at,seq").Select("id").Where("bisafn=?", bhsafn.GetString()).Where("etd_tap=?", etd.Format("2006-01-02")).Where("part_no=?", bhypat.GetString()).Where("shipment_id=?", shipment.ID).Where("pono=?", bhodpo.GetString()).Find(&models.OrderPlan{}).Count(&intCountOrderPlan)
@@ -187,8 +186,8 @@ func ImportInvoiceTap(fileName *string) {
 											db.Create(&sysLog)
 										}
 										var checkPlDuplicate int64
-										db.Where("pallet_id=?", &plData.ID).Where("order_detail_id=?", &orderDetail.ID).Find(&models.PalletDetail{}).Count(&checkPlDuplicate)
-										if checkPlDuplicate < int64(ctnRnd) {
+										db.Select("id").Where("pallet_id=?", &plData.ID).Where("order_detail_id=?", &orderDetail.ID).Find(&models.PalletDetail{}).Count(&checkPlDuplicate)
+										if checkPlDuplicate < orderDetail.OrderCtn {
 											var lastFticket models.LastFticket
 											db.Select("id,last_running").Where("factory_id=?", &facData.ID).Where("on_year=?", y[:4]).First(&lastFticket)
 											seqNo := (lastFticket.LastRunning + 1)
