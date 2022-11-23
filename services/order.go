@@ -173,7 +173,7 @@ func GenerateOrderDetailWithReviseChangeMode(ord models.OrderPlan, orderTitle mo
 		db.Save(&ordDetail)
 
 		// update change mode
-		if err := db.Model(&models.Order{}).Where("id = ?", order.ID).Update("shipment_id = ?", r.ShipmentID).Error; err != nil {
+		if err := db.Model(&models.Order{}).Where("id=?", order.ID).Update("shipment_id", r.ShipmentID).Error; err != nil {
 			panic(err)
 		}
 
