@@ -202,7 +202,7 @@ func CreateOrder(factory, start_etd, end_etd string) {
 		x++
 	}
 
-	CreateOrderWithRevise(factory, start_etd, end_etd, "D")
+	// CreateOrderWithRevise(factory, start_etd, end_etd, "D")
 }
 
 func CreateOrderWithRevise(factory, start_etd, end_etd, revise string) {
