@@ -71,9 +71,10 @@ func ImportInvoiceTap(fileName *string) {
 							var shipment models.Shipment
 							db.First(&shipment, "title=?", inv[len(inv)-1:])
 							var orderPlan models.OrderPlan
-							db.Order("created_at desc,seq desc").Select("id,bal_qty,bistdp").Where("bisafn=?", bhsafn.GetString()).Where("etd_tap=?", etd.Format("2006-01-02")).Where("part_no=?", bhypat.GetString()).Where("shipment_id=?", shipment.ID).Where("(bal_qty/bistdp)=?", bhctn.GetString()).First(&orderPlan)
+							// db.Order("created_at desc,seq desc").Select("id,bal_qty,bistdp").Where("bisafn=?", bhsafn.GetString()).Where("etd_tap=?", etd.Format("2006-01-02")).Where("part_no=?", bhypat.GetString()).Where("shipment_id=?", shipment.ID).Where("(bal_qty/bistdp)=?", bhctn.GetString()).First(&orderPlan)
+							db.Order("created_at desc,seq desc").Select("id,bal_qty,bistdp").Where("bisafn=?", bhsafn.GetString()).Where("etd_tap=?", etd.Format("2006-01-02")).Where("part_no=?", bhypat.GetString()).Where("shipment_id=?", shipment.ID).Where("pono=?", bhodpo.GetString()).First(&orderPlan)
 							var intCountOrderPlan int64
-							db.Order("created_at,seq").Select("id").Where("bisafn=?", bhsafn.GetString()).Where("etd_tap=?", etd.Format("2006-01-02")).Where("part_no=?", bhypat.GetString()).Where("shipment_id=?", shipment.ID).Where("(bal_qty/bistdp)=?", bhctn.GetString()).Find(&models.OrderPlan{}).Count(&intCountOrderPlan)
+							db.Order("created_at,seq").Select("id").Where("bisafn=?", bhsafn.GetString()).Where("etd_tap=?", etd.Format("2006-01-02")).Where("part_no=?", bhypat.GetString()).Where("shipment_id=?", shipment.ID).Where("pono=?", bhodpo.GetString()).Find(&models.OrderPlan{}).Count(&intCountOrderPlan)
 							Bhcon, _ := strconv.ParseInt(bhcon.GetString(), 10, 64)
 							Bhctn, _ := strconv.ParseInt(bhctn.GetString(), 10, 64)
 							Bhwidt, _ := strconv.ParseInt(bhwidt.GetString(), 10, 64)
