@@ -3,6 +3,7 @@ package services
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/abe27/api/configs"
 	"github.com/abe27/api/models"
@@ -54,10 +55,10 @@ func CreateOrder(factory, start_etd, end_etd string) {
 		x++
 	}
 
-	CreateOrderWithRevise(factory, start_etd, end_etd)
+	CreateOrderWithRevise(factory)
 }
 
-func CreateOrderWithRevise(factory, start_etd, end_etd string) {
+func CreateOrderWithRevise(factory string) {
 	db := configs.Store
 	var ord []models.OrderPlan
 	if err := db.
@@ -66,7 +67,7 @@ func CreateOrderWithRevise(factory, start_etd, end_etd string) {
 		Where("is_generate=?", false).
 		Where("is_revise_error=?", false).
 		Where("vendor=?", &factory).
-		Where("upddte BETWEEN ? AND ?", start_etd, end_etd).
+		Where("upddte <= ?", (time.Now()).Format("2006-01-02")).
 		Find(&ord).Error; err != nil {
 		sysLogger := models.SyncLogger{
 			Title:       "generate order ent revises",
@@ -201,9 +202,9 @@ func GenerateOrderDetailWithReviseChangeMode(ord models.OrderPlan, orderTitle mo
 		invSeq.LastRunning += 1
 		db.Save(&invSeq)
 
-		fmt.Printf("Create New OrderID: %s ZCode: %s\n", order.ID, keyCode)
+		// fmt.Printf("Create New OrderID: %s ZCode: %s\n", order.ID, keyCode)
 	}
-	fmt.Printf("Order ID: %s\n", order.ID)
+	// fmt.Printf("Order ID: %s\n", order.ID)
 
 	// Order Detail
 	r := ord
