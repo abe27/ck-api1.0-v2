@@ -54,11 +54,11 @@ func CreateOrder(factory, start_etd, end_etd string) {
 		x++
 	}
 
-	CreateOrderWithReviseMode(factory, start_etd, end_etd)
-	err = configs.Store.Exec("delete from tbt_orders where id in (select t.id from tbt_orders t left join tbt_order_details d on t.id=d.order_id where d.id is null)").Error
-	if err != nil {
-		panic(err)
-	}
+	// CreateOrderWithReviseMode(factory, start_etd, end_etd)
+	// err = configs.Store.Exec("delete from tbt_orders where id in (select t.id from tbt_orders t left join tbt_order_details d on t.id=d.order_id where d.id is null)").Error
+	// if err != nil {
+	// 	panic(err)
+	// }
 }
 
 func CreateOrderWithReviseMode(factory, start_etd, end_etd string) {
