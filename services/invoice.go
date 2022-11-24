@@ -3,6 +3,7 @@ package services
 import (
 	"fmt"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/abe27/api/configs"
@@ -71,7 +72,7 @@ func ImportInvoiceTap(fileName *string) {
 							var shipment models.Shipment
 							db.First(&shipment, "title=?", inv[len(inv)-1:])
 							var orderPlan models.OrderPlan
-							db.Order("created_at desc,seq desc").Select("id,bal_qty,bistdp").Where("bisafn=?", bhsafn.GetString()).Where("etd_tap=?", etd.Format("2006-01-02")).Where("part_no=?", bhypat.GetString()).Where("shipment_id=?", shipment.ID).Where("pono=?", bhodpo.GetString()).First(&orderPlan)
+							db.Order("created_at desc,seq desc").Select("id,bal_qty,bistdp").Where("bisafn=?", bhsafn.GetString()).Where("etd_tap=?", etd.Format("2006-01-02")).Where("part_no=?", bhypat.GetString()).Where("shipment_id=?", shipment.ID).Where("pono in ?", []string{bhodpo.GetString(), strings.Trim(strings.ReplaceAll(bhodpo.GetString(), " ", ""), "")}).First(&orderPlan)
 							// var intCountOrderPlan int64
 							// db.Order("created_at,seq").Select("id").Where("bisafn=?", bhsafn.GetString()).Where("etd_tap=?", etd.Format("2006-01-02")).Where("part_no=?", bhypat.GetString()).Where("shipment_id=?", shipment.ID).Where("pono=?", bhodpo.GetString()).Find(&models.OrderPlan{}).Count(&intCountOrderPlan)
 							Bhcon, _ := strconv.ParseInt(bhcon.GetString(), 10, 64)
@@ -85,6 +86,7 @@ func ImportInvoiceTap(fileName *string) {
 							invTap.Biseq = int64(line)
 							invTap.Bhivno = bhivno.GetString()
 							invTap.Bhodpo = bhodpo.GetString()
+							invTap.BhodpoTrim = strings.Trim(strings.ReplaceAll(bhodpo.GetString(), " ", ""), "")
 							invTap.Bhivdt = etd
 							invTap.Bhconn = bhconn.GetString()
 							invTap.Bhcons = bhcons.GetString()
@@ -105,12 +107,13 @@ func ImportInvoiceTap(fileName *string) {
 							invTap.Bhcbmt = Bhcbmt
 							invTap.IsMatched = false
 							db.FirstOrCreate(&invTap, &models.ImportInvoiceTap{
-								Bhivno: bhivno.GetString(),
-								Bhodpo: bhodpo.GetString(),
-								Bhivdt: etd,
-								Bhsafn: bhsafn.GetString(),
-								Bhypat: bhypat.GetString(),
-								Bhctn:  Bhctn,
+								Bhivno:     bhivno.GetString(),
+								Bhodpo:     bhodpo.GetString(),
+								BhodpoTrim: strings.Trim(strings.ReplaceAll(bhodpo.GetString(), " ", ""), ""),
+								Bhivdt:     etd,
+								Bhsafn:     bhsafn.GetString(),
+								Bhypat:     bhypat.GetString(),
+								Bhctn:      Bhctn,
 							})
 
 							// fmt.Printf("select * from tbt_order_plans where bisafn='%s' and etd_tap='%s' and part_no='%s' and shipment_id='%s' and (bal_qty/bistdp)=%s rows: %d\n", bhsafn.GetString(), etd.Format("2006-01-02"), bhypat.GetString(), shipment.ID, bhctn.GetString(), intCountOrderPlan)

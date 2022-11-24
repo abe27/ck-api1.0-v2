@@ -12,6 +12,7 @@ type ImportInvoiceTap struct {
 	Biseq       int64     `json:"biseq,omitempty" form:"biseq" binding:"required"`
 	Bhivno      string    `gorm:"not null;size:10" json:"bhivno,omitempty" form:"bhivno" binding:"required"`
 	Bhodpo      string    `gorm:"not null;size:25" json:"bhodpo,omitempty" form:"bhodpo" binding:"required"`
+	BhodpoTrim  string    `gorm:"not null;size:25" json:"bhodpo_trim,omitempty" form:"bhodpo_trim" binding:"required"`
 	Bhivdt      time.Time `gorm:"not null;type:date;" json:"bhivdt,omitempty" form:"bhivdt" binding:"required"`
 	Bhconn      string    `gorm:"size:50;" json:"bhconn,omitempty" form:"bhconn"`
 	Bhcons      string    `gorm:"size:50" json:"bhconns,omitempty" form:"bhconns"`
