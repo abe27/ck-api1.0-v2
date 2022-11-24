@@ -126,16 +126,23 @@ func GenerateOrderDetailWithReviseChangeMode(ord models.OrderPlan, orderTitle mo
 	db.
 		Where("consignee_id=?", ord.ConsigneeID).
 		Where("etd_date=?", &ord.EtdTap).
+		Where("shipment_id=?", ord.ShipmentID).
 		Where("pc_id=?", ord.PcID).
 		Where("commercial_id=?", ord.CommercialID).
 		Where("sample_flg_id=?", ord.SampleFlgID).
-		Where("bioat=?", ord.Bioabt).
+		Where("Bioabt=?", ord.Bioabt).
 		Find(&order)
 
 	if order.ID != "" {
 		// update change mode
-		if err := db.Model(&models.Order{}).Where("id=?", order.ID).Update("shipment_id", ord.ShipmentID).Error; err != nil {
-			panic(err)
+		if reviseMode == "M" {
+			if err := db.Model(&models.Order{}).Where("id=?", order.ID).Update("shipment_id", ord.ShipmentID).Error; err != nil {
+				panic(err)
+			}
+		} else if reviseMode == "D" {
+			if err := db.Model(&models.Order{}).Where("id=?", order.ID).Update("etd_date", &ord.EtdTap).Error; err != nil {
+				panic(err)
+			}
 		}
 	} else {
 		/// Generate ZoneCode
@@ -172,7 +179,7 @@ func GenerateOrderDetailWithReviseChangeMode(ord models.OrderPlan, orderTitle mo
 			CommercialID: ord.CommercialID,
 			SampleFlgID:  ord.SampleFlgID,
 			OrderTitleID: &orderTitle.ID,
-			Bioat:        ord.Bioabt,
+			Bioabt:       ord.Bioabt,
 			ZoneCode:     keyCode,
 			LoadingArea:  loadingData.LoadingArea,
 			Privilege:    loadingData.Privilege,
@@ -192,7 +199,7 @@ func GenerateOrderDetailWithReviseChangeMode(ord models.OrderPlan, orderTitle mo
 			PcID:         ord.PcID,
 			CommercialID: ord.CommercialID,
 			SampleFlgID:  ord.SampleFlgID,
-			Bioat:        ord.Bioabt,
+			Bioabt:       ord.Bioabt,
 		}).Error; err != nil {
 			// Create log if Create Order is Error!
 			sysLogger := models.SyncLogger{
@@ -210,14 +217,14 @@ func GenerateOrderDetailWithReviseChangeMode(ord models.OrderPlan, orderTitle mo
 		fmt.Printf("OrderID: %s ZCode: %s\n", order.ID, keyCode)
 	}
 
-	db.FirstOrCreate(&order, &models.Order{
+	db.First(&order, &models.Order{
 		ConsigneeID:  ord.ConsigneeID,
 		ShipmentID:   ord.ShipmentID,
 		EtdDate:      &ord.EtdTap,
 		PcID:         ord.PcID,
 		CommercialID: ord.CommercialID,
 		SampleFlgID:  ord.SampleFlgID,
-		Bioat:        ord.Bioabt,
+		Bioabt:       ord.Bioabt,
 	})
 	// Order Detail
 	r := ord
@@ -235,14 +242,16 @@ func GenerateOrderDetailWithReviseChangeMode(ord models.OrderPlan, orderTitle mo
 	}
 
 	if err := db.FirstOrCreate(&ordDetail, &models.OrderDetail{
-		OrderID:  &order.ID,
-		Pono:     &r.Pono,
-		LedgerID: r.LedgerID,
+		// OrderID:  &order.ID,
+		Pono:      &r.Pono,
+		LedgerID:  r.LedgerID,
+		IsMatched: false,
 	}).Error; err != nil {
 		panic(err)
 	}
 
 	// Confirm Data After Create
+	ordDetail.OrderID = &order.ID
 	ordDetail.OrderPlanID = &r.ID
 	ordDetail.OrderCtn = int64(ctn)
 	ordDetail.IsSync = true
@@ -307,7 +316,7 @@ func GenerateOrderDetail(ord models.OrderPlan, orderTitle models.OrderTitle) {
 		CommercialID: ord.CommercialID,
 		SampleFlgID:  ord.SampleFlgID,
 		OrderTitleID: &orderTitle.ID,
-		Bioat:        ord.Bioabt,
+		Bioabt:       ord.Bioabt,
 		ZoneCode:     keyCode,
 		LoadingArea:  loadingData.LoadingArea,
 		Privilege:    loadingData.Privilege,
@@ -328,7 +337,7 @@ func GenerateOrderDetail(ord models.OrderPlan, orderTitle models.OrderTitle) {
 		Where("pc_id=?", ord.PcID).
 		Where("commercial_id=?", ord.CommercialID).
 		Where("sample_flg_id=?", ord.SampleFlgID).
-		Where("bioat=?", ord.Bioabt).
+		Where("Bioabt=?", ord.Bioabt).
 		Find(&models.Order{}).Count(&orderCountDuplicate)
 
 	if orderCountDuplicate == 0 {
@@ -462,7 +471,7 @@ func GenerateOrderDetailWithRevise(ord models.OrderPlan, orderTitle models.Order
 		PcID:         ord.PcID,
 		CommercialID: ord.CommercialID,
 		SampleFlgID:  ord.SampleFlgID,
-		Bioat:        ord.Bioabt,
+		Bioabt:       ord.Bioabt,
 	}).Find(&models.Order{}).Count(&checkOrderDuplicate)
 	if checkOrderDuplicate == 0 {
 		// update lastinvoice no
@@ -478,7 +487,7 @@ func GenerateOrderDetailWithRevise(ord models.OrderPlan, orderTitle models.Order
 		CommercialID: ord.CommercialID,
 		SampleFlgID:  ord.SampleFlgID,
 		OrderTitleID: &orderTitle.ID,
-		Bioat:        ord.Bioabt,
+		Bioabt:       ord.Bioabt,
 		ZoneCode:     keyCode,
 		LoadingArea:  loadingData.LoadingArea,
 		Privilege:    loadingData.Privilege,
@@ -498,7 +507,7 @@ func GenerateOrderDetailWithRevise(ord models.OrderPlan, orderTitle models.Order
 		PcID:         ord.PcID,
 		CommercialID: ord.CommercialID,
 		SampleFlgID:  ord.SampleFlgID,
-		Bioat:        ord.Bioabt,
+		Bioabt:       ord.Bioabt,
 	}).Error; err != nil {
 		sysLogger := models.SyncLogger{
 			Title:       fmt.Sprintf("creating order %v", ord.ConsigneeID),

@@ -32,7 +32,7 @@ type Order struct {
 	CommercialID *string        `gorm:"not null" json:"commercial_id,omitempty" form:"commercial_id" binding:"required"`
 	SampleFlgID  *string        `gorm:"not null" json:"sample_flg_id,omitempty" form:"sample_flg_id" binding:"required"`
 	OrderTitleID *string        `gorm:"not null" json:"title_id,omitempty" form:"title_id" binding:"required"`
-	Bioat        int64          `json:"bioat,omitempty" form:"bioat" binding:"required"`
+	Bioabt       int64          `json:"bioabt,omitempty" form:"bioabt" binding:"required"`
 	CarrierCode  string         `gorm:"size:255;" json:"carrier_code,omitempty" form:"carrier_code" binding:"required"`
 	ShipForm     string         `gorm:"size:255;" json:"ship_form,omitempty" form:"ship_form" binding:"required"`
 	ShipTo       string         `gorm:"size:255;" json:"ship_to,omitempty" form:"ship_to" binding:"required"`
