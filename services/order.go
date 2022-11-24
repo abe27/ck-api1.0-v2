@@ -125,17 +125,23 @@ func GenerateOrderDetailWithReviseChangeMode(ord models.OrderPlan, orderTitle mo
 	var order models.Order
 	db.
 		Where("consignee_id=?", ord.ConsigneeID).
-		Where("shipment_id=?", ord.ShipmentID).
+		// Where("shipment_id=?", ord.ShipmentID).
 		Where("etd_date=?", &ord.EtdTap).
 		Where("pc_id=?", ord.PcID).
 		Where("commercial_id=?", ord.CommercialID).
 		Where("sample_flg_id=?", ord.SampleFlgID).
 		Where("bioabt=?", ord.Bioabt).
-		Where("is_invoice=?", false).
-		Find(&order)
+		// Where("is_invoice=?", false).
+		First(&order)
 	// panic(order.ID)
 
-	if order.ID == "" {
+	if order.ID != "" {
+		order.ShipmentID = ord.ShipmentID
+		order.EtdDate = &ord.EtdTap
+		if err := db.Save(&order).Error; err != nil {
+			panic(err)
+		}
+	} else {
 		/// Generate ZoneCode
 		etd := ord.EtdTap.Format("20060102")
 		var ordCount int64
@@ -222,14 +228,10 @@ func GenerateOrderDetailWithReviseChangeMode(ord models.OrderPlan, orderTitle mo
 	ordDetail.OrderCtn = int64(ctn)
 	ordDetail.TotalOnPallet = 0
 
-	var balCtn int64 = 0
-	if r.BalQty > 0 {
-		balCtn = (int64(r.BalQty) / int64(r.Bistdp))
-	}
 	if err := db.FirstOrCreate(&ordDetail, &models.OrderDetail{
 		Pono:     &r.Pono,
 		LedgerID: r.LedgerID,
-		OrderCtn: balCtn,
+		OrderCtn: int64(ctn),
 	}).Error; err != nil {
 		panic(err)
 	}
