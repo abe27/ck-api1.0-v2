@@ -54,10 +54,10 @@ func CreateOrder(factory, start_etd, end_etd string) {
 		x++
 	}
 
-	CreateOrderWithRevise(factory, start_etd, end_etd)
+	CreateOrderWithReviseMode(factory, start_etd, end_etd)
 }
 
-func CreateOrderWithRevise(factory, start_etd, end_etd string) {
+func CreateOrderWithReviseMode(factory, start_etd, end_etd string) {
 	db := configs.Store
 	var ord []models.OrderPlan
 	if err := db.
@@ -66,7 +66,8 @@ func CreateOrderWithRevise(factory, start_etd, end_etd string) {
 		Where("is_generate=?", false).
 		Where("is_revise_error=?", false).
 		Where("vendor=?", &factory).
-		Where("upddte BETWEEN ? AND ?", start_etd, end_etd).
+		Where("etd_tap BETWEEN ? AND ?", start_etd, end_etd).
+		Where("substring(reasoncd, 1, 1) not in ?", []string{"D"}).
 		Find(&ord).Error; err != nil {
 		sysLogger := models.SyncLogger{
 			Title:       "generate order ent revises",
@@ -226,14 +227,14 @@ func GenerateOrderDetailWithReviseChangeMode(ord models.OrderPlan, orderTitle mo
 	if r.BalQty > 0 {
 		ctn = int(r.BalQty) / int(r.Bistdp)
 	}
-	ordDetail := models.OrderDetail{
-		OrderID:       &order.ID,
-		Pono:          &r.Pono,
-		LedgerID:      r.LedgerID,
-		OrderPlanID:   &r.ID,
-		OrderCtn:      int64(ctn),
-		TotalOnPallet: 0,
-	}
+
+	var ordDetail models.OrderDetail
+	ordDetail.OrderID = &order.ID
+	ordDetail.Pono = &r.Pono
+	ordDetail.LedgerID = r.LedgerID
+	ordDetail.OrderPlanID = &r.ID
+	ordDetail.OrderCtn = int64(ctn)
+	ordDetail.TotalOnPallet = 0
 
 	var balCtn int64 = 0
 	if r.BalQty > 0 {
@@ -385,14 +386,14 @@ func GenerateOrderDetail(ord models.OrderPlan, orderTitle models.OrderTitle) {
 			if r.BalQty > 0 {
 				ctn = int(r.BalQty) / int(r.Bistdp)
 			}
-			ordDetail := models.OrderDetail{
-				OrderID:       &order.ID,
-				Pono:          &r.Pono,
-				LedgerID:      r.LedgerID,
-				OrderPlanID:   &r.ID,
-				OrderCtn:      int64(ctn),
-				TotalOnPallet: 0,
-			}
+
+			var ordDetail models.OrderDetail
+			ordDetail.OrderID = &order.ID
+			ordDetail.Pono = &r.Pono
+			ordDetail.LedgerID = r.LedgerID
+			ordDetail.OrderPlanID = &r.ID
+			ordDetail.OrderCtn = int64(ctn)
+			ordDetail.TotalOnPallet = 0
 
 			db.FirstOrCreate(&ordDetail, &models.OrderDetail{
 				OrderID:  &order.ID,
