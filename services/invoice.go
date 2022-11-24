@@ -72,8 +72,8 @@ func ImportInvoiceTap(fileName *string) {
 							db.First(&shipment, "title=?", inv[len(inv)-1:])
 							var orderPlan models.OrderPlan
 							db.Order("created_at desc,seq desc").Select("id,bal_qty,bistdp").Where("bisafn=?", bhsafn.GetString()).Where("etd_tap=?", etd.Format("2006-01-02")).Where("part_no=?", bhypat.GetString()).Where("shipment_id=?", shipment.ID).Where("pono=?", bhodpo.GetString()).First(&orderPlan)
-							var intCountOrderPlan int64
-							db.Order("created_at,seq").Select("id").Where("bisafn=?", bhsafn.GetString()).Where("etd_tap=?", etd.Format("2006-01-02")).Where("part_no=?", bhypat.GetString()).Where("shipment_id=?", shipment.ID).Where("pono=?", bhodpo.GetString()).Find(&models.OrderPlan{}).Count(&intCountOrderPlan)
+							// var intCountOrderPlan int64
+							// db.Order("created_at,seq").Select("id").Where("bisafn=?", bhsafn.GetString()).Where("etd_tap=?", etd.Format("2006-01-02")).Where("part_no=?", bhypat.GetString()).Where("shipment_id=?", shipment.ID).Where("pono=?", bhodpo.GetString()).Find(&models.OrderPlan{}).Count(&intCountOrderPlan)
 							Bhcon, _ := strconv.ParseInt(bhcon.GetString(), 10, 64)
 							Bhctn, _ := strconv.ParseInt(bhctn.GetString(), 10, 64)
 							Bhwidt, _ := strconv.ParseInt(bhwidt.GetString(), 10, 64)
@@ -210,7 +210,7 @@ func ImportInvoiceTap(fileName *string) {
 										}
 									}
 									// Update Status OrderDetail
-									db.Model(&orderDetail).Select("total_on_pallet", "order_ctn", "is_matched", "is_sync").Updates(models.OrderDetail{TotalOnPallet: orderDetail.TotalOnPallet + int64(ctnRnd), OrderCtn: int64(orderPlan.BalQty) / int64(orderPlan.Bistdp), IsMatched: true, IsSync: true})
+									db.Model(&orderDetail).Select("total_on_pallet", "order_ctn", "is_matched", "is_checked", "is_sync").Updates(models.OrderDetail{TotalOnPallet: orderDetail.TotalOnPallet + int64(ctnRnd), OrderCtn: int64(orderPlan.BalQty) / int64(orderPlan.Bistdp), IsMatched: true, IsChecked: true, IsSync: true})
 								}
 								// fmt.Printf("Type: %s Pallet No.: %s DIM: %s(%s) PALLET SIZE: %s\n", txtType, bhpaln.GetString(), boxDimensions, dimData.Type, dimData.PalletSize)
 							}
