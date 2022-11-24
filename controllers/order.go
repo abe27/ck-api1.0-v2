@@ -15,6 +15,7 @@ func GetAllOrder(c *fiber.Ctx) error {
 	db := configs.Store
 	var r models.Response
 	var obj []models.Order
+	isChecked := c.Query("is_checked")
 	etd := c.Query("etd")
 	if etd != "" {
 		var facData models.Factory
@@ -24,6 +25,7 @@ func GetAllOrder(c *fiber.Ctx) error {
 			err := db.
 				Order("etd_date,updated_at").
 				Where("etd_date=?", etd).
+				Where("is_checked=?", isChecked).
 				Preload("Consignee.Whs").
 				Preload("Consignee.Factory").
 				Preload("Consignee.Affcode").
@@ -86,6 +88,7 @@ func GetAllOrder(c *fiber.Ctx) error {
 		err := db.
 			Order("etd_date,updated_at").
 			Where("etd_date=?", etd).
+			Where("is_checked=?", isChecked).
 			Where("consignee_id in ?", conID).
 			Preload("Consignee.Whs").
 			Preload("Consignee.Factory").
@@ -156,6 +159,7 @@ func GetAllOrder(c *fiber.Ctx) error {
 	err = db.
 		Limit(100).
 		Order("etd_date,updated_at").
+		Where("is_checked=?", isChecked).
 		Preload("Consignee.Whs").
 		Preload("Consignee.Factory").
 		Preload("Consignee.Affcode").
