@@ -13,8 +13,8 @@ type Part struct {
 	Title       string    `gorm:"size:50;unique;not null;" json:"title,omitempty" form:"title" binding:"required"`
 	Description string    `json:"description,omitempty" form:"description" binding:"required"`
 	IsActive    bool      `json:"is_active,omitempty" form:"is_active" default:"true"`
-	CreatedAt   time.Time `json:"created_at,omitempty" form:"created_at" default:"now"`
-	UpdatedAt   time.Time `json:"updated_at,omitempty" form:"updated_at" default:"now"`
+	CreatedAt   time.Time `json:"created_at,omitempty" default:"now"`
+	UpdatedAt   time.Time `json:"updated_at,omitempty" default:"now"`
 }
 
 func (u *Part) BeforeCreate(tx *gorm.DB) (err error) {
@@ -38,8 +38,8 @@ type Ledger struct {
 	Qty         float64   `json:"qty,omitempty" form:"qty" default:"0"`
 	Ctn         float64   `json:"ctn,omitempty" form:"ctn" default:"0"`
 	IsActive    bool      `json:"is_active,omitempty" form:"is_active" default:"true"`
-	CreatedAt   time.Time `json:"created_at,omitempty" form:"created_at" default:"now"`
-	UpdatedAt   time.Time `json:"updated_at,omitempty" form:"updated_at" default:"now"`
+	CreatedAt   time.Time `json:"created_at,omitempty" default:"now"`
+	UpdatedAt   time.Time `json:"updated_at,omitempty" default:"now"`
 	Whs         Whs       `gorm:"foreignKey:WhsID;references:ID" json:"whs,omitempty"`
 	Factory     Factory   `gorm:"foreignKey:FactoryID;references:ID" json:"factory,omitempty"`
 	Part        Part      `gorm:"foreignKey:PartID;references:ID;" json:"part,omitempty"`
@@ -66,8 +66,8 @@ type Carton struct {
 	Qty             float64       `json:"qty,omitempty" form:"qty" default:"0"`
 	PalletNo        string        `json:"pallet_no,omitempty" form:"pallet_no" binding:"required"`
 	IsActive        bool          `json:"is_active,omitempty" form:"is_active" default:"true"`
-	CreatedAt       time.Time     `json:"created_at,omitempty" form:"created_at" default:"now"`
-	UpdatedAt       time.Time     `json:"updated_at,omitempty" form:"updated_at" default:"now"`
+	CreatedAt       time.Time     `json:"created_at,omitempty" default:"now"`
+	UpdatedAt       time.Time     `json:"updated_at,omitempty" default:"now"`
 	Ledger          Ledger        `gorm:"foreignKey:LedgerID;references:ID" json:"ledger,omitempty"`
 	Location        Location      `gorm:"foreignKey:LocationID;references:ID" json:"location,omitempty"`
 	ReceiveDetail   ReceiveDetail `gorm:"foreignKey:ReceiveDetailID;references:ID;" json:"receive_detail,omitempty"`

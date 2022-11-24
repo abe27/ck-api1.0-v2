@@ -12,8 +12,8 @@ type Area struct {
 	Title       string    `gorm:"not null;size:50;unique;" json:"title,omitempty" form:"title" binding:"required"`
 	Description string    `gorm:"null" json:"description,omitempty" form:"description"`
 	IsActive    bool      `gorm:"null" json:"is_active,omitempty" form:"is_active" default:"false"`
-	CreatedAt   time.Time `json:"created_at,omitempty" form:"created_at" default:"now"`
-	UpdatedAt   time.Time `json:"updated_at,omitempty" form:"updated_at" default:"now"`
+	CreatedAt   time.Time `json:"created_at,omitempty" default:"now"`
+	UpdatedAt   time.Time `json:"updated_at,omitempty" default:"now"`
 }
 
 func (obj *Area) BeforeCreate(tx *gorm.DB) (err error) {
@@ -28,8 +28,8 @@ type Whs struct {
 	Value       string    `gorm:"size:5;" json:"value,omitempty" form:"value" binding:"required"`
 	Description string    `gorm:"null" json:"description,omitempty" form:"description"`
 	IsActive    bool      `gorm:"null" json:"is_active,omitempty" form:"is_active" default:"false"`
-	CreatedAt   time.Time `json:"created_at,omitempty" form:"created_at" default:"now"`
-	UpdatedAt   time.Time `json:"updated_at,omitempty" form:"updated_at" default:"now"`
+	CreatedAt   time.Time `json:"created_at,omitempty" default:"now"`
+	UpdatedAt   time.Time `json:"updated_at,omitempty" default:"now"`
 }
 
 func (obj *Whs) BeforeCreate(tx *gorm.DB) (err error) {
@@ -51,8 +51,8 @@ type Factory struct {
 	Sortg3      string    `gorm:"size:50;" json:"sortg3,omitempty" form:"sortg3" binding:"required"`
 	Description string    `gorm:"null" json:"description,omitempty" form:"description"`
 	IsActive    bool      `gorm:"null" json:"is_active,omitempty" form:"is_active" default:"false"`
-	CreatedAt   time.Time `json:"created_at,omitempty" form:"created_at" default:"now"`
-	UpdatedAt   time.Time `json:"updated_at,omitempty" form:"updated_at" default:"now"`
+	CreatedAt   time.Time `json:"created_at,omitempty" default:"now"`
+	UpdatedAt   time.Time `json:"updated_at,omitempty" default:"now"`
 }
 
 func (obj *Factory) BeforeCreate(tx *gorm.DB) (err error) {
@@ -66,8 +66,8 @@ type PrefixName struct {
 	Title       string    `gorm:"not null;size:50;unique;" json:"title,omitempty" form:"title" binding:"required"`
 	Description string    `gorm:"null" json:"description,omitempty" form:"description"`
 	IsActive    bool      `gorm:"null" json:"is_active,omitempty" form:"is_active" default:"false"`
-	CreatedAt   time.Time `json:"created_at,omitempty" form:"created_at" default:"now"`
-	UpdatedAt   time.Time `json:"updated_at,omitempty" form:"updated_at" default:"now"`
+	CreatedAt   time.Time `json:"created_at,omitempty" default:"now"`
+	UpdatedAt   time.Time `json:"updated_at,omitempty" default:"now"`
 }
 
 func (obj *PrefixName) BeforeCreate(tx *gorm.DB) (err error) {
@@ -81,8 +81,8 @@ type Position struct {
 	Title       string    `gorm:"not null;size:50;unique;" json:"title,omitempty" form:"title" binding:"required"`
 	Description string    `gorm:"null" json:"description,omitempty" form:"description"`
 	IsActive    bool      `gorm:"null" json:"is_active,omitempty" form:"is_active" default:"false"`
-	CreatedAt   time.Time `json:"created_at,omitempty" form:"created_at" default:"now"`
-	UpdatedAt   time.Time `json:"updated_at,omitempty" form:"updated_at" default:"now"`
+	CreatedAt   time.Time `json:"created_at,omitempty" default:"now"`
+	UpdatedAt   time.Time `json:"updated_at,omitempty" default:"now"`
 }
 
 func (obj *Position) BeforeCreate(tx *gorm.DB) (err error) {
@@ -96,8 +96,8 @@ type Department struct {
 	Title       string    `gorm:"not null;size:50;unique;" json:"title,omitempty" form:"title" binding:"required"`
 	Description string    `gorm:"null" json:"description,omitempty" form:"description"`
 	IsActive    bool      `gorm:"null" json:"is_active,omitempty" form:"is_active" default:"false"`
-	CreatedAt   time.Time `json:"created_at,omitempty" form:"created_at" default:"now"`
-	UpdatedAt   time.Time `json:"updated_at,omitempty" form:"updated_at" default:"now"`
+	CreatedAt   time.Time `json:"created_at,omitempty" default:"now"`
+	UpdatedAt   time.Time `json:"updated_at,omitempty" default:"now"`
 }
 
 func (obj *Department) BeforeCreate(tx *gorm.DB) (err error) {
@@ -111,8 +111,8 @@ type Unit struct {
 	Title       string    `gorm:"not null;size:50;unique;" json:"title,omitempty" form:"title" binding:"required"`
 	Description string    `gorm:"null" json:"description,omitempty" form:"description"`
 	IsActive    bool      `gorm:"null" json:"is_active,omitempty" form:"is_active" default:"false"`
-	CreatedAt   time.Time `json:"created_at,omitempty" form:"created_at" default:"now"`
-	UpdatedAt   time.Time `json:"updated_at,omitempty" form:"updated_at" default:"now"`
+	CreatedAt   time.Time `json:"created_at,omitempty" default:"now"`
+	UpdatedAt   time.Time `json:"updated_at,omitempty" default:"now"`
 }
 
 func (obj *Unit) BeforeCreate(tx *gorm.DB) (err error) {
@@ -126,8 +126,8 @@ type PartType struct {
 	Title       string    `gorm:"not null;size:50;unique;" json:"title,omitempty" form:"title" binding:"required"`
 	Description string    `gorm:"null" json:"description,omitempty" form:"description"`
 	IsActive    bool      `gorm:"null" json:"is_active,omitempty" form:"is_active" default:"false"`
-	CreatedAt   time.Time `json:"created_at,omitempty" form:"created_at" default:"now"`
-	UpdatedAt   time.Time `json:"updated_at,omitempty" form:"updated_at" default:"now"`
+	CreatedAt   time.Time `json:"created_at,omitempty" default:"now"`
+	UpdatedAt   time.Time `json:"updated_at,omitempty" default:"now"`
 }
 
 func (obj *PartType) BeforeCreate(tx *gorm.DB) (err error) {
@@ -142,8 +142,8 @@ type ReceiveType struct {
 	Title       string    `gorm:"not null;size:50;unique;" json:"title,omitempty" form:"title" binding:"required"`
 	Description string    `gorm:"null" json:"description,omitempty" form:"description"`
 	IsActive    bool      `gorm:"null" json:"is_active,omitempty" form:"is_active" default:"false"`
-	CreatedAt   time.Time `json:"created_at,omitempty" form:"created_at" default:"now"`
-	UpdatedAt   time.Time `json:"updated_at,omitempty" form:"updated_at" default:"now"`
+	CreatedAt   time.Time `json:"created_at,omitempty" default:"now"`
+	UpdatedAt   time.Time `json:"updated_at,omitempty" default:"now"`
 	Whs         Whs       `gorm:"foreignKey:WhsID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"whs,omitempty"`
 }
 
@@ -158,8 +158,8 @@ type FileType struct {
 	Title       string    `gorm:"not null;unique;size:50" json:"title,omitempty" form:"title" binding:"required"`
 	Description string    `json:"description,omitempty" form:"description" binding:"required"`
 	IsActive    bool      `json:"is_active,omitempty" form:"is_active" binding:"required"`
-	CreatedAt   time.Time `json:"created_at,omitempty" form:"created_at" default:"now"`
-	UpdatedAt   time.Time `json:"updated_at,omitempty" form:"updated_at" default:"now"`
+	CreatedAt   time.Time `json:"created_at,omitempty" default:"now"`
+	UpdatedAt   time.Time `json:"updated_at,omitempty" default:"now"`
 }
 
 func (obj *FileType) BeforeCreate(tx *gorm.DB) (err error) {
@@ -191,8 +191,8 @@ type Pc struct {
 	Title       string    `gorm:"not null;unique;size:50" json:"title,omitempty" form:"title" binding:"required"`
 	Description string    `json:"description,omitempty" form:"description" binding:"required"`
 	IsActive    bool      `json:"is_active,omitempty" form:"is_active" binding:"required"`
-	CreatedAt   time.Time `json:"created_at,omitempty" form:"created_at" default:"now"`
-	UpdatedAt   time.Time `json:"updated_at,omitempty" form:"updated_at" default:"now"`
+	CreatedAt   time.Time `json:"created_at,omitempty" default:"now"`
+	UpdatedAt   time.Time `json:"updated_at,omitempty" default:"now"`
 }
 
 func (obj *Pc) BeforeCreate(tx *gorm.DB) (err error) {
@@ -207,8 +207,8 @@ type Commercial struct {
 	Prefix      string    `gorm:"size:5" json:"prefix,omitempty" form:"prefix" binding:"required"`
 	Description string    `json:"description,omitempty" form:"description" binding:"required"`
 	IsActive    bool      `json:"is_active,omitempty" form:"is_active" binding:"required"`
-	CreatedAt   time.Time `json:"created_at,omitempty" form:"created_at" default:"now"`
-	UpdatedAt   time.Time `json:"updated_at,omitempty" form:"updated_at" default:"now"`
+	CreatedAt   time.Time `json:"created_at,omitempty" default:"now"`
+	UpdatedAt   time.Time `json:"updated_at,omitempty" default:"now"`
 }
 
 func (obj *Commercial) BeforeCreate(tx *gorm.DB) (err error) {
@@ -222,8 +222,8 @@ type SampleFlg struct {
 	Title       string    `gorm:"not null;unique;size:50" json:"title,omitempty" form:"title" binding:"required"`
 	Description string    `json:"description,omitempty" form:"description" binding:"required"`
 	IsActive    bool      `json:"is_active,omitempty" form:"is_active" binding:"required"`
-	CreatedAt   time.Time `json:"created_at,omitempty" form:"created_at" default:"now"`
-	UpdatedAt   time.Time `json:"updated_at,omitempty" form:"updated_at" default:"now"`
+	CreatedAt   time.Time `json:"created_at,omitempty" default:"now"`
+	UpdatedAt   time.Time `json:"updated_at,omitempty" default:"now"`
 }
 
 func (obj *SampleFlg) BeforeCreate(tx *gorm.DB) (err error) {
@@ -237,8 +237,8 @@ type ReviseOrder struct {
 	Title       string    `gorm:"not null;unique;size:15" json:"title,omitempty" form:"title" binding:"required"`
 	Description string    `json:"description,omitempty" form:"description" binding:"required"`
 	IsActive    bool      `json:"is_active,omitempty" form:"is_active" binding:"required"`
-	CreatedAt   time.Time `json:"created_at,omitempty" form:"created_at" default:"now"`
-	UpdatedAt   time.Time `json:"updated_at,omitempty" form:"updated_at" default:"now"`
+	CreatedAt   time.Time `json:"created_at,omitempty" default:"now"`
+	UpdatedAt   time.Time `json:"updated_at,omitempty" default:"now"`
 }
 
 func (obj *ReviseOrder) BeforeCreate(tx *gorm.DB) (err error) {
@@ -252,8 +252,8 @@ type Shipment struct {
 	Title       string    `gorm:"not null;unique;size:15" json:"title,omitempty" form:"title" binding:"required"`
 	Description string    `json:"description,omitempty" form:"description" binding:"required"`
 	IsActive    bool      `json:"is_active,omitempty" form:"is_active" binding:"required"`
-	CreatedAt   time.Time `json:"created_at,omitempty" form:"created_at" default:"now"`
-	UpdatedAt   time.Time `json:"updated_at,omitempty" form:"updated_at" default:"now"`
+	CreatedAt   time.Time `json:"created_at,omitempty" default:"now"`
+	UpdatedAt   time.Time `json:"updated_at,omitempty" default:"now"`
 }
 
 func (obj *Shipment) BeforeCreate(tx *gorm.DB) (err error) {
@@ -267,8 +267,8 @@ type OrderType struct {
 	Title       string    `gorm:"not null;unique;size:15" json:"title,omitempty" form:"title" binding:"required"`
 	Description string    `json:"description,omitempty" form:"description" binding:"required"`
 	IsActive    bool      `json:"is_active,omitempty" form:"is_active" binding:"required"`
-	CreatedAt   time.Time `json:"created_at,omitempty" form:"created_at" default:"now"`
-	UpdatedAt   time.Time `json:"updated_at,omitempty" form:"updated_at" default:"now"`
+	CreatedAt   time.Time `json:"created_at,omitempty" default:"now"`
+	UpdatedAt   time.Time `json:"updated_at,omitempty" default:"now"`
 }
 
 func (obj *OrderType) BeforeCreate(tx *gorm.DB) (err error) {
@@ -283,8 +283,8 @@ type OrderGroupType struct {
 	Title       string    `gorm:"not null;unique;size:15" json:"title,omitempty" form:"title" binding:"required"`
 	Description string    `json:"description,omitempty" form:"description" binding:"required"`
 	IsActive    bool      `json:"is_active,omitempty" form:"is_active" binding:"required"`
-	CreatedAt   time.Time `json:"created_at,omitempty" form:"created_at" default:"now"`
-	UpdatedAt   time.Time `json:"updated_at,omitempty" form:"updated_at" default:"now"`
+	CreatedAt   time.Time `json:"created_at,omitempty" default:"now"`
+	UpdatedAt   time.Time `json:"updated_at,omitempty" default:"now"`
 }
 
 func (obj *OrderGroupType) BeforeCreate(tx *gorm.DB) (err error) {
@@ -301,8 +301,8 @@ type OrderGroup struct {
 	SubOrder         string          `gorm:"not null;size:15" json:"sub_order,omitempty" form:"sub_order" binding:"required"`
 	Description      string          `json:"description,omitempty" form:"description" binding:"required"`
 	IsActive         bool            `json:"is_active,omitempty" form:"is_active" binding:"required"`
-	CreatedAt        time.Time       `json:"created_at,omitempty" form:"created_at" default:"now"`
-	UpdatedAt        time.Time       `json:"updated_at,omitempty" form:"updated_at" default:"now"`
+	CreatedAt        time.Time       `json:"created_at,omitempty" default:"now"`
+	UpdatedAt        time.Time       `json:"updated_at,omitempty" default:"now"`
 	User             *User           `gorm:"foreignKey:UserID;references:ID" json:"user,omitempty"`
 	Consignee        *Consignee      `gorm:"foreignKey:ConsigneeID;references:ID" json:"consignee,omitempty"`
 	OrderGroupType   *OrderGroupType `gorm:"foreignKey:OrderGroupTypeID;references:ID" json:"order_group_type,omitempty"`
@@ -332,8 +332,8 @@ type Location struct {
 	Description string    `gorm:"null" json:"description,omitempty" form:"description"`
 	MaxLimit    int64     `gorm:"null" json:"max_limit,omitempty" form:"max_limit" binding:"required"`
 	IsActive    bool      `gorm:"null" json:"is_active,omitempty" form:"is_active" default:"true"`
-	CreatedAt   time.Time `json:"created_at,omitempty" form:"created_at" default:"now"`
-	UpdatedAt   time.Time `json:"updated_at,omitempty" form:"updated_at" default:"now"`
+	CreatedAt   time.Time `json:"created_at,omitempty" default:"now"`
+	UpdatedAt   time.Time `json:"updated_at,omitempty" default:"now"`
 }
 
 func (obj *Location) BeforeCreate(tx *gorm.DB) (err error) {
@@ -347,8 +347,8 @@ type AutoGenerateInvoice struct {
 	FactoryID  *string   `gorm:"not null;unique;" json:"factory_id,omitempty" form:"factory_id,omitempty"`
 	IsGenerate bool      `json:"is_generate" form:"is_generate" default:"true"`
 	IsActive   bool      `json:"is_active,omitempty" form:"is_active" default:"true"`
-	CreatedAt  time.Time `json:"created_at,omitempty" form:"created_at" default:"now"`
-	UpdatedAt  time.Time `json:"updated_at,omitempty" form:"updated_at" default:"now"`
+	CreatedAt  time.Time `json:"created_at,omitempty" default:"now"`
+	UpdatedAt  time.Time `json:"updated_at,omitempty" default:"now"`
 	Factory    Factory   `gorm:"foreignKey:FactoryID;references:ID" json:"factory,omitempty"`
 }
 
@@ -364,8 +364,8 @@ type LineNotifyToken struct {
 	FactoryID *string   `gorm:"not null;" json:"factory_id,omitempty" form:"factory_id,omitempty"`
 	Token     string    `gorm:"not null;unique;" json:"token,omitempty" form:"token"`
 	IsActive  bool      `json:"is_active,omitempty" form:"is_active" default:"true"`
-	CreatedAt time.Time `json:"created_at,omitempty" form:"created_at" default:"now"`
-	UpdatedAt time.Time `json:"updated_at,omitempty" form:"updated_at" default:"now"`
+	CreatedAt time.Time `json:"created_at,omitempty" default:"now"`
+	UpdatedAt time.Time `json:"updated_at,omitempty" default:"now"`
 	Whs       Whs       `gorm:"foreignKey:WhsID;references:ID" json:"whs,omitempty"`
 	Factory   Factory   `gorm:"foreignKey:FactoryID;references:ID" json:"factory,omitempty"`
 }
@@ -405,8 +405,8 @@ type LastFticket struct {
 	OnYear      int64     `gorm:"not null;" json:"on_year,omitempty" form:"on_year"`
 	LastRunning int64     `json:"last_running,omitempty" form:"last_running" binding:"required"`
 	IsActive    bool      `json:"is_active,omitempty" form:"is_active" binding:"required"`
-	CreatedAt   time.Time `json:"created_at,omitempty" form:"created_at" default:"now"`
-	UpdatedAt   time.Time `json:"updated_at,omitempty" form:"updated_at" default:"now"`
+	CreatedAt   time.Time `json:"created_at,omitempty" default:"now"`
+	UpdatedAt   time.Time `json:"updated_at,omitempty" default:"now"`
 	Factory     Factory   `gorm:"foreignKey:FactoryID;references:ID" json:"factory,omitempty"`
 }
 
@@ -421,8 +421,8 @@ type PlanningDay struct {
 	Title       string    `gorm:"not null;size:50;unique;" json:"title,omitempty" form:"title" binding:"required"`
 	Description string    `gorm:"null" json:"description,omitempty" form:"description"`
 	IsActive    bool      `gorm:"null" json:"is_active,omitempty" form:"is_active" default:"false"`
-	CreatedAt   time.Time `json:"created_at,omitempty" form:"created_at" default:"now"`
-	UpdatedAt   time.Time `json:"updated_at,omitempty" form:"updated_at" default:"now"`
+	CreatedAt   time.Time `json:"created_at,omitempty" default:"now"`
+	UpdatedAt   time.Time `json:"updated_at,omitempty" default:"now"`
 }
 
 func (obj *PlanningDay) BeforeCreate(tx *gorm.DB) (err error) {

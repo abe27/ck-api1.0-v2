@@ -15,8 +15,8 @@ type CartonNotReceive struct {
 	SerialNo      string    `gorm:"not null;size:10;" json:"serial_no,omitempty" form:"serial_no" binding:"required"`
 	Qty           int64     `json:"qty,omitempty" form:"qty" binding:"required"`
 	IsSync        bool      `json:"is_sync,omitempty" form:"is_sync" default:"false"`
-	CreatedAt     time.Time `json:"created_at,omitempty" form:"created_at" default:"now"`
-	UpdatedAt     time.Time `json:"updated_at,omitempty" form:"updated_at" default:"now"`
+	CreatedAt     time.Time `json:"created_at,omitempty" default:"now"`
+	UpdatedAt     time.Time `json:"updated_at,omitempty" default:"now"`
 }
 
 func (u *CartonNotReceive) BeforeCreate(tx *gorm.DB) (err error) {

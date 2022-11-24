@@ -13,8 +13,8 @@ type User struct {
 	Email     string    `gorm:"not null;unique;size:50;" json:"email,omitempty" form:"email"`
 	Password  string    `gorm:"not null;unique;size:60;" json:"-" form:"password"`
 	IsActive  bool      `gorm:"null" json:"is_active,omitempty" form:"is_active" default:"false"`
-	CreatedAt time.Time `json:"created_at,omitempty" form:"created_at" default:"now"`
-	UpdatedAt time.Time `json:"updated_at,omitempty" form:"updated_at" default:"now"`
+	CreatedAt time.Time `json:"created_at,omitempty" default:"now"`
+	UpdatedAt time.Time `json:"updated_at,omitempty" default:"now"`
 }
 
 func (obj *User) BeforeCreate(tx *gorm.DB) (err error) {
@@ -28,8 +28,8 @@ type JwtToken struct {
 	UserID    *string   `gorm:"not null;unique;" json:"user_id,omitempty" form:"user_id" binding:"required"`
 	Token     string    `gorm:"not null;unique;" json:"token,omitempty" form:"token"`
 	IsActive  bool      `gorm:"null" json:"is_active,omitempty" form:"is_active" default:"false"`
-	CreatedAt time.Time `json:"created_at,omitempty" form:"created_at" default:"now"`
-	UpdatedAt time.Time `json:"updated_at,omitempty" form:"updated_at" default:"now"`
+	CreatedAt time.Time `json:"created_at,omitempty" default:"now"`
+	UpdatedAt time.Time `json:"updated_at,omitempty" default:"now"`
 	User      User      `gorm:"foreignKey:UserID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"user,omitempty"`
 }
 
@@ -43,8 +43,8 @@ type Administrator struct {
 	ID        string    `gorm:"primaryKey;size:21;" json:"id,omitempty"`
 	UserID    *string   `gorm:"unique;" json:"user_id,omitempty" form:"user_id"`
 	IsActive  bool      `gorm:"null" json:"is_active,omitempty" form:"is_active" default:"false"`
-	CreatedAt time.Time `json:"created_at,omitempty" form:"created_at" default:"now"`
-	UpdatedAt time.Time `json:"updated_at,omitempty" form:"updated_at" default:"now"`
+	CreatedAt time.Time `json:"created_at,omitempty" default:"now"`
+	UpdatedAt time.Time `json:"updated_at,omitempty" default:"now"`
 	User      User      `gorm:"foreignKey:UserID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"user,omitempty"`
 }
 
@@ -67,8 +67,8 @@ type Profile struct {
 	WhsID        *string    `json:"whs_id,omitempty" form:"whs_id"`
 	FactoryID    *string    `json:"factory_id,omitempty" form:"factory_id"`
 	IsActive     bool       `gorm:"null" json:"is_active,omitempty" form:"is_active" default:"false"`
-	CreatedAt    time.Time  `json:"created_at,omitempty" form:"created_at" default:"now"`
-	UpdatedAt    time.Time  `json:"updated_at,omitempty" form:"updated_at" default:"now"`
+	CreatedAt    time.Time  `json:"created_at,omitempty" default:"now"`
+	UpdatedAt    time.Time  `json:"updated_at,omitempty" default:"now"`
 	User         User       `gorm:"foreignKey:UserID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"user,omitempty"`
 	Area         Area       `gorm:"foreignKey:AreaID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"area,omitempty"`
 	Whs          Whs        `gorm:"foreignKey:WhsID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"whs,omitempty"`

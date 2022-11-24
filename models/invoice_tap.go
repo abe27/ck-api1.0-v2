@@ -34,8 +34,8 @@ type ImportInvoiceTap struct {
 	IsMatched   bool      `json:"is_matched,omitempty" form:"is_matched" default:"true"`
 	IsChecked   bool      `json:"is_checked,omitempty" form:"is_checked" default:"true"`
 	IsActive    bool      `json:"is_active,omitempty" form:"is_active" default:"true"`
-	CreatedAt   time.Time `json:"created_at,omitempty" form:"created_at" default:"now"`
-	UpdatedAt   time.Time `json:"updated_at,omitempty" form:"updated_at" default:"now"`
+	CreatedAt   time.Time `json:"created_at,omitempty" default:"now"`
+	UpdatedAt   time.Time `json:"updated_at,omitempty" default:"now"`
 	OrderPlan   OrderPlan `gorm:"foreignKey:OrderPlanID;references:ID" json:"order_plan,omitempty"`
 }
 

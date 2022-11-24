@@ -94,10 +94,11 @@ func CreateOrderWithRevise(factory, start_etd, end_etd string) {
 		// GenerateOrderDetailWithRevise(ord[i], orderTitle)
 		if obj.Reasoncd[:1] != "D" && obj.Reasoncd[:1] != "M" {
 			GenerateOrderDetailWithRevise(ord[i], orderTitle)
-		} else if obj.Reasoncd[:1] == "M" {
-			GenerateOrderDetailWithReviseChangeMode(ord[i], orderTitle, "M")
-
 		}
+		// else if obj.Reasoncd[:1] == "M" {
+		// 	GenerateOrderDetailWithReviseChangeMode(ord[i], orderTitle, "M")
+
+		// }
 		// else if obj.Reasoncd[:1] == "D" {
 		// 	GenerateOrderDetailWithReviseChangeMode(ord[i], orderTitle, "D")
 		// }
@@ -126,23 +127,16 @@ func GenerateOrderDetailWithReviseChangeMode(ord models.OrderPlan, orderTitle mo
 	db.
 		Where("consignee_id=?", ord.ConsigneeID).
 		Where("etd_date=?", &ord.EtdTap).
-		Where("shipment_id=?", ord.ShipmentID).
 		Where("pc_id=?", ord.PcID).
 		Where("commercial_id=?", ord.CommercialID).
 		Where("sample_flg_id=?", ord.SampleFlgID).
-		Where("Bioabt=?", ord.Bioabt).
+		Where("bioabt=?", ord.Bioabt).
 		Find(&order)
 
 	if order.ID != "" {
 		// update change mode
-		if reviseMode == "M" {
-			if err := db.Model(&models.Order{}).Where("id=?", order.ID).Update("shipment_id", ord.ShipmentID).Error; err != nil {
-				panic(err)
-			}
-		} else if reviseMode == "D" {
-			if err := db.Model(&models.Order{}).Where("id=?", order.ID).Update("etd_date", &ord.EtdTap).Error; err != nil {
-				panic(err)
-			}
+		if err := db.Model(&models.Order{}).Where("id=?", order.ID).Update("shipment_id", ord.ShipmentID).Error; err != nil {
+			panic(err)
 		}
 	} else {
 		/// Generate ZoneCode
@@ -217,7 +211,7 @@ func GenerateOrderDetailWithReviseChangeMode(ord models.OrderPlan, orderTitle mo
 		fmt.Printf("OrderID: %s ZCode: %s\n", order.ID, keyCode)
 	}
 
-	db.First(&order, &models.Order{
+	db.FirstOrCreate(&order, &models.Order{
 		ConsigneeID:  ord.ConsigneeID,
 		ShipmentID:   ord.ShipmentID,
 		EtdDate:      &ord.EtdTap,
@@ -242,16 +236,14 @@ func GenerateOrderDetailWithReviseChangeMode(ord models.OrderPlan, orderTitle mo
 	}
 
 	if err := db.FirstOrCreate(&ordDetail, &models.OrderDetail{
-		// OrderID:  &order.ID,
-		Pono:      &r.Pono,
-		LedgerID:  r.LedgerID,
-		IsMatched: false,
+		OrderID:  &order.ID,
+		Pono:     &r.Pono,
+		LedgerID: r.LedgerID,
 	}).Error; err != nil {
 		panic(err)
 	}
 
 	// Confirm Data After Create
-	ordDetail.OrderID = &order.ID
 	ordDetail.OrderPlanID = &r.ID
 	ordDetail.OrderCtn = int64(ctn)
 	ordDetail.IsSync = true
@@ -337,7 +329,7 @@ func GenerateOrderDetail(ord models.OrderPlan, orderTitle models.OrderTitle) {
 		Where("pc_id=?", ord.PcID).
 		Where("commercial_id=?", ord.CommercialID).
 		Where("sample_flg_id=?", ord.SampleFlgID).
-		Where("Bioabt=?", ord.Bioabt).
+		Where("bioabt=?", ord.Bioabt).
 		Find(&models.Order{}).Count(&orderCountDuplicate)
 
 	if orderCountDuplicate == 0 {

@@ -22,8 +22,8 @@ type FileEdi struct {
 	BatchPath  string    `gorm:"size:255" json:"batch_path,omitempty"`
 	IsDownload bool      `json:"is_download,omitempty" form:"is_download" binding:"required"`
 	IsActive   bool      `json:"is_active,omitempty" form:"is_active" binding:"required"`
-	CreatedAt  time.Time `json:"created_at,omitempty" form:"created_at" default:"now"`
-	UpdatedAt  time.Time `json:"updated_at,omitempty" form:"updated_at" default:"now"`
+	CreatedAt  time.Time `json:"created_at,omitempty" default:"now"`
+	UpdatedAt  time.Time `json:"updated_at,omitempty" default:"now"`
 	Factory    Factory   `gorm:"foreignKey:FactoryID;references:ID" json:"factory,omitempty"`
 	Mailbox    Mailbox   `gorm:"foreignKey:MailboxID;references:ID" json:"mailbox,omitempty"`
 	FileType   FileType  `gorm:"foreignKey:FileTypeID;references:ID" json:"file_type,omitempty"`

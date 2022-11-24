@@ -23,8 +23,8 @@ type CartonHistory struct {
 	RefNo       string    `gorm:"null;size:25" json:"ref_no,omitempty" form:"ref_no"`
 	ReceiveNo   string    `gorm:"null;size:25" json:"receive_no,omitempty" form:"receive_no"`
 	Description string    `json:"description,omitempty" form:"description" binding:"required"`
-	CreatedAt   time.Time `json:"created_at,omitempty" form:"created_at" default:"now"`
-	UpdatedAt   time.Time `json:"updated_at,omitempty" form:"updated_at" default:"now"`
+	CreatedAt   time.Time `json:"created_at,omitempty" default:"now"`
+	UpdatedAt   time.Time `json:"updated_at,omitempty" default:"now"`
 }
 
 func (u *CartonHistory) BeforeCreate(tx *gorm.DB) (err error) {
@@ -38,8 +38,8 @@ type SyncLogger struct {
 	Title       string    `gorm:"not null;size:100" json:"title,omitempty" form:"title" binding:"required"`
 	Description string    `json:"description,omitempty" form:"description" binding:"required"`
 	IsSuccess   bool      `json:"is_active,omitempty" form:"is_active" binding:"required"`
-	CreatedAt   time.Time `json:"created_at,omitempty" form:"created_at" default:"now"`
-	UpdatedAt   time.Time `json:"updated_at,omitempty" form:"updated_at" default:"now"`
+	CreatedAt   time.Time `json:"created_at,omitempty" default:"now"`
+	UpdatedAt   time.Time `json:"updated_at,omitempty" default:"now"`
 }
 
 func (obj *SyncLogger) BeforeCreate(tx *gorm.DB) (err error) {

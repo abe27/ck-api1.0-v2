@@ -14,8 +14,8 @@ type OrderLoadingArea struct {
 	LoadingArea string    `gorm:"not null;" json:"loading_area,omitempty" form:"loading_area" binding:"required"`
 	Privilege   string    `gorm:"not null;" json:"privilege,omitempty" form:"privilege" binding:"required"`
 	IsActive    bool      `json:"is_active,omitempty" form:"is_active" binding:"required"`
-	CreatedAt   time.Time `json:"created_at,omitempty" form:"created_at" default:"now"`
-	UpdatedAt   time.Time `json:"updated_at,omitempty" form:"updated_at" default:"now"`
+	CreatedAt   time.Time `json:"created_at,omitempty" default:"now"`
+	UpdatedAt   time.Time `json:"updated_at,omitempty" default:"now"`
 	OrderZone   OrderZone `gorm:"foreignKey:OrderZoneID;references:ID" json:"order_zone,omitempty"`
 }
 

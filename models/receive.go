@@ -20,8 +20,8 @@ type Receive struct {
 	ReceiveCtn    int64           `json:"receive_ctn,omitempty" form:"receive_ctn" default:"0"`
 	IsSync        bool            `json:"is_sync,omitempty" form:"is_sync" default:"true"`
 	IsActive      bool            `json:"is_active,omitempty" form:"is_active" binding:"required"`
-	CreatedAt     time.Time       `json:"created_at,omitempty" form:"created_at" default:"now"`
-	UpdatedAt     time.Time       `json:"updated_at,omitempty" form:"updated_at" default:"now"`
+	CreatedAt     time.Time       `json:"created_at,omitempty" default:"now"`
+	UpdatedAt     time.Time       `json:"updated_at,omitempty" default:"now"`
 	FileEdi       FileEdi         `gorm:"foreignKey:FileEdiID;references:ID" json:"file_edi,omitempty"`
 	ReceiveType   ReceiveType     `gorm:"foreignKey:ReceiveTypeID;references:ID" json:"receive_type,omitempty"`
 	ReceiveDetail []ReceiveDetail `json:"receive_detail,omitempty"`
@@ -41,8 +41,8 @@ type ReceiveDetail struct {
 	PlanQty   int64     `json:"plan_qty" form:"plan_qty"`
 	PlanCtn   int64     `json:"plan_ctn" form:"plan_ctn"`
 	IsActive  bool      `json:"is_active,omitempty" form:"is_active" binding:"required"`
-	CreatedAt time.Time `json:"created_at,omitempty" form:"created_at" default:"now"`
-	UpdatedAt time.Time `json:"updated_at,omitempty" form:"updated_at" default:"now"`
+	CreatedAt time.Time `json:"created_at,omitempty" default:"now"`
+	UpdatedAt time.Time `json:"updated_at,omitempty" default:"now"`
 	Receive   Receive   `gorm:"foreignKey:ReceiveID;references:ID" json:"receive,omitempty"`
 	Ledger    Ledger    `gorm:"foreignKey:LedgerID;references:ID" json:"ledger,omitempty"`
 	// Cartons   []Carton  `json:"carton"`

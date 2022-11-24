@@ -15,8 +15,8 @@ type SchedulePlan struct {
 	PlanningDayID string      `gorm:"not null;" json:"planning_day_id" form:"planning_day_id"`
 	IsSync        bool        `json:"is_sync,omitempty" form:"is_sync"`
 	IsActive      bool        `json:"is_active,omitempty" form:"is_active"`
-	CreatedAt     time.Time   `json:"created_at,omitempty" form:"created_at" default:"now"`
-	UpdatedAt     time.Time   `json:"updated_at,omitempty" form:"updated_at" default:"now"`
+	CreatedAt     time.Time   `json:"created_at,omitempty" default:"now"`
+	UpdatedAt     time.Time   `json:"updated_at,omitempty" default:"now"`
 	Customer      Customer    `gorm:"foreignKey:CustomerID;references:ID" json:"customer"`
 	Shipment      Shipment    `gorm:"foreignKey:ShipmentID;references:ID" json:"shipment"`
 	Whs           Whs         `gorm:"foreignKey:WhsID;references:ID" json:"whs"`

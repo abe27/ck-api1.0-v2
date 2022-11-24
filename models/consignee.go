@@ -12,8 +12,8 @@ type Affcode struct {
 	Title       string    `gorm:"not null;unique;size:15" json:"title,omitempty" form:"title" binding:"required"`
 	Description string    `json:"description,omitempty" form:"description" binding:"required"`
 	IsActive    bool      `json:"is_active,omitempty" form:"is_active" binding:"required"`
-	CreatedAt   time.Time `json:"created_at,omitempty" form:"created_at" default:"now"`
-	UpdatedAt   time.Time `json:"updated_at,omitempty" form:"updated_at" default:"now"`
+	CreatedAt   time.Time `json:"created_at,omitempty" default:"now"`
+	UpdatedAt   time.Time `json:"updated_at,omitempty" default:"now"`
 }
 
 func (obj *Affcode) BeforeCreate(tx *gorm.DB) (err error) {
@@ -27,8 +27,8 @@ type Customer struct {
 	Title       string    `gorm:"not null;unique;size:15" json:"title,omitempty" form:"title" binding:"required"`
 	Description string    `json:"description,omitempty" form:"description" binding:"required"`
 	IsActive    bool      `json:"is_active,omitempty" form:"is_active" binding:"required"`
-	CreatedAt   time.Time `json:"created_at,omitempty" form:"created_at" default:"now"`
-	UpdatedAt   time.Time `json:"updated_at,omitempty" form:"updated_at" default:"now"`
+	CreatedAt   time.Time `json:"created_at,omitempty" default:"now"`
+	UpdatedAt   time.Time `json:"updated_at,omitempty" default:"now"`
 }
 
 func (obj *Customer) BeforeCreate(tx *gorm.DB) (err error) {
@@ -42,8 +42,8 @@ type CustomerAddress struct {
 	Title       string    `gorm:"not null;unique;size:50" json:"title,omitempty" form:"title" binding:"required"`
 	Description string    `json:"description,omitempty" form:"description" binding:"required"`
 	IsActive    bool      `json:"is_active,omitempty" form:"is_active" binding:"required"`
-	CreatedAt   time.Time `json:"created_at,omitempty" form:"created_at" default:"now"`
-	UpdatedAt   time.Time `json:"updated_at,omitempty" form:"updated_at" default:"now"`
+	CreatedAt   time.Time `json:"created_at,omitempty" default:"now"`
+	UpdatedAt   time.Time `json:"updated_at,omitempty" default:"now"`
 }
 
 func (obj *CustomerAddress) BeforeCreate(tx *gorm.DB) (err error) {
@@ -61,8 +61,8 @@ type Consignee struct {
 	CustomerAddressID *string         `gorm:"null;" json:"customer_ddress_id,omitempty" form:"customer_address_id"`
 	Prefix            string          `gorm:"not null" json:"prefix,omitempty" form:"prefix" binding:"required"`
 	IsActive          bool            `json:"is_active,omitempty" form:"is_active" binding:"required"`
-	CreatedAt         time.Time       `json:"created_at,omitempty" form:"created_at" default:"now"`
-	UpdatedAt         time.Time       `json:"updated_at,omitempty" form:"updated_at" default:"now"`
+	CreatedAt         time.Time       `json:"created_at,omitempty" default:"now"`
+	UpdatedAt         time.Time       `json:"updated_at,omitempty" default:"now"`
 	Whs               Whs             `gorm:"foreignKey:WhsID;references:ID" json:"whs,omitempty"`
 	Factory           Factory         `gorm:"foreignKey:FactoryID;references:ID" json:"factory,omitempty"`
 	Affcode           Affcode         `gorm:"foreignKey:AffcodeID;references:ID" json:"affcode,omitempty"`
@@ -84,8 +84,8 @@ type OrderZone struct {
 	WhsID       *string   `gorm:"not null;" json:"whs_id,omitempty" form:"whs_id" binding:"required"`
 	Description string    `json:"description,omitempty" form:"description" binding:"required"`
 	IsActive    bool      `json:"is_active,omitempty" form:"is_active" binding:"required"`
-	CreatedAt   time.Time `json:"created_at,omitempty" form:"created_at" default:"now"`
-	UpdatedAt   time.Time `json:"updated_at,omitempty" form:"updated_at" default:"now"`
+	CreatedAt   time.Time `json:"created_at,omitempty" default:"now"`
+	UpdatedAt   time.Time `json:"updated_at,omitempty" default:"now"`
 	Factory     Factory   `gorm:"foreignKey:FactoryID;references:ID" json:"factory,omitempty"`
 	Whs         Whs       `gorm:"foreignKey:WhsID;references:ID" json:"whs,omitempty"`
 }
@@ -103,8 +103,8 @@ type LastInvoice struct {
 	OnYear      int64     `gorm:"not null;" json:"on_year,omitempty" form:"on_year" binding:"required"`
 	LastRunning int64     `json:"last_running,omitempty" form:"last_running" binding:"required"`
 	IsActive    bool      `json:"is_active,omitempty" form:"is_active" binding:"required"`
-	CreatedAt   time.Time `json:"created_at,omitempty" form:"created_at" default:"now"`
-	UpdatedAt   time.Time `json:"updated_at,omitempty" form:"updated_at" default:"now"`
+	CreatedAt   time.Time `json:"created_at,omitempty" default:"now"`
+	UpdatedAt   time.Time `json:"updated_at,omitempty" default:"now"`
 	Factory     Factory   `gorm:"foreignKey:FactoryID;references:ID" json:"factory,omitempty"`
 	Affcode     Affcode   `gorm:"foreignKey:AffcodeID;references:ID" json:"affcode,omitempty"`
 }

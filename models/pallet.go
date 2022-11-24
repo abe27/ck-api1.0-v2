@@ -16,8 +16,8 @@ type Pallet struct {
 	PalletTotal  int64          `gorm:"not null;" json:"pallet_total,omitempty" form:"pallet_total" binding:"required"`
 	IsSync       bool           `json:"is_sync,omitempty" form:"is_sync" binding:"required"`
 	IsActive     bool           `json:"is_active,omitempty" form:"is_active" binding:"required"`
-	CreatedAt    time.Time      `json:"created_at,omitempty" form:"created_at" default:"now"`
-	UpdatedAt    time.Time      `json:"updated_at,omitempty" form:"updated_at" default:"now"`
+	CreatedAt    time.Time      `json:"created_at,omitempty" default:"now"`
+	UpdatedAt    time.Time      `json:"updated_at,omitempty" default:"now"`
 	Order        Order          `gorm:"foreignKey:OrderID;references:ID" json:"order,omitempty"`
 	PalletType   PalletType     `gorm:"foreignKey:PalletTypeID;references:ID"  json:"pallet_type"`
 	PalletDetail []PalletDetail `json:"pallet_detail,omitempty"`
@@ -36,8 +36,8 @@ type PalletDetail struct {
 	SeqNo         int64       `gorm:"not null;" json:"seq_no" form:"seq_no" binding:"required"`
 	IsPrintLabel  bool        `json:"is_print_label,omitempty" form:"is_print_label" binding:"required"`
 	IsActive      bool        `json:"is_active,omitempty" form:"is_active" binding:"required"`
-	CreatedAt     time.Time   `json:"created_at,omitempty" form:"created_at" default:"now"`
-	UpdatedAt     time.Time   `json:"updated_at,omitempty" form:"updated_at" default:"now"`
+	CreatedAt     time.Time   `json:"created_at,omitempty" default:"now"`
+	UpdatedAt     time.Time   `json:"updated_at,omitempty" default:"now"`
 	Pallet        Pallet      `gorm:"foreignKey:PalletID;references:ID" json:"pallet,omitempty"`
 	OrderDetail   OrderDetail `gorm:"foreignKey:OrderDetailID;references:ID"  json:"order_detail,omitempty"`
 }
