@@ -123,30 +123,16 @@ func GenerateOrderDetailWithReviseChangeMode(ord models.OrderPlan, orderTitle mo
 	db.Select("id,title,description").Where("title=?", ord.Biac).First(&affcodeData)
 
 	var order models.Order
-
-	if reviseMode == "M" {
-		db.
-			Where("consignee_id=?", ord.ConsigneeID).
-			// Where("shipment_id=?", ord.ShipmentID).
-			Where("etd_date=?", &ord.EtdTap).
-			Where("pc_id=?", ord.PcID).
-			Where("commercial_id=?", ord.CommercialID).
-			Where("sample_flg_id=?", ord.SampleFlgID).
-			Where("bioabt=?", ord.Bioabt).
-			Where("is_invoice=?", false).
-			Find(&order)
-	} else if reviseMode == "D" {
-		db.
-			Where("consignee_id=?", ord.ConsigneeID).
-			Where("shipment_id=?", ord.ShipmentID).
-			// Where("etd_date=?", &ord.EtdTap).
-			Where("pc_id=?", ord.PcID).
-			Where("commercial_id=?", ord.CommercialID).
-			Where("sample_flg_id=?", ord.SampleFlgID).
-			Where("bioabt=?", ord.Bioabt).
-			Where("is_invoice=?", false).
-			Find(&order)
-	}
+	db.
+		Where("consignee_id=?", ord.ConsigneeID).
+		Where("shipment_id=?", ord.ShipmentID).
+		Where("etd_date=?", &ord.EtdTap).
+		Where("pc_id=?", ord.PcID).
+		Where("commercial_id=?", ord.CommercialID).
+		Where("sample_flg_id=?", ord.SampleFlgID).
+		Where("bioabt=?", ord.Bioabt).
+		Where("is_invoice=?", false).
+		Find(&order)
 	// panic(order.ID)
 
 	if order.ID == "" {
