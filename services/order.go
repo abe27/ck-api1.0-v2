@@ -59,7 +59,7 @@ func CreateOrder(factory, start_etd, end_etd string) {
 	// // // Revise Change Date Mode
 	// CreateOrderWithReviseChangeMode(factory, start_etd, end_etd)
 	// // Check Import Order Tap
-	GenerateImportInvoiceTap()
+	// GenerateImportInvoiceTap()
 }
 
 func GenerateOrderDetail(ord models.OrderPlan, orderTitle models.OrderTitle) {
