@@ -202,7 +202,7 @@ func CreateOrderWithRevise(factory, start_etd, end_etd string) {
 		Where("is_generate=?", false).
 		Where("is_revise_error=?", false).
 		Where("vendor=?", &factory).
-		Where("upddte BETWEEN ? AND ?", start_etd, end_etd).
+		Where("upddte=?", (time.Now()).Format("2006-01-02")).
 		Where("substring(reasoncd, 1, 1) in ?", []string{"Q", "P"}).
 		Find(&ord).Error; err != nil {
 		sysLogger := models.SyncLogger{
@@ -324,7 +324,7 @@ func CreateOrderWithReviseChangeMode(factory, start_etd, end_etd string) {
 		Where("is_generate=?", false).
 		Where("is_revise_error=?", false).
 		Where("vendor=?", &factory).
-		Where("upddte BETWEEN ? AND ?", start_etd, end_etd).
+		Where("upddte=?", (time.Now()).Format("2006-01-02")).
 		Where("substring(reasoncd, 1, 1) not in ?", []string{"Q", "P"}).
 		Find(&ord).Error; err != nil {
 		sysLogger := models.SyncLogger{
