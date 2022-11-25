@@ -14,9 +14,8 @@ func CreateOrder(factory, start_etd, end_etd string) {
 	db := configs.Store
 	var ord []models.OrderPlan
 	err := db.
-		Order("etd_tap,shipment_id").
+		Order("etd_tap").
 		Select("order_zone_id,consignee_id,shipment_id,etd_tap,pc_id,commercial_id,bioabt,order_group,vendor,biac,bishpc,bisafn,sample_flg_id,carrier_code").
-		// Where("substring(reasoncd, 1, 1) in (?)", []string{"", "0", "-", "H"}).
 		Where("length(reasoncd) = ?", 0).
 		Where("is_generate=?", false).
 		Where("is_revise_error=?", false).
@@ -54,12 +53,12 @@ func CreateOrder(factory, start_etd, end_etd string) {
 		x++
 	}
 
-	// Revise Qty and Create
-	CreateOrderWithRevise(factory, start_etd, end_etd)
-	// Revise Change Shipment Mode
-	CreateOrderWithReviseChangeMode(factory, start_etd, end_etd)
-	// Revise Change Date Mode
-	CreateOrderWithReviseChangeDateMode(factory, start_etd, end_etd)
+	// // Revise Qty and Create
+	// CreateOrderWithRevise(factory, start_etd, end_etd)
+	// // Revise Change Shipment Mode
+	// CreateOrderWithReviseChangeMode(factory, start_etd, end_etd)
+	// // Revise Change Date Mode
+	// CreateOrderWithReviseChangeDateMode(factory, start_etd, end_etd)
 }
 
 func CreateOrderWithRevise(factory, start_etd, end_etd string) {
@@ -180,8 +179,7 @@ func CreateOrderWithReviseChangeDateMode(factory, start_etd, end_etd string) {
 	for i < len(ord) {
 		obj := ord[i]
 		if obj.Reasoncd[:1] == "D" {
-			// GenerateOrderDetailWithReviseChangeMode(ord[i], orderTitle)
-			fmt.Printf("%s\n", obj.EtdTap)
+			GenerateOrderDetailWithReviseChangeDateMode(ord[i], orderTitle)
 		}
 		i++
 	}
@@ -230,7 +228,7 @@ func GenerateOrderDetail(ord models.OrderPlan, orderTitle models.OrderTitle) {
 		AffcodeID: &affcodeData.ID,
 		OnYear:    ConvertInt((etd)[:4]),
 	})
-
+	// Fetch Order
 	var order models.Order
 	order.ConsigneeID = ord.ConsigneeID
 	order.ShipmentID = ord.ShipmentID
@@ -251,63 +249,45 @@ func GenerateOrderDetail(ord models.OrderPlan, orderTitle models.OrderTitle) {
 	order.IsActive = false
 	order.IsSync = true
 
-	var orderCountDuplicate int64
-	db.Select("id").
-		Where("consignee_id=?", ord.ConsigneeID).
-		Where("shipment_id=?", ord.ShipmentID).
-		Where("etd_date=?", &ord.EtdTap).
-		Where("pc_id=?", ord.PcID).
-		Where("commercial_id=?", ord.CommercialID).
-		Where("sample_flg_id=?", ord.SampleFlgID).
-		Where("bioabt=?", ord.Bioabt).
-		Find(&models.Order{}).Count(&orderCountDuplicate)
-
-	if orderCountDuplicate == 0 {
-		if err := db.Create(&order).Error; err != nil {
-			// Create log if Create Order is Error!
-			sysLogger := models.SyncLogger{
-				Title:       fmt.Sprintf("creating order %v", ord.ConsigneeID),
-				Description: fmt.Sprintf("Error creating order: %v", err),
-			}
-			db.Create(&sysLogger)
-			panic(err)
+	if err := db.First(&order, &models.Order{
+		ConsigneeID:  ord.ConsigneeID,
+		ShipmentID:   ord.ShipmentID,
+		EtdDate:      &ord.EtdTap,
+		PcID:         ord.PcID,
+		CommercialID: ord.CommercialID,
+		SampleFlgID:  ord.SampleFlgID,
+		Bioabt:       ord.Bioabt,
+	}).Error; err != nil {
+		if err := db.Create(&order).Error; err == nil {
+			// update lastinvoice no
+			invSeq.LastRunning += 1
+			db.Save(&invSeq)
 		}
 	}
 
-	if order.ID != "" {
-		// Create Order Detail
-		var orderPlan []models.OrderPlan
-		if err := db.Order("etd_tap,created_at,seq").
-			Where("is_revise_error=?", false).
-			Where("is_generate=?", false).
-			Where("order_zone_id=?", ord.OrderZoneID).
-			Where("consignee_id=?", ord.ConsigneeID).
-			Where("shipment_id=?", ord.ShipmentID).
-			Where("etd_tap=?", ord.EtdTap).
-			Where("pc_id=?", ord.PcID).
-			Where("commercial_id=?", ord.CommercialID).
-			Where("sample_flg_id=?", ord.SampleFlgID).
-			Where("bioabt=?", ord.Bioabt).
-			Where("order_group=?", ord.OrderGroup).
-			Where("length(reasoncd) = ?", 0).
-			Find(&orderPlan).Error; err != nil {
-			// Create log if Create Order is Error!
-			sysLogger := models.SyncLogger{
-				Title:       "fetch order plan",
-				Description: fmt.Sprintf("Error fetch order: %v", err),
-			}
-			db.Create(&sysLogger)
-			panic(err)
-		}
-
-		j := 0
-		for j < len(orderPlan) {
-			r := orderPlan[j]
+	fmt.Printf("Order ID: %s\n", order.ID)
+	// Fetch Order Plan
+	var orderPlan []models.OrderPlan
+	if err := db.Order("upddte,updtime,seq").Find(&orderPlan, &models.OrderPlan{
+		OrderZoneID:  ord.OrderTypeID,  // order_zone_id,
+		ConsigneeID:  ord.ConsigneeID,  // consignee_id,
+		ShipmentID:   ord.ShipmentID,   // shipment_id,
+		EtdTap:       ord.EtdTap,       // etd_tap,
+		PcID:         ord.PcID,         // pc_id,
+		CommercialID: ord.CommercialID, // commercial_id,
+		Bioabt:       ord.Bioabt,       // bioabt,
+		OrderGroup:   ord.OrderGroup,   // order_group,
+		Vendor:       ord.Vendor,       // vendor,
+		Biac:         ord.Biac,         // biac,
+		Bishpc:       ord.Bishpc,       // bishpc,
+	}).Error; err == nil {
+		rnd := 0
+		for _, r := range orderPlan {
 			ctn := 0
 			if r.BalQty > 0 {
 				ctn = int(r.BalQty) / int(r.Bistdp)
 			}
-
+			fmt.Printf("%d ::: %s %s %d Revise: %s %s\n", rnd, r.Pono, r.PartNo, ctn, r.Reasoncd, r.Updtime)
 			var ordDetail models.OrderDetail
 			ordDetail.OrderID = &order.ID
 			ordDetail.Pono = &r.Pono
@@ -326,18 +306,14 @@ func GenerateOrderDetail(ord models.OrderPlan, orderTitle models.OrderTitle) {
 			ordDetail.OrderPlanID = &r.ID
 			ordDetail.OrderCtn = int64(ctn)
 			ordDetail.IsSync = true
-			db.Save(&ordDetail)
-
-			// Update Order Plan Set Status Generated
-			ordPlan := &r
-			ordPlan.IsGenerate = true
-			db.Save(&ordPlan)
-			j++
+			if err := db.Save(&ordDetail).Error; err == nil {
+				// Update Order Plan Set Status Generated
+				ordPlan := &r
+				ordPlan.IsGenerate = true
+				db.Save(&ordPlan)
+			}
+			rnd++
 		}
-
-		// update lastinvoice no
-		invSeq.LastRunning += 1
-		db.Save(&invSeq)
 	}
 }
 
@@ -552,6 +528,31 @@ func GenerateOrderDetailWithReviseChangeMode(ord models.OrderPlan, orderTitle mo
 			}
 			fmt.Printf("Create ZoneCode: %s\n", keyCode)
 		}
+	}
+}
+
+func GenerateOrderDetailWithReviseChangeDateMode(ord models.OrderPlan, orderTitle models.OrderTitle) {
+	db := configs.Store
+
+	// Fetch Order Entries
+	var order models.Order
+	if err := db.First(&order, &models.Order{
+		ConsigneeID: ord.ConsigneeID,
+		ShipmentID:  ord.ShipmentID,
+		// EtdDate:      &ord.EtdTap,
+		PcID:         ord.PcID,
+		CommercialID: ord.CommercialID,
+		SampleFlgID:  ord.SampleFlgID,
+		Bioabt:       ord.Bioabt,
+		// IsInvoice:    false,
+	}).Error; err != nil {
+		panic(err)
+	}
+	var orderDetail models.OrderDetail
+	if err := db.Preload("Order").First(&orderDetail, "order_plan_id=?", &ord.ID).Error; err == nil {
+		fmt.Printf("Found Order ID: %s\n", orderDetail.ID)
+	} else {
+		fmt.Printf("Not Found Order ID: %s\n", ord.ID)
 	}
 }
 
