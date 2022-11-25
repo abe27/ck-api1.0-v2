@@ -119,7 +119,20 @@ func GenerateImportInvoiceTap() {
 	var invTap []models.ImportInvoiceTap
 	if err := db.Find(&invTap, &models.ImportInvoiceTap{IsMatched: false}).Error; err == nil {
 		for _, r := range invTap {
-			fmt.Println(r.Bhivno)
+			inv := r.Bhivno
+			inv_seq, _ := strconv.ParseInt(inv[5:len(inv)-1], 10, 64)
+			var facData models.Factory
+			db.Select("id,title,inv_prefix,label_prefix").First(&facData, "inv_prefix=?", inv[:2])
+			etd := r.Bhivdt
+			// fmt.Printf("%d ==> ETD: %s\n", line, etd)
+			var shipment models.Shipment
+			db.First(&shipment, "title=?", inv[len(inv)-1:])
+			var orderPlan models.OrderPlan
+			if err := db.Order("created_at desc,seq desc").Select("id,bal_qty,bistdp").Where("bisafn like ?", "%"+r.Bhsafn+"%").Where("etd_tap=?", etd.Format("2006-01-02")).Where("part_no=?", r.Bhypat).Where("shipment_id=?", shipment.ID).Where("pono in ?", []string{strings.Trim(r.Bhodpo, ""), strings.Trim(strings.ReplaceAll(r.Bhodpo, " ", ""), "")}).First(&orderPlan).Error; err != nil {
+				print(err.Error())
+			}
+			CreateOrderPallet(&r, &orderPlan, inv_seq, strconv.FormatInt(r.Bhwidt, 10), strconv.FormatInt(r.Bhleng, 10), strconv.FormatInt(r.Bhhigh, 10), r.Bhpaln, strconv.FormatInt(r.Bhctn, 10), etd, &facData)
+			fmt.Printf("%s ==> %d %s\n", inv, inv_seq, orderPlan.ID)
 		}
 	}
 }
