@@ -54,11 +54,11 @@ func CreateOrder(factory, start_etd, end_etd string) {
 		x++
 	}
 
-	// Revise Qty and Create
-	CreateOrderWithRevise(factory, start_etd, end_etd)
-	// // Revise Change Date Mode
-	CreateOrderWithReviseChangeMode(factory, start_etd, end_etd)
-	// Check Import Order Tap
+	// // Revise Qty and Create
+	// CreateOrderWithRevise(factory, start_etd, end_etd)
+	// // // Revise Change Date Mode
+	// CreateOrderWithReviseChangeMode(factory, start_etd, end_etd)
+	// // Check Import Order Tap
 	GenerateImportInvoiceTap()
 }
 
