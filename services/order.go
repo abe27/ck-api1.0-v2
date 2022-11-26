@@ -33,8 +33,6 @@ func CreateOrder(factory, end_etd string) {
 		panic(err)
 	}
 
-	// fmt.Printf("Fetch Order Title: 000\n")
-
 	var orderTitle models.OrderTitle
 	err = db.Select("id,title").Where("title=?", "000").First(&orderTitle).Error
 	if err != nil {
@@ -46,8 +44,8 @@ func CreateOrder(factory, end_etd string) {
 		GenerateOrderDetail(ord[x], orderTitle)
 		x++
 	}
-
 	// CreateOrderWithRevise(factory, start_etd, end_etd, &orderTitle)
+	GenerateImportInvoiceTap()
 }
 
 func GenerateOrderDetail(ord models.OrderPlan, orderTitle models.OrderTitle) {

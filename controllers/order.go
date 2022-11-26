@@ -305,12 +305,6 @@ func GenerateOrder(c *fiber.Ctx) error {
 		factory = "INJ"
 	}
 
-	// start_etd := c.Query("start_etd")
-	// if start_etd == "" {
-	// 	r.Message = "กรุณาระบุวันที่เริ่ม"
-	// 	return c.Status(fiber.StatusInternalServerError).JSON(&r)
-	// }
-
 	end_date := c.Query("end_date")
 	if end_date == "" {
 		r.Message = "กรุณาระบุวันที่สิ้นสุด"
