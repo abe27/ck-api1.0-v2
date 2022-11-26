@@ -181,16 +181,7 @@ func GenerateOrderDetail(ord models.OrderPlan, orderTitle models.OrderTitle) {
 func CreateOrderWithRevise(factory, end_etd string, orderTitle *models.OrderTitle) {
 	db := configs.Store
 	var ord []models.OrderPlan
-	if err := db.
-		Order("upddte,updtime,seq").
-		Preload("OrderDetail.Order").
-		Where("length(reasoncd) > ?", 0).
-		Where("is_generate=?", false).
-		Where("is_revise_error=?", false).
-		Where("vendor=?", &factory).
-		Where("upddte <= ?", (time.Now()).Format("2006-01-02")).
-		Where("substring(reasoncd, 1, 1) in ?", []string{"M", "D"}).
-		Find(&ord).Error; err != nil {
+	if err := db.Raw("select * from tbt_order_plans where length(reasoncd) > 0 and is_generate=false and is_revise_error=false and vendor='INJ' and upddte <= current_date and substring(reasoncd, 1, 1) in ('Q') order by upddte,updtime,seq").Scan(&ord).Error; err != nil {
 		sysLogger := models.SyncLogger{
 			Title:       "generate order ent revises",
 			Description: fmt.Sprintf("%v", err),
