@@ -21,7 +21,7 @@ func CreateOrder(factory, end_etd string) {
 		Where("is_generate=?", false).
 		Where("is_revise_error=?", false).
 		Where("vendor=?", &factory).
-		Where("etd_tap <=", end_etd).
+		Where("etd_tap <= ?", end_etd).
 		Group("order_zone_id,consignee_id,shipment_id,etd_tap,pc_id,commercial_id,bioabt,order_group,vendor,biac,bishpc,bisafn,sample_flg_id,carrier_code").
 		Find(&ord).Error
 	if err != nil {
