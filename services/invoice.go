@@ -61,10 +61,6 @@ func ImportInvoiceTap(fileName *string) {
 						var shipment models.Shipment
 						db.First(&shipment, "title=?", inv[len(inv)-1:])
 						var orderPlan models.OrderPlan
-						// if err := db.Order("created_at desc,seq desc").Select("id,bal_qty,bistdp").Where("bisafn like ?", "%"+bhsafn.GetString()+"%").Where("etd_tap=?", etd.Format("2006-01-02")).Where("part_no=?", bhypat.GetString()).Where("shipment_id=?", shipment.ID).Where("pono in ?", []string{strings.Trim(bhodpo.GetString(), ""), strings.Trim(strings.ReplaceAll(bhodpo.GetString(), " ", ""), "")}).Last(&orderPlan).Error; err != nil {
-						// 	print(err.Error())
-						// }
-
 						if err := db.Raw(fmt.Sprintf("select id,bal_qty,bistdp from tbt_order_plans where etd_tap='%s' and part_no='%s' and shipment_id='%s' and pono in ('%s','%s') order by created_at desc,seq desc limit 1", etd.Format("2006-01-02"), bhypat.GetString(), shipment.ID, strings.Trim(bhodpo.GetString(), ""), strings.Trim(strings.ReplaceAll(bhodpo.GetString(), " ", ""), ""))).Scan(&orderPlan).Error; err == nil {
 							Bhcon, _ := strconv.ParseInt(bhcon.GetString(), 10, 64)
 							Bhctn, _ := strconv.ParseInt(bhctn.GetString(), 10, 64)
