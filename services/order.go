@@ -114,7 +114,7 @@ func GenerateOrderDetail(ord models.OrderPlan, orderTitle models.OrderTitle) {
 	order.IsActive = false
 	order.IsSync = true
 
-	if err := db.First(&order, &models.Order{
+	if err := db.Last(&order, &models.Order{
 		ConsigneeID:  ord.ConsigneeID,
 		ShipmentID:   ord.ShipmentID,
 		EtdDate:      &ord.EtdTap,
@@ -130,52 +130,52 @@ func GenerateOrderDetail(ord models.OrderPlan, orderTitle models.OrderTitle) {
 		}
 	}
 
-	fmt.Printf("Order ID: %s\n", order.ID)
+	// fmt.Printf("Order ID: %s\n", order.ID)
 	// Fetch Order Plan
-	var orderPlan []models.OrderPlan
-	if err := db.Order("upddte,updtime,seq").Find(&orderPlan, &models.OrderPlan{
-		OrderZoneID:  ord.OrderTypeID,  // order_zone_id,
-		ConsigneeID:  ord.ConsigneeID,  // consignee_id,
-		ShipmentID:   ord.ShipmentID,   // shipment_id,
-		EtdTap:       ord.EtdTap,       // etd_tap,
-		PcID:         ord.PcID,         // pc_id,
-		CommercialID: ord.CommercialID, // commercial_id,
-		Bioabt:       ord.Bioabt,       // bioabt,
-		OrderGroup:   ord.OrderGroup,   // order_group,
-		Vendor:       ord.Vendor,       // vendor,
-		Biac:         ord.Biac,         // biac,
-		Bishpc:       ord.Bishpc,       // bishpc,
-	}).Error; err == nil {
-		rnd := 0
-		for _, r := range orderPlan {
-			ctn := 0
-			if r.BalQty > 0 {
-				ctn = int(r.BalQty) / int(r.Bistdp)
-			}
-			fmt.Printf("%d ::: %s %s %d Revise: %s %s\n", rnd, r.Pono, r.PartNo, ctn, r.Reasoncd, r.Updtime)
-			var ordDetail models.OrderDetail
-			ordDetail.OrderID = &order.ID
-			ordDetail.Pono = &r.Pono
-			ordDetail.LedgerID = r.LedgerID
-			ordDetail.OrderPlanID = &r.ID
-			ordDetail.OrderCtn = int64(ctn)
-			ordDetail.TotalOnPallet = 0
+	if order.ID != "" {
+		var orderPlan []models.OrderPlan
+		if err := db.Order("upddte,updtime,seq").Find(&orderPlan, &models.OrderPlan{
+			OrderZoneID:  ord.OrderTypeID,  // order_zone_id,
+			ConsigneeID:  ord.ConsigneeID,  // consignee_id,
+			ShipmentID:   ord.ShipmentID,   // shipment_id,
+			EtdTap:       ord.EtdTap,       // etd_tap,
+			PcID:         ord.PcID,         // pc_id,
+			CommercialID: ord.CommercialID, // commercial_id,
+			Bioabt:       ord.Bioabt,       // bioabt,
+			OrderGroup:   ord.OrderGroup,   // order_group,
+		}).Error; err == nil {
+			rnd := 0
+			for _, r := range orderPlan {
+				ctn := 0
+				if r.BalQty > 0 {
+					ctn = int(r.BalQty) / int(r.Bistdp)
+				}
+				fmt.Printf("%d ::: %s %s %d Revise: %s %s\n", rnd, r.Pono, r.PartNo, ctn, r.Reasoncd, r.Updtime)
+				var ordDetail models.OrderDetail
+				ordDetail.OrderID = &order.ID
+				ordDetail.Pono = &r.Pono
+				ordDetail.LedgerID = r.LedgerID
+				ordDetail.OrderPlanID = &r.ID
+				ordDetail.OrderCtn = int64(ctn)
+				ordDetail.TotalOnPallet = 0
 
-			db.FirstOrCreate(&ordDetail, &models.OrderDetail{
-				OrderID:  &order.ID,
-				Pono:     &r.Pono,
-				LedgerID: r.LedgerID,
-			})
+				db.FirstOrCreate(&ordDetail, &models.OrderDetail{
+					OrderID:  &order.ID,
+					Pono:     &r.Pono,
+					LedgerID: r.LedgerID,
+				})
 
-			// Confirm Data After Create
-			ordDetail.OrderPlanID = &r.ID
-			ordDetail.OrderCtn = int64(ctn)
-			ordDetail.IsSync = true
-			if err := db.Save(&ordDetail).Error; err == nil {
+				// Confirm Data After Create
+				ordDetail.OrderPlanID = &r.ID
+				ordDetail.OrderCtn = int64(ctn)
+				ordDetail.IsSync = true
+				if err := db.Save(&ordDetail).Error; err != nil {
+					panic(err)
+				}
 				// Update Order Plan Set Status Generated
 				db.Model(&models.OrderPlan{}).Where("id=?", r.ID).Update("is_generate", true)
+				rnd++
 			}
-			rnd++
 		}
 	}
 }
