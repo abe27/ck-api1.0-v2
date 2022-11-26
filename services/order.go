@@ -15,6 +15,7 @@ func CreateOrder(factory, end_etd string) {
 	db := configs.Store
 	var ord []models.OrderPlan
 	err := db.
+		Limit(50).
 		Order("etd_tap").
 		Select("order_zone_id,consignee_id,shipment_id,etd_tap,pc_id,commercial_id,bioabt,order_group,vendor,biac,bishpc,bisafn,sample_flg_id,carrier_code").
 		Where("length(reasoncd) = ?", 0).
@@ -44,7 +45,7 @@ func CreateOrder(factory, end_etd string) {
 		GenerateOrderDetail(ord[x], orderTitle)
 		x++
 	}
-	CreateOrderWithRevise(factory, end_etd, &orderTitle)
+	// CreateOrderWithRevise(factory, end_etd, &orderTitle)
 	go GenerateImportInvoiceTap()
 }
 
