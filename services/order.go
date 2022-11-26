@@ -45,7 +45,7 @@ func CreateOrder(factory, end_etd string) {
 		x++
 	}
 	// CreateOrderWithRevise(factory, start_etd, end_etd, &orderTitle)
-	GenerateImportInvoiceTap()
+	go GenerateImportInvoiceTap()
 }
 
 func GenerateOrderDetail(ord models.OrderPlan, orderTitle models.OrderTitle) {
