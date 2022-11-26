@@ -142,8 +142,8 @@ func GetAllOrder(c *fiber.Ctx) error {
 
 	start_etd := c.Query("start_etd")
 	to_etd := c.Query("to_etd")
-	isDownload, err := strconv.ParseBool(c.Query("status"))
-	if err != nil {
+	isDownload := true
+	if c.Query("status") == "false" {
 		isDownload = false
 	}
 	if start_etd != "" {
@@ -163,7 +163,7 @@ func GetAllOrder(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusOK).JSON(&r)
 	}
 	// Fetch All Data
-	err = db.
+	if err := db.
 		Limit(limitData).
 		Order("etd_date,updated_at").
 		Where("is_checked=?", isChecked).
@@ -199,8 +199,7 @@ func GetAllOrder(c *fiber.Ctx) error {
 		Preload("OrderDetail.OrderPlan.OrderZone").
 		Preload("OrderDetail.OrderPlan.SampleFlg").
 		Find(&obj, "is_sync=?", isDownload).
-		Error
-	if err != nil {
+		Error; err != nil {
 		r.Message = services.MessageNotFound("Order Ent")
 		r.Data = &err
 		return c.Status(fiber.StatusNotFound).JSON(&r)
