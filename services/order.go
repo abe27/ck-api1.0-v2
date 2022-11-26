@@ -188,7 +188,7 @@ func CreateOrderWithRevise(factory, end_etd string, orderTitle *models.OrderTitl
 		Where("is_generate=?", false).
 		Where("is_revise_error=?", false).
 		Where("vendor=?", &factory).
-		Where("upddte !<= ?", (time.Now()).Format("2006-01-02")).
+		Where("upddte <= ?", (time.Now()).Format("2006-01-02")).
 		Where("substring(reasoncd, 1, 1) in ?", []string{"M", "D"}).
 		Find(&ord).Error; err != nil {
 		sysLogger := models.SyncLogger{
