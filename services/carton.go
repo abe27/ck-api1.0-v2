@@ -157,7 +157,7 @@ func CreateCarton(obj *models.CartonHistory) {
 	}
 
 	var ctn int64
-	db.Select("count(id)").Where("ledger_id=?", ledger.ID).Where("qty > ?", "0").Find(&models.Carton{}).Scan(&ctn)
+	db.Raw(fmt.Sprintf("SELECT count(id) FROM tbt_cartons WHERE ledger_id='%s' AND qty > '0'", ledger.ID)).Scan(&ctn)
 	ledger.Qty = 0
 	if obj.Qty > 0 {
 		ledger.Qty = float64(obj.Qty)
