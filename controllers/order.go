@@ -306,11 +306,11 @@ func GenerateOrder(c *fiber.Ctx) error {
 		factory = "INJ"
 	}
 
-	start_etd := c.Query("start_etd")
-	if start_etd == "" {
-		r.Message = "กรุณาระบุวันที่เริ่ม"
-		return c.Status(fiber.StatusInternalServerError).JSON(&r)
-	}
+	// start_etd := c.Query("start_etd")
+	// if start_etd == "" {
+	// 	r.Message = "กรุณาระบุวันที่เริ่ม"
+	// 	return c.Status(fiber.StatusInternalServerError).JSON(&r)
+	// }
 
 	end_date := c.Query("end_date")
 	if end_date == "" {
@@ -342,8 +342,8 @@ func GenerateOrder(c *fiber.Ctx) error {
 	}
 
 	// go services.CreateOrder(factory, start_etd, end_date)
-	services.CreateOrder(factory, start_etd, end_date)
-	r.Message = fmt.Sprintf("Auto Generate Order %s Start: %s End: %s", factory, start_etd, end_date)
+	services.CreateOrder(factory, end_date)
+	r.Message = fmt.Sprintf("Auto Generate Order %s ETD <= %s", factory, end_date)
 	r.Data = nil
 	return c.Status(fiber.StatusCreated).JSON(&r)
 }

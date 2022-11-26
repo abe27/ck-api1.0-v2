@@ -10,7 +10,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func CreateOrder(factory, start_etd, end_etd string) {
+func CreateOrder(factory, end_etd string) {
 	// Group Order to create order ent
 	db := configs.Store
 	var ord []models.OrderPlan
@@ -21,7 +21,7 @@ func CreateOrder(factory, start_etd, end_etd string) {
 		Where("is_generate=?", false).
 		Where("is_revise_error=?", false).
 		Where("vendor=?", &factory).
-		Where("etd_tap BETWEEN ? AND ?", start_etd, end_etd).
+		Where("etd_tap <=", end_etd).
 		Group("order_zone_id,consignee_id,shipment_id,etd_tap,pc_id,commercial_id,bioabt,order_group,vendor,biac,bishpc,bisafn,sample_flg_id,carrier_code").
 		Find(&ord).Error
 	if err != nil {
@@ -38,15 +38,8 @@ func CreateOrder(factory, start_etd, end_etd string) {
 	var orderTitle models.OrderTitle
 	err = db.Select("id,title").Where("title=?", "000").First(&orderTitle).Error
 	if err != nil {
-		sysLogger := models.SyncLogger{
-			Title:       "get order title",
-			Description: fmt.Sprintf("Error fetch order title: %v", err),
-		}
-		db.Create(&sysLogger)
 		panic(err)
 	}
-
-	// fmt.Printf("Fetch Order Title: %s\n", orderTitle.ID)
 
 	x := 0
 	for x < len(ord) {
@@ -54,12 +47,7 @@ func CreateOrder(factory, start_etd, end_etd string) {
 		x++
 	}
 
-	// // Revise Qty and Create
-	// CreateOrderWithRevise(factory, start_etd, end_etd)
-	// // // Revise Change Date Mode
-	// CreateOrderWithReviseChangeMode(factory, start_etd, end_etd)
-	// // Check Import Order Tap
-	// GenerateImportInvoiceTap()
+	// CreateOrderWithRevise(factory, start_etd, end_etd, &orderTitle)
 }
 
 func GenerateOrderDetail(ord models.OrderPlan, orderTitle models.OrderTitle) {
@@ -192,7 +180,7 @@ func GenerateOrderDetail(ord models.OrderPlan, orderTitle models.OrderTitle) {
 	}
 }
 
-func CreateOrderWithRevise(factory, start_etd, end_etd string) {
+func CreateOrderWithRevise(factory, start_etd, end_etd string, orderTitle *models.OrderTitle) {
 	db := configs.Store
 	var ord []models.OrderPlan
 	if err := db.
@@ -213,24 +201,14 @@ func CreateOrderWithRevise(factory, start_etd, end_etd string) {
 		panic(err)
 	}
 
-	var orderTitle models.OrderTitle
-	if err := db.Select("id,title").Where("title=?", "000").First(&orderTitle).Error; err != nil {
-		sysLogger := models.SyncLogger{
-			Title:       "get order title",
-			Description: fmt.Sprintf("Error fetch order title: %v", err),
-		}
-		db.Create(&sysLogger)
-		panic(err)
-	}
-
 	i := 0
 	for i < len(ord) {
-		GenerateOrderDetailWithRevise(end_etd, ord[i], orderTitle)
+		GenerateOrderDetailWithRevise(end_etd, &ord[i], orderTitle)
 		i++
 	}
 }
 
-func GenerateOrderDetailWithRevise(endDate string, ord models.OrderPlan, orderTitle models.OrderTitle) {
+func GenerateOrderDetailWithRevise(endDate string, ord *models.OrderPlan, orderTitle *models.OrderTitle) {
 	db := configs.Store
 	parseEndDate, _ := time.Parse("2006-01-02", endDate)
 	if !(ord.EtdTap.After(parseEndDate)) {
@@ -310,7 +288,7 @@ func GenerateOrderDetailWithRevise(endDate string, ord models.OrderPlan, orderTi
 				db.Save(&invSeq)
 			}
 		}
-		CreateOrderDetail(&order, &ord)
+		// CreateOrderDetail(&order, &ord)
 	}
 }
 
