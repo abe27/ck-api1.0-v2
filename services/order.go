@@ -44,7 +44,7 @@ func CreateOrder(factory, end_etd string) {
 		GenerateOrderDetail(ord[x], orderTitle)
 		x++
 	}
-	// CreateOrderWithRevise(factory, start_etd, end_etd, &orderTitle)
+	CreateOrderWithRevise(factory, end_etd, &orderTitle)
 	go GenerateImportInvoiceTap()
 }
 
@@ -178,7 +178,7 @@ func GenerateOrderDetail(ord models.OrderPlan, orderTitle models.OrderTitle) {
 	}
 }
 
-func CreateOrderWithRevise(factory, start_etd, end_etd string, orderTitle *models.OrderTitle) {
+func CreateOrderWithRevise(factory, end_etd string, orderTitle *models.OrderTitle) {
 	db := configs.Store
 	var ord []models.OrderPlan
 	if err := db.
@@ -188,8 +188,8 @@ func CreateOrderWithRevise(factory, start_etd, end_etd string, orderTitle *model
 		Where("is_generate=?", false).
 		Where("is_revise_error=?", false).
 		Where("vendor=?", &factory).
-		Where("upddte <= ?", (time.Now()).Format("2006-01-02")).
-		Where("substring(reasoncd, 1, 1) in ?", []string{"Q", "P"}).
+		Where("upddte !<= ?", (time.Now()).Format("2006-01-02")).
+		Where("substring(reasoncd, 1, 1) in ?", []string{"M", "D"}).
 		Find(&ord).Error; err != nil {
 		sysLogger := models.SyncLogger{
 			Title:       "generate order ent revises",
@@ -201,7 +201,7 @@ func CreateOrderWithRevise(factory, start_etd, end_etd string, orderTitle *model
 
 	i := 0
 	for i < len(ord) {
-		GenerateOrderDetailWithRevise(end_etd, &ord[i], orderTitle)
+		// GenerateOrderDetailWithRevise(end_etd, &ord[i], orderTitle)
 		i++
 	}
 }
