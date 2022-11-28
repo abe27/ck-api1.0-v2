@@ -618,7 +618,7 @@ func DeleteOrder(ord *models.OrderPlan) {
 		db.Select("id").Where("order_id=?", v.ID).Find(&models.OrderDetail{}).Count(&countOrdDetail)
 		if countOrdDetail == 0 {
 			if err := db.Delete(&models.Order{}, "id", v.ID).Error; err != nil {
-				panic(err)
+				fmt.Printf("Err: %s\n", err.Error())
 			}
 		}
 	}
