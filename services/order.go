@@ -168,11 +168,10 @@ func GenerateOrderDetail(ord models.OrderPlan, orderTitle models.OrderTitle) {
 				ordDetail.OrderPlanID = &r.ID
 				ordDetail.OrderCtn = int64(ctn)
 				ordDetail.IsSync = true
-				if err := db.Save(&ordDetail).Error; err != nil {
-					panic(err)
+				if err := db.Save(&ordDetail).Error; err == nil {
+					// Update Order Plan Set Status Generated
+					db.Model(&models.OrderPlan{}).Where("id=?", r.ID).Update("is_generate", true)
 				}
-				// Update Order Plan Set Status Generated
-				db.Model(&models.OrderPlan{}).Where("id=?", r.ID).Update("is_generate", true)
 				rnd++
 			}
 		}
