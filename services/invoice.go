@@ -110,6 +110,7 @@ func ImportInvoiceTap(fileName *string) {
 			line++
 		}
 	}
+	DeleteImportTap()
 }
 
 func GenerateImportInvoiceTap() {
@@ -130,6 +131,7 @@ func GenerateImportInvoiceTap() {
 			}
 		}
 	}
+	DeleteImportTap()
 }
 
 func CreateOrderPallet(invTap *models.ImportInvoiceTap, orderPlan *models.OrderPlan, inv_seq int64, bhwidt, bhleng, bhhigh, bhpaln, bhctn string, etd time.Time, facData *models.Factory) {
@@ -239,5 +241,14 @@ func CreateOrderPallet(invTap *models.ImportInvoiceTap, orderPlan *models.OrderP
 				}
 			}
 		}
+	}
+}
+
+func DeleteImportTap() {
+	if err := configs.Store.Where("bhivdt < ?", (time.Now()).Format("2006-01-02")).Delete(&models.ImportInvoiceTap{}).Error; err != nil {
+		panic(err)
+	}
+	if err := configs.Store.Where("is_matched = ?", true).Delete(&models.ImportInvoiceTap{}).Error; err != nil {
+		panic(err)
 	}
 }
