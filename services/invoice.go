@@ -110,7 +110,7 @@ func ImportInvoiceTap(fileName *string) {
 			line++
 		}
 	}
-	DeleteImportTap()
+	// DeleteImportTap()
 }
 
 func GenerateImportInvoiceTap() {
@@ -131,7 +131,7 @@ func GenerateImportInvoiceTap() {
 			}
 		}
 	}
-	DeleteImportTap()
+	// DeleteImportTap()
 }
 
 func CreateOrderPallet(invTap *models.ImportInvoiceTap, orderPlan *models.OrderPlan, inv_seq int64, bhwidt, bhleng, bhhigh, bhpaln, bhctn string, etd time.Time, facData *models.Factory) {
