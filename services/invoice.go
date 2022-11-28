@@ -115,7 +115,7 @@ func ImportInvoiceTap(fileName *string) {
 func GenerateImportInvoiceTap() {
 	db := configs.Store
 	var invTap []models.ImportInvoiceTap
-	if err := db.Find(&invTap, &models.ImportInvoiceTap{IsMatched: false}).Error; err == nil {
+	if err := db.Order("bhivdt").Find(&invTap, &models.ImportInvoiceTap{IsMatched: false}).Error; err == nil {
 		for _, r := range invTap {
 			inv := r.Bhivno
 			inv_seq, _ := strconv.ParseInt(inv[5:len(inv)-1], 10, 64)
