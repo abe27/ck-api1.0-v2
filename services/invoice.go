@@ -231,7 +231,9 @@ func CreateOrderPallet(invTap *models.ImportInvoiceTap, orderPlan *models.OrderP
 						}
 					}
 					// // Update Status OrderDetail
-					if err := db.Model(&orderDetail).Select("total_on_pallet", "order_ctn", "is_matched", "is_checked", "is_sync").Updates(models.OrderDetail{TotalOnPallet: orderDetail.TotalOnPallet + int64(ctnRnd), OrderCtn: int64(orderPlan.BalQty) / int64(orderPlan.Bistdp), IsMatched: true, IsChecked: true, IsSync: true}).Error; err == nil {
+					var sumPl int64
+					db.Select("id").Where("order_detail_id=?", &orderDetail.ID).Find(&models.PalletDetail{}).Count(&sumPl)
+					if err := db.Model(&orderDetail).Select("total_on_pallet", "order_ctn", "is_matched", "is_checked", "is_sync").Updates(models.OrderDetail{TotalOnPallet: sumPl, OrderCtn: int64(orderPlan.BalQty) / int64(orderPlan.Bistdp), IsMatched: true, IsChecked: true, IsSync: true}).Error; err == nil {
 						db.Save(&invTap)
 					}
 				}
