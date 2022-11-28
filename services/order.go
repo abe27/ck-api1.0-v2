@@ -296,6 +296,7 @@ func CreateOrderWithRevise(factory, endDate string, orderTitle *models.OrderTitl
 				}
 			}
 		}
+		DeleteOrder(&ord[i])
 		i++
 	}
 }
@@ -604,7 +605,7 @@ func CreateOrderDetail(order *models.Order, ord *models.OrderPlan) {
 func DeleteOrder(ord *models.OrderPlan) {
 	db := configs.Store
 	var order []models.Order
-	db.Order("created_at desc").Select("id").Last(&order, &models.Order{
+	db.Order("created_at desc").Select("id").Find(&order, &models.Order{
 		ConsigneeID:  ord.ConsigneeID,
 		PcID:         ord.PcID,
 		CommercialID: ord.CommercialID,
