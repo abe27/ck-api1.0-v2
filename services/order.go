@@ -182,7 +182,7 @@ func GenerateOrderDetail(ord models.OrderPlan, orderTitle models.OrderTitle) {
 func CreateOrderWithRevise(factory, endDate string, orderTitle *models.OrderTitle) {
 	db := configs.Store
 	var ord []models.OrderPlan
-	if err := db.Raw("select * from tbt_order_plans where length(reasoncd) > 0 and is_generate=false and is_revise_error=false and vendor=? and upddte <= current_date order by upddte,updtime,seq", factory).Scan(&ord).Error; err != nil {
+	if err := db.Raw("select * from tbt_order_plans where length(reasoncd) > 0 and is_generate=false and is_revise_error=false and vendor=? order by upddte,updtime,seq", factory).Scan(&ord).Error; err != nil {
 		sysLogger := models.SyncLogger{
 			Title:       "generate order ent revises",
 			Description: fmt.Sprintf("%v", err),
@@ -280,6 +280,20 @@ func CreateOrderWithRevise(factory, endDate string, orderTitle *models.OrderTitl
 			if order.ID != "" {
 				fmt.Printf("ID: %s\n", order.ID)
 				CreateOrderDetail(&order, &ord[i])
+			}
+		} else {
+			var orderDetail models.OrderDetail
+			if err := db.Where("pono=?", &ord[i].Pono).Where("ledger_id=?", ord[i].LedgerID).Where("total_on_pallet=?", 0).First(&orderDetail).Error; err == nil {
+				fmt.Printf("Order %s found ID: %s  OrderID: %s ETD: %s Revise: %s\n", ord[i].ID, orderDetail.ID, *orderDetail.OrderID, ord[i].EtdTap, ord[i].Reasoncd)
+				if err := db.Delete(&models.OrderDetail{}, "id", orderDetail.ID).Error; err == nil {
+					var countOrdDetail int64
+					db.Select("id").Where("order_id=?", orderDetail.OrderID).Find(&models.OrderDetail{}).Count(&countOrdDetail)
+					if countOrdDetail == 0 {
+						if err := db.Delete(&models.Order{}, "id", orderDetail.OrderID).Error; err != nil {
+							panic(err)
+						}
+					}
+				}
 			}
 		}
 		i++
@@ -582,23 +596,28 @@ func CreateOrderDetail(order *models.Order, ord *models.OrderPlan) {
 			OrderCtn:    int64(ctn),
 		})
 		if err := db.Model(&models.OrderPlan{}).Where("id=?", ord.ID).Update("is_generate", true).Error; err == nil {
-			var order []models.Order
-			db.Order("created_at desc").Select("id").Last(&order, &models.Order{
-				ConsigneeID:  ord.ConsigneeID,
-				PcID:         ord.PcID,
-				CommercialID: ord.CommercialID,
-				SampleFlgID:  ord.SampleFlgID,
-				Bioabt:       ord.Bioabt,
-			})
+			DeleteOrder(ord)
+		}
+	}
+}
 
-			for _, v := range order {
-				var countOrdDetail int64
-				db.Select("id").Where("order_id=?", v.ID).Find(&models.OrderDetail{}).Count(&countOrdDetail)
-				if countOrdDetail == 0 {
-					if err := db.Delete(&models.Order{}, "id", v.ID).Error; err != nil {
-						panic(err)
-					}
-				}
+func DeleteOrder(ord *models.OrderPlan) {
+	db := configs.Store
+	var order []models.Order
+	db.Order("created_at desc").Select("id").Last(&order, &models.Order{
+		ConsigneeID:  ord.ConsigneeID,
+		PcID:         ord.PcID,
+		CommercialID: ord.CommercialID,
+		SampleFlgID:  ord.SampleFlgID,
+		Bioabt:       ord.Bioabt,
+	})
+
+	for _, v := range order {
+		var countOrdDetail int64
+		db.Select("id").Where("order_id=?", v.ID).Find(&models.OrderDetail{}).Count(&countOrdDetail)
+		if countOrdDetail == 0 {
+			if err := db.Delete(&models.Order{}, "id", v.ID).Error; err != nil {
+				panic(err)
 			}
 		}
 	}
