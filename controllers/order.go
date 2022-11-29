@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
 
 	"github.com/abe27/api/configs"
@@ -16,11 +15,11 @@ func GetAllOrder(c *fiber.Ctx) error {
 	var r models.Response
 	var obj []models.Order
 	isChecked := c.Query("is_checked")
-	limitData := 50
-	if c.Query("limit") != "" {
-		lmt, _ := strconv.Atoi(c.Query("limit"))
-		limitData = lmt
-	}
+	// limitData := 50
+	// if c.Query("limit") != "" {
+	// 	lmt, _ := strconv.Atoi(c.Query("limit"))
+	// 	limitData = lmt
+	// }
 	etd := c.Query("etd")
 	if etd != "" {
 		var facData models.Factory
@@ -28,7 +27,6 @@ func GetAllOrder(c *fiber.Ctx) error {
 		isAdmin := services.IsAdmin(c)
 		if isAdmin {
 			err := db.
-				Limit(limitData).
 				Order("etd_date,updated_at").
 				Where("etd_date=?", etd).
 				Where("is_checked=?", isChecked).
@@ -92,7 +90,6 @@ func GetAllOrder(c *fiber.Ctx) error {
 		}
 
 		err := db.
-			Limit(limitData).
 			Order("etd_date,updated_at").
 			Where("etd_date=?", etd).
 			Where("is_checked=?", isChecked).
@@ -164,7 +161,6 @@ func GetAllOrder(c *fiber.Ctx) error {
 	}
 	// Fetch All Data
 	if err := db.
-		Limit(limitData).
 		Order("etd_date,updated_at").
 		Where("is_checked=?", isChecked).
 		Preload("Consignee.Whs").

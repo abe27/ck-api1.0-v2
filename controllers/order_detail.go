@@ -39,8 +39,13 @@ func GetAllOrderDetail(c *fiber.Ctx) error {
 		Preload("OrderPlan.FileEdi.Factory").
 		Preload("OrderPlan.FileEdi.Mailbox.Area").
 		Preload("OrderPlan.FileEdi.FileType").
-		Preload("OrderPlan.Whs").
+		Preload("OrderPlan.FileEdi.FileType").
 		Preload("OrderPlan.ReviseOrder").
+		Preload("OrderPlan.OrderType").
+		Preload("OrderPlan.FileEdi.Factory").
+		Preload("OrderPlan.FileEdi.Mailbox.Area").
+		Preload("OrderPlan.FileEdi.FileType").
+		Preload("OrderPlan.Whs").
 		Preload("OrderPlan.OrderZone").
 		Preload("OrderPlan.SampleFlg").
 		Where("order_id=?", &id).Find(&data).Error
