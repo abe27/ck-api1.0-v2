@@ -21,6 +21,7 @@ func CreateOrder(factory, end_etd string) {
 	// After Get Tap
 	CreateOrderWithRevise(factory, end_etd, &orderTitle)
 	/// After Generate Order Get Tap Data
+	go ClearOrder()
 	go GenerateImportInvoiceTap()
 }
 
@@ -641,4 +642,15 @@ func GetOrderGroup(c *fiber.Ctx) []string {
 		conID = append(conID, *v.ConsigneeID)
 	}
 	return conID
+}
+
+func ClearOrder() {
+	db := configs.Store
+	var orderList []string
+	db.Raw("select t.id from tbt_orders t left join tbt_order_details d on t.id=d.order_id where d.id is null").Scan(&orderList)
+	for _, id := range orderList {
+		if err := db.Delete(&models.Order{}, "id=?", id).Error; err == nil {
+			fmt.Printf("Delete Order ID: %s\n", id)
+		}
+	}
 }
