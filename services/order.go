@@ -14,7 +14,7 @@ func CreateOrder(factory, end_etd string) {
 	// Group Order to create order ent
 	db := configs.Store
 	var ord []models.OrderPlan
-	err := db.
+	if err := db.
 		Order("etd_tap").
 		Select("order_zone_id,consignee_id,shipment_id,etd_tap,pc_id,commercial_id,bioabt,order_group,vendor,biac,bishpc,bisafn,sample_flg_id,carrier_code").
 		Where("length(reasoncd) = ?", 0).
@@ -23,8 +23,7 @@ func CreateOrder(factory, end_etd string) {
 		Where("vendor=?", &factory).
 		Where("etd_tap <= ?", end_etd).
 		Group("order_zone_id,consignee_id,shipment_id,etd_tap,pc_id,commercial_id,bioabt,order_group,vendor,biac,bishpc,bisafn,sample_flg_id,carrier_code").
-		Find(&ord).Error
-	if err != nil {
+		Find(&ord).Error; err != nil {
 		sysLogger := models.SyncLogger{
 			Title:       "generate order ent",
 			Description: fmt.Sprintf("Error fetch order: %v", err),
@@ -34,148 +33,148 @@ func CreateOrder(factory, end_etd string) {
 	}
 
 	var orderTitle models.OrderTitle
-	err = db.Select("id,title").Where("title=?", "000").First(&orderTitle).Error
-	if err != nil {
+	if err := db.Select("id,title").Where("title=?", "000").First(&orderTitle).Error; err != nil {
 		panic(err)
 	}
 
-	x := 0
-	for x < len(ord) {
-		GenerateOrderDetail(ord[x], orderTitle)
-		x++
-	}
-
-	CreateOrderWithRevise(factory, end_etd, &orderTitle)
-	// GenerateImportInvoiceTap()
-}
-
-func GenerateOrderDetail(ord models.OrderPlan, orderTitle models.OrderTitle) {
-	db := configs.Store
-	etd := ord.EtdTap.Format("20060102")
-	var ship models.Shipment
-	db.Select("id,title").First(&ship, "id=?", ord.ShipmentID)
-	/// Generate ZoneCode
-	var ordCount int64
-	db.Select("id").Where("etd_date=?", ord.EtdTap).Find(&models.Order{}).Count(&ordCount)
-	sum := ordCount + 1
-	keyCode := fmt.Sprintf("%s%s%03d", etd[2:], ship.Title, sum)
-	var sumOrder models.Order
-	db.Select("id").First(&sumOrder, "zone_code=?", keyCode)
-	for !(len(sumOrder.ID) == 0) {
-		keyCode = fmt.Sprintf("%s%s%03d", etd[2:], ship.Title, sum)
-	}
-
-	// Check LoadingArea
-	// fmt.Printf("Check LoadingArea %s\n", ord[x].OrderGroup[:1])
-	prefixOrder := "-"
-	if ord.OrderGroup[:1] == "@" {
-		prefixOrder = "@"
-	}
-	var loadingData models.OrderLoadingArea
-	db.Select("prefix,loading_area,privilege").Where("order_zone_id=?", ord.OrderZoneID).Where("prefix=?", prefixOrder).First(&loadingData)
-
-	var factoryEnt models.Factory
-	db.Select("id,title").Where("title=?", ord.Vendor).First(&factoryEnt)
-	var affcodeData models.Affcode
-	db.Select("id,title,description").Where("title=?", ord.Biac).First(&affcodeData)
-
-	// Get LastInvoiceNo
-	invSeq := models.LastInvoice{
-		FactoryID:   &factoryEnt.ID,
-		AffcodeID:   &affcodeData.ID,
-		OnYear:      ConvertInt((etd)[:4]),
-		LastRunning: 0,
-	}
-
-	db.FirstOrCreate(&invSeq, &models.LastInvoice{
-		FactoryID: &factoryEnt.ID,
-		AffcodeID: &affcodeData.ID,
-		OnYear:    ConvertInt((etd)[:4]),
-	})
-	// Fetch Order
-	var order models.Order
-	order.ConsigneeID = ord.ConsigneeID
-	order.ShipmentID = ord.ShipmentID
-	order.EtdDate = &ord.EtdTap
-	order.PcID = ord.PcID
-	order.CommercialID = ord.CommercialID
-	order.SampleFlgID = ord.SampleFlgID
-	order.OrderTitleID = &orderTitle.ID
-	order.Bioabt = ord.Bioabt
-	order.ZoneCode = keyCode
-	order.LoadingArea = loadingData.LoadingArea
-	order.Privilege = loadingData.Privilege
-	order.ShipForm = ord.Bishpc         // bishpc
-	order.ShipTo = ord.Bisafn           // bisafn
-	order.SampleFlg = ord.SampleFlg     // sample_flg
-	order.CarrierCode = ord.CarrierCode // carriercod
-	order.RunningSeq = (invSeq.LastRunning + 1)
-	order.IsActive = false
-	order.IsSync = true
-
-	if err := db.Last(&order, &models.Order{
-		ConsigneeID:  ord.ConsigneeID,
-		ShipmentID:   ord.ShipmentID,
-		EtdDate:      &ord.EtdTap,
-		PcID:         ord.PcID,
-		CommercialID: ord.CommercialID,
-		SampleFlgID:  ord.SampleFlgID,
-		Bioabt:       ord.Bioabt,
-	}).Error; err != nil {
-		if err := db.Create(&order).Error; err == nil {
-			// update lastinvoice no
-			invSeq.LastRunning += 1
-			db.Save(&invSeq)
+	for _, v := range ord {
+		fmt.Printf("Generate Order Etd: %s\n", v.EtdTap)
+		etd := v.EtdTap.Format("20060102")
+		var ship models.Shipment
+		if err := db.Select("id,title").First(&ship, "id=?", v.ShipmentID).Error; err != nil {
+			panic(err)
 		}
-	}
 
-	// fmt.Printf("Order ID: %s\n", order.ID)
-	// Fetch Order Plan
-	if order.ID != "" {
-		var orderPlan []models.OrderPlan
-		if err := db.Order("upddte,updtime,seq").Find(&orderPlan, &models.OrderPlan{
-			OrderZoneID:  ord.OrderTypeID,  // order_zone_id,
-			ConsigneeID:  ord.ConsigneeID,  // consignee_id,
-			ShipmentID:   ord.ShipmentID,   // shipment_id,
-			EtdTap:       ord.EtdTap,       // etd_tap,
-			PcID:         ord.PcID,         // pc_id,
-			CommercialID: ord.CommercialID, // commercial_id,
-			Bioabt:       ord.Bioabt,       // bioabt,
-			OrderGroup:   ord.OrderGroup,   // order_group,
-		}).Error; err == nil {
-			rnd := 0
-			for _, r := range orderPlan {
-				ctn := 0
-				if r.BalQty > 0 {
-					ctn = int(r.BalQty) / int(r.Bistdp)
+		fmt.Printf("Shipment ID: %s\n", ship.ID)
+		/// Generate ZoneCode
+		var ordCount int64
+		if err := db.Select("id").Where("etd_date=?", v.EtdTap).Find(&models.Order{}).Count(&ordCount).Error; err != nil {
+			panic(err)
+		}
+
+		fmt.Printf("Count Order: %d\n", ordCount)
+		keyCode := fmt.Sprintf("%s%s", etd[2:], ship.Title)
+		var countSeq int64
+		db.Raw("SELECT count(id) + 1 FROM tbt_orders WHERE zone_code like ?", keyCode+"%").Scan(&countSeq)
+		keyCode = fmt.Sprintf("%s%s%03d", etd[2:], ship.Title, countSeq)
+		// fmt.Printf("ZoneCode: %s Seq: %d\n", keyCode, countSeq)
+
+		// Check LoadingArea
+		// fmt.Printf("Check LoadingArea %s\n", v.OrderGroup[:1])
+		prefixOrder := "-"
+		if v.OrderGroup[:1] == "@" {
+			prefixOrder = "@"
+		}
+		var loadingData models.OrderLoadingArea
+		db.Select("prefix,loading_area,privilege").Where("order_zone_id=?", v.OrderZoneID).Where("prefix=?", prefixOrder).First(&loadingData)
+
+		var factoryEnt models.Factory
+		db.Select("id,title").Where("title=?", v.Vendor).First(&factoryEnt)
+		var affcodeData models.Affcode
+		db.Select("id,title,description").Where("title=?", v.Biac).First(&affcodeData)
+
+		// Get LastInvoiceNo
+		invSeq := models.LastInvoice{
+			FactoryID:   &factoryEnt.ID,
+			AffcodeID:   &affcodeData.ID,
+			OnYear:      ConvertInt((etd)[:4]),
+			LastRunning: 0,
+		}
+
+		db.FirstOrCreate(&invSeq, &models.LastInvoice{
+			FactoryID: &factoryEnt.ID,
+			AffcodeID: &affcodeData.ID,
+			OnYear:    ConvertInt((etd)[:4]),
+		})
+
+		// Fetch Order
+		var order models.Order
+		order.ConsigneeID = v.ConsigneeID
+		order.ShipmentID = v.ShipmentID
+		order.EtdDate = &v.EtdTap
+		order.PcID = v.PcID
+		order.CommercialID = v.CommercialID
+		order.SampleFlgID = v.SampleFlgID
+		order.OrderTitleID = &orderTitle.ID
+		order.Bioabt = v.Bioabt
+		order.ZoneCode = keyCode
+		order.LoadingArea = loadingData.LoadingArea
+		order.Privilege = loadingData.Privilege
+		order.ShipForm = v.Bishpc         // bishpc
+		order.ShipTo = v.Bisafn           // bisafn
+		order.SampleFlg = v.SampleFlg     // sample_flg
+		order.CarrierCode = v.CarrierCode // carriercod
+		order.RunningSeq = (invSeq.LastRunning + 1)
+		order.IsActive = false
+		order.IsSync = true
+
+		if err := db.First(&order, &models.Order{
+			ConsigneeID:  v.ConsigneeID,
+			ShipmentID:   v.ShipmentID,
+			EtdDate:      &v.EtdTap,
+			PcID:         v.PcID,
+			CommercialID: v.CommercialID,
+			SampleFlgID:  v.SampleFlgID,
+			Bioabt:       v.Bioabt,
+		}).Error; err != nil {
+			if err := db.Create(&order).Error; err == nil {
+				// update lastinvoice no
+				invSeq.LastRunning += 1
+				db.Save(&invSeq)
+			}
+		}
+
+		// fmt.Printf("Order ID: %s\n", order.ID)
+		// Fetch Order Plan
+		if order.ID != "" {
+			var orderPlan []models.OrderPlan
+			if err := db.Order("upddte,updtime,seq").Find(&orderPlan, &models.OrderPlan{
+				OrderZoneID:  v.OrderTypeID,  // order_zone_id,
+				ConsigneeID:  v.ConsigneeID,  // consignee_id,
+				ShipmentID:   v.ShipmentID,   // shipment_id,
+				EtdTap:       v.EtdTap,       // etd_tap,
+				PcID:         v.PcID,         // pc_id,
+				CommercialID: v.CommercialID, // commercial_id,
+				Bioabt:       v.Bioabt,       // bioabt,
+				OrderGroup:   v.OrderGroup,   // order_group,
+			}).Error; err == nil {
+				rnd := 0
+				for _, r := range orderPlan {
+					ctn := 0
+					if r.BalQty > 0 {
+						ctn = int(r.BalQty) / int(r.Bistdp)
+					}
+					fmt.Printf("%d ::: %s %s %d Revise: %s %s\n", rnd, r.Pono, r.PartNo, ctn, r.Reasoncd, r.Updtime)
+					var ordDetail models.OrderDetail
+					ordDetail.OrderID = &order.ID
+					ordDetail.Pono = &r.Pono
+					ordDetail.LedgerID = r.LedgerID
+					ordDetail.OrderPlanID = &r.ID
+					ordDetail.OrderCtn = int64(ctn)
+					ordDetail.TotalOnPallet = 0
+
+					db.FirstOrCreate(&ordDetail, &models.OrderDetail{
+						OrderID:  &order.ID,
+						Pono:     &r.Pono,
+						LedgerID: r.LedgerID,
+					})
+
+					// Confirm Data After Create
+					ordDetail.OrderPlanID = &r.ID
+					ordDetail.OrderCtn = int64(ctn)
+					ordDetail.IsSync = true
+					if err := db.Save(&ordDetail).Error; err == nil {
+						// Update Order Plan Set Status Generated
+						db.Model(&models.OrderPlan{}).Where("id=?", r.ID).Update("is_generate", true)
+					}
+					rnd++
 				}
-				fmt.Printf("%d ::: %s %s %d Revise: %s %s\n", rnd, r.Pono, r.PartNo, ctn, r.Reasoncd, r.Updtime)
-				var ordDetail models.OrderDetail
-				ordDetail.OrderID = &order.ID
-				ordDetail.Pono = &r.Pono
-				ordDetail.LedgerID = r.LedgerID
-				ordDetail.OrderPlanID = &r.ID
-				ordDetail.OrderCtn = int64(ctn)
-				ordDetail.TotalOnPallet = 0
-
-				db.FirstOrCreate(&ordDetail, &models.OrderDetail{
-					OrderID:  &order.ID,
-					Pono:     &r.Pono,
-					LedgerID: r.LedgerID,
-				})
-
-				// Confirm Data After Create
-				ordDetail.OrderPlanID = &r.ID
-				ordDetail.OrderCtn = int64(ctn)
-				ordDetail.IsSync = true
-				if err := db.Save(&ordDetail).Error; err == nil {
-					// Update Order Plan Set Status Generated
-					db.Model(&models.OrderPlan{}).Where("id=?", r.ID).Update("is_generate", true)
-				}
-				rnd++
 			}
 		}
 	}
+
+	// CreateOrderWithRevise(factory, end_etd, &orderTitle)
+	// GenerateImportInvoiceTap()
 }
 
 func CreateOrderWithRevise(factory, endDate string, orderTitle *models.OrderTitle) {
