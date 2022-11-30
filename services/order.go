@@ -128,16 +128,7 @@ func CreateOrder(factory, end_etd string) {
 		// Fetch Order Plan
 		if order.ID != "" {
 			var orderPlan []models.OrderPlan
-			if err := db.Order("upddte,updtime,seq").Find(&orderPlan, &models.OrderPlan{
-				OrderZoneID:  v.OrderTypeID,  // order_zone_id,
-				ConsigneeID:  v.ConsigneeID,  // consignee_id,
-				ShipmentID:   v.ShipmentID,   // shipment_id,
-				EtdTap:       v.EtdTap,       // etd_tap,
-				PcID:         v.PcID,         // pc_id,
-				CommercialID: v.CommercialID, // commercial_id,
-				Bioabt:       v.Bioabt,       // bioabt,
-				OrderGroup:   v.OrderGroup,   // order_group,
-			}).Error; err == nil {
+			if err := db.Raw("select * from tbt_order_plans where order_zone_id=? and consignee_id=? and pc_id=? and commercial_id=? and shipment_id=? and order_group=? and etd_tap=? and bioabt=? order by upddte,updtime,seq", v.OrderTypeID, v.ConsigneeID, v.PcID, v.CommercialID, v.ShipmentID, v.OrderGroup, v.EtdTap.Format("2006-01-02"), v.Bioabt).Error; err == nil {
 				rnd := 0
 				for _, r := range orderPlan {
 					ctn := 0
