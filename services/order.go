@@ -21,8 +21,8 @@ func CreateOrder(factory, end_etd string) {
 	// After Get Tap
 	CreateOrderWithRevise(factory, end_etd, &orderTitle)
 	/// After Generate Order Get Tap Data
-	go ClearOrder()
-	go GenerateImportInvoiceTap()
+	ClearOrder()
+	GenerateImportInvoiceTap()
 }
 
 func CreateOrderWithOutRevise(factory, endDate string, orderTitle *models.OrderTitle) {
