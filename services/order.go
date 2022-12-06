@@ -16,13 +16,23 @@ func CreateOrder(factory, end_etd string) {
 		panic(err)
 	}
 	CreateOrderWithOutRevise(factory, end_etd, &orderTitle)
-	/// After Generate Order Get Tap Data
-	GenerateImportInvoiceTap()
 	// After Get Tap
 	CreateOrderWithRevise(factory, end_etd, &orderTitle)
 	/// After Generate Order Get Tap Data
 	ClearOrder()
 	GenerateImportInvoiceTap()
+}
+
+func GetZoneCode(etd string, ship *models.Shipment) string {
+	db := configs.Store
+	keyCode := fmt.Sprintf("%s%s", etd[2:], ship.Title)
+	var countSeq int64
+	if err := db.Raw("SELECT cast(substring(zone_code, 8) as int) + 1  FROM tbt_orders WHERE zone_code like ? order by zone_code desc limit 1", keyCode+"%").Scan(&countSeq).Error; err != nil {
+		panic(err)
+	}
+	keyCode = fmt.Sprintf("%s%s%03d", etd[2:], ship.Title, countSeq)
+	fmt.Printf("ZoneCode: %s Seq: %d\n", keyCode, countSeq)
+	return keyCode
 }
 
 func CreateOrderWithOutRevise(factory, endDate string, orderTitle *models.OrderTitle) {
@@ -63,11 +73,6 @@ func CreateOrderWithOutRevise(factory, endDate string, orderTitle *models.OrderT
 		}
 
 		fmt.Printf("Count Order: %d\n", ordCount)
-		keyCode := fmt.Sprintf("%s%s", etd[2:], ship.Title)
-		var countSeq int64
-		db.Raw("SELECT count(id) + 1 FROM tbt_orders WHERE zone_code like ?", keyCode+"%").Scan(&countSeq)
-		keyCode = fmt.Sprintf("%s%s%03d", etd[2:], ship.Title, countSeq)
-		// fmt.Printf("ZoneCode: %s Seq: %d\n", keyCode, countSeq)
 
 		// Check LoadingArea
 		// fmt.Printf("Check LoadingArea %s\n", v.OrderGroup[:1])
@@ -107,7 +112,7 @@ func CreateOrderWithOutRevise(factory, endDate string, orderTitle *models.OrderT
 		order.SampleFlgID = v.SampleFlgID
 		order.OrderTitleID = &orderTitle.ID
 		order.Bioabt = v.Bioabt
-		order.ZoneCode = keyCode
+		order.ZoneCode = GetZoneCode(etd, &ship)
 		order.LoadingArea = loadingData.LoadingArea
 		order.Privilege = loadingData.Privilege
 		order.ShipForm = v.Bishpc         // bishpc
@@ -206,7 +211,7 @@ func CreateOrderWithRevise(factory, endDate string, orderTitle *models.OrderTitl
 				Bioabt:       ord.Bioabt,
 			})
 
-			if order.ID == "" {
+			if len(order.ID) > 20 {
 				etd := ord.EtdTap.Format("20060102")
 				var ship models.Shipment
 				if err := db.Select("id,title").First(&ship, "id=?", ord.ShipmentID).Error; err != nil {
@@ -219,12 +224,6 @@ func CreateOrderWithRevise(factory, endDate string, orderTitle *models.OrderTitl
 				if err := db.Select("id").Where("etd_date=?", ord.EtdTap).Find(&models.Order{}).Count(&ordCount).Error; err != nil {
 					panic(err)
 				}
-
-				fmt.Printf("Count Order: %d\n", ordCount)
-				keyCode := fmt.Sprintf("%s%s", etd[2:], ship.Title)
-				var countSeq int64
-				db.Raw("SELECT count(id) + 1 FROM tbt_orders WHERE zone_code like ?", keyCode+"%").Scan(&countSeq)
-				keyCode = fmt.Sprintf("%s%s%03d", etd[2:], ship.Title, countSeq)
 
 				// Check LoadingArea
 				// fmt.Printf("Check LoadingArea %s\n", ord[x].OrderGroup[:1])
@@ -263,7 +262,7 @@ func CreateOrderWithRevise(factory, endDate string, orderTitle *models.OrderTitl
 				order.SampleFlgID = ord.SampleFlgID
 				order.OrderTitleID = &orderTitle.ID
 				order.Bioabt = ord.Bioabt
-				order.ZoneCode = keyCode
+				order.ZoneCode = GetZoneCode(etd, &ship)
 				order.LoadingArea = loadingData.LoadingArea
 				order.Privilege = loadingData.Privilege
 				order.ShipForm = ord.Bishpc         // bishpc
@@ -274,10 +273,12 @@ func CreateOrderWithRevise(factory, endDate string, orderTitle *models.OrderTitl
 				order.IsActive = false
 				order.IsSync = true
 
-				if err := db.Save(&order).Error; err == nil {
-					invSeq.LastRunning = order.RunningSeq
-					db.Save(&invSeq)
+				if err := db.Save(&order).Error; err != nil {
+					panic(err)
 				}
+
+				invSeq.LastRunning = order.RunningSeq
+				db.Save(&invSeq)
 			}
 
 			if order.ID != "" {
