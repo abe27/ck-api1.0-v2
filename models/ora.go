@@ -16,6 +16,7 @@ type OraStock struct {
 	Slug      string    `json:"slug,omitempty"`
 	PartNo    string    `json:"part_no,omitempty"`
 	PartName  string    `json:"part_name,omitempty"`
+	SerialNo  string    `json:"serial_no,omitempty"`
 	LotNo     string    `json:"lot_no,omitempty"`
 	LineNo    string    `json:"die_no,omitempty"`
 	ReviseNo  string    `json:"revise_no,omitempty"`
