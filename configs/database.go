@@ -6,7 +6,8 @@ import (
 )
 
 var (
-	Store *gorm.DB
+	Store           *gorm.DB
+	API_TRIGGER_URL string
 )
 
 func SetDB() {

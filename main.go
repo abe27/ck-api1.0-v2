@@ -29,6 +29,7 @@ func init() {
 	if len(os.Getenv("DBPASSWORD")) > 0 {
 		dns = fmt.Sprintf("host=%s user=%s dbname=%s port=%s password=%s sslmode=%s TimeZone=%s", os.Getenv("DBHOST"), os.Getenv("DBUSER"), os.Getenv("DBNAME"), os.Getenv("DBPORT"), os.Getenv("DBPASSWORD"), os.Getenv("SSLMODE"), os.Getenv("TZNAME"))
 	}
+	configs.API_TRIGGER_URL = os.Getenv("API_TRIGGER_URL")
 	// fmt.Printf("DNS: %s\n", dns)
 	configs.Store, err = gorm.Open(postgres.Open(dns), &gorm.Config{
 		DisableAutomaticPing:                     true,
