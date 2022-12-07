@@ -100,6 +100,12 @@ func (u *OrderPlan) BeforeCreate(tx *gorm.DB) (err error) {
 	return nil
 }
 
+type FrmOrderPlan struct {
+	RowID    string `form:"row_id"`
+	IsSync   bool   `form:"is_sync"`   // is_sync:true
+	IsActive bool   `form:"is_active"` // is_active:true
+}
+
 type HistoryOrderPlan struct {
 	ID               string      `gorm:"primaryKey;size:21;" json:"id"`
 	UserID           string      `gorm:"not null;" json:"user_id,omitempty" form:"user_id"`

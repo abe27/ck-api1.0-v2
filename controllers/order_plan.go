@@ -7,6 +7,44 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+func GetAllOrderPlanToSync(c *fiber.Ctx) error {
+	var r models.Response
+	var orderPlan []models.OrderPlan
+	if err := configs.Store.
+		Limit(100).
+		Order("upddte desc,updtime desc").
+		Where("is_sync=?", false).
+		Preload("FileEdi.Factory").
+		Preload("FileEdi.Mailbox.Area").
+		Preload("FileEdi.FileType").
+		Preload("Whs").
+		Preload("Consignee.Whs").
+		Preload("Consignee.Factory").
+		Preload("Consignee.Affcode").
+		Preload("Consignee.Customer").
+		Preload("Consignee.CustomerAddress").
+		Preload("ReviseOrder").
+		Preload("Ledger.Whs").
+		Preload("Ledger.Factory").
+		Preload("Ledger.Part").
+		Preload("Ledger.PartType").
+		Preload("Ledger.Unit").
+		Preload("Pc").
+		Preload("Commercial").
+		Preload("OrderType").
+		Preload("Shipment").
+		Preload("OrderZone.Whs").
+		Preload("OrderZone.Factory").
+		Preload("SampleFlg").
+		Find(&orderPlan).Error; err != nil {
+		r.Message = services.MessageSystemErrorWith(err.Error())
+		return c.Status(fiber.StatusInternalServerError).JSON(&r)
+	}
+	r.Message = services.MessageSystemWithMessage("History")
+	r.Data = &orderPlan
+	return c.Status(fiber.StatusOK).JSON(&r)
+}
+
 func GetAllOrderPlan(c *fiber.Ctx) error {
 	var r models.Response
 	vendor := c.Query("vendor")
@@ -97,6 +135,17 @@ func ShowOrderPlanByID(c *fiber.Ctx) error {
 
 func UpdateOrderPlanByID(c *fiber.Ctx) error {
 	var r models.Response
+	var frm models.FrmOrderPlan
+	if err := c.BodyParser(&frm); err != nil {
+		r.Message = err.Error()
+		return c.Status(fiber.StatusInternalServerError).JSON(&r)
+	}
+
+	if err := configs.Store.Where("id=?", c.Params("id")).Updates(&models.OrderPlan{IsSync: frm.IsSync, IsActive: frm.IsActive, RowID: frm.RowID}).Error; err != nil {
+		r.Message = err.Error()
+		return c.Status(fiber.StatusInternalServerError).JSON(&r)
+	}
+	r.Message = "Update Order Plan ID: " + c.Params("id")
 	return c.Status(fiber.StatusOK).JSON(&r)
 }
 
