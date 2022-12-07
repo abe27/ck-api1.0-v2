@@ -12,8 +12,14 @@ import (
 func GetAllReceiveEnt(c *fiber.Ctx) error {
 	etd := time.Now().Format("2006-01-02")
 	if c.Query("etd") != "" {
-		etd = time.Now().Format("2006-01-02")
+		etd = c.Query("etd")
 	}
+
+	isSync := false
+	if c.Query("is_sync") != "" {
+		isSync = true
+	}
+
 	var r models.Response
 	var obj []models.Receive
 	db := configs.Store
@@ -28,8 +34,8 @@ func GetAllReceiveEnt(c *fiber.Ctx) error {
 		Preload("ReceiveDetail.Ledger.PartType").
 		Preload("ReceiveDetail.Ledger.Unit").
 		Preload("ReceiveDetail.CartonNotReceive").
-		Where("receive_date <= ?", etd).
-		Where("is_sync=?", false).
+		Where("receive_date=?", etd).
+		Where("is_sync=?", isSync).
 		Find(&obj).
 		Error
 	if err != nil {
