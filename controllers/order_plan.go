@@ -11,7 +11,7 @@ func GetAllOrderPlanToSync(c *fiber.Ctx) error {
 	var r models.Response
 	var orderPlan []models.OrderPlan
 	if err := configs.Store.
-		Limit(2000).
+		Limit(5000).
 		Order("upddte,updtime,seq").
 		Where("is_sync=?", false).
 		Preload("FileEdi.Factory").
