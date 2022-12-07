@@ -28,7 +28,8 @@ func GetAllReceiveEnt(c *fiber.Ctx) error {
 		Preload("ReceiveDetail.Ledger.PartType").
 		Preload("ReceiveDetail.Ledger.Unit").
 		Preload("ReceiveDetail.CartonNotReceive").
-		Where("receive_date=?", etd).
+		Where("receive_date <= ?", etd).
+		Where("is_sync=?", false).
 		Find(&obj).
 		Error
 	if err != nil {

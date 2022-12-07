@@ -8,23 +8,23 @@ import (
 )
 
 type Receive struct {
-	ID            string          `gorm:"primaryKey;size:21" json:"id,omitempty"`
-	RowID         string          `gorm:"null;size:18" json:"row_id,omitempty" form:"row_id"`
-	FileEdiID     *string         `gorm:"not null" form:"file_edi_id" json:"file_edi_id,omitempty"`
-	ReceiveTypeID *string         `gorm:"not null" form:"receive_type_id" json:"receive_type_id,omitempty"`
-	ReceiveDate   time.Time       `gorm:"type:date" json:"receive_date,omitempty" form:"receive_date" binding:"required"`
-	TransferOutNo string          `gorm:"not null;unique;size:15" json:"transfer_out_no,omitempty" form:"transfer_out_no" binding:"required"`
-	TexNo         string          `gorm:"size:15;" json:"tex_no,omitempty" form:"tex_no"`
-	Item          int64           `json:"item,omitempty" form:"item" default:"0"`
+	ID            string          `gorm:"primaryKey;size:21" json:"id"`
+	RowID         string          `gorm:"null;size:18" json:"row_id" form:"row_id"`
+	FileEdiID     *string         `gorm:"not null" form:"file_edi_id" json:"file_edi_id"`
+	ReceiveTypeID *string         `gorm:"not null" form:"receive_type_id" json:"receive_type_id"`
+	ReceiveDate   time.Time       `gorm:"type:date" json:"receive_date" form:"receive_date" binding:"required"`
+	TransferOutNo string          `gorm:"not null;unique;size:15" json:"transfer_out_no" form:"transfer_out_no" binding:"required"`
+	TexNo         string          `gorm:"size:15;" json:"tex_no" form:"tex_no"`
+	Item          int64           `json:"item" form:"item" default:"0"`
 	PlanCtn       int64           `json:"plan_ctn" form:"plan_ctn" default:"0"`
-	ReceiveCtn    int64           `json:"receive_ctn,omitempty" form:"receive_ctn" default:"0"`
-	IsSync        bool            `json:"is_sync,omitempty" form:"is_sync" default:"true"`
-	IsActive      bool            `json:"is_active,omitempty" form:"is_active" binding:"required"`
-	CreatedAt     time.Time       `json:"created_at,omitempty" default:"now"`
-	UpdatedAt     time.Time       `json:"updated_at,omitempty" default:"now"`
-	FileEdi       FileEdi         `gorm:"foreignKey:FileEdiID;references:ID" json:"file_edi,omitempty"`
-	ReceiveType   ReceiveType     `gorm:"foreignKey:ReceiveTypeID;references:ID" json:"receive_type,omitempty"`
-	ReceiveDetail []ReceiveDetail `json:"receive_detail,omitempty"`
+	ReceiveCtn    int64           `json:"receive_ctn" form:"receive_ctn" default:"0"`
+	IsSync        bool            `json:"is_sync" form:"is_sync" default:"true"`
+	IsActive      bool            `json:"is_active" form:"is_active" binding:"required"`
+	CreatedAt     time.Time       `json:"created_at" default:"now"`
+	UpdatedAt     time.Time       `json:"updated_at" default:"now"`
+	FileEdi       FileEdi         `gorm:"foreignKey:FileEdiID;references:ID" json:"file_edi"`
+	ReceiveType   ReceiveType     `gorm:"foreignKey:ReceiveTypeID;references:ID" json:"receive_type"`
+	ReceiveDetail []ReceiveDetail `json:"receive_detail"`
 }
 
 func (u *Receive) BeforeCreate(tx *gorm.DB) (err error) {
@@ -34,17 +34,17 @@ func (u *Receive) BeforeCreate(tx *gorm.DB) (err error) {
 }
 
 type ReceiveDetail struct {
-	ID               string             `gorm:"primaryKey;size:21" json:"id,omitempty"`
-	RowID            string             `gorm:"null;size:18" json:"row_id,omitempty" form:"row_id"`
-	ReceiveID        *string            `gorm:"not null;" form:"receive_id" json:"receive_id,omitempty"`
-	LedgerID         *string            `gorm:"not null;" form:"ledger_id" json:"ledger_id,omitempty"`
+	ID               string             `gorm:"primaryKey;size:21" json:"id"`
+	RowID            string             `gorm:"null;size:18" json:"row_id" form:"row_id"`
+	ReceiveID        *string            `gorm:"not null;" form:"receive_id" json:"receive_id"`
+	LedgerID         *string            `gorm:"not null;" form:"ledger_id" json:"ledger_id"`
 	PlanQty          int64              `json:"plan_qty" form:"plan_qty"`
 	PlanCtn          int64              `json:"plan_ctn" form:"plan_ctn"`
-	IsActive         bool               `json:"is_active,omitempty" form:"is_active" binding:"required"`
-	CreatedAt        time.Time          `json:"created_at,omitempty" default:"now"`
-	UpdatedAt        time.Time          `json:"updated_at,omitempty" default:"now"`
-	Receive          Receive            `gorm:"foreignKey:ReceiveID;references:ID" json:"receive,omitempty"`
-	Ledger           Ledger             `gorm:"foreignKey:LedgerID;references:ID" json:"ledger,omitempty"`
+	IsActive         bool               `json:"is_active" form:"is_active" binding:"required"`
+	CreatedAt        time.Time          `json:"created_at" default:"now"`
+	UpdatedAt        time.Time          `json:"updated_at" default:"now"`
+	Receive          Receive            `gorm:"foreignKey:ReceiveID;references:ID" json:"receive"`
+	Ledger           Ledger             `gorm:"foreignKey:LedgerID;references:ID" json:"ledger"`
 	CartonNotReceive []CartonNotReceive `json:"receive_carton"`
 	// Cartons   []Carton  `json:"carton"`
 }
@@ -74,6 +74,6 @@ type ReceiveIcam struct {
 }
 
 type ReceiveEntForm struct {
-	IsSync   bool `json:"is_sync,omitempty" form:"is_sync" default:"true"`
+	IsSync   bool `json:"is_sync" form:"is_sync" default:"true"`
 	IsActive bool `form:"is_active" binding:"required"`
 }
