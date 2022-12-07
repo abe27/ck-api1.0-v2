@@ -30,22 +30,26 @@ func GetAllStock(c *fiber.Ctx) error {
 	req, err := http.NewRequest(method, url, nil)
 
 	if err != nil {
-		panic(err)
+		r.Message = err.Error()
+		return c.Status(fiber.StatusInternalServerError).JSON(&r)
 	}
 	res, err := client.Do(req)
 	if err != nil {
-		panic(err)
+		r.Message = err.Error()
+		return c.Status(fiber.StatusInternalServerError).JSON(&r)
 	}
 	defer res.Body.Close()
 
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
-		panic(err)
+		r.Message = err.Error()
+		return c.Status(fiber.StatusInternalServerError).JSON(&r)
 	}
 
 	var obj models.OraResponse
 	if err = json.Unmarshal(body, &obj); err != nil {
-		panic(err)
+		r.Message = err.Error()
+		return c.Status(fiber.StatusInternalServerError).JSON(&r)
 	}
 
 	// Get PartName
@@ -53,7 +57,8 @@ func GetAllStock(c *fiber.Ctx) error {
 	for _, i := range obj.Data {
 		var p models.Part
 		if err = db.Where("title=?", i.PartNo).First(&p).Error; err != nil {
-			panic(err)
+			r.Message = err.Error()
+			return c.Status(fiber.StatusInternalServerError).JSON(&r)
 		}
 		i.Slug = p.Slug
 		i.PartName = p.Description
@@ -85,22 +90,26 @@ func ShowStockByID(c *fiber.Ctx) error {
 	req, err := http.NewRequest(method, url, nil)
 
 	if err != nil {
-		panic(err)
+		r.Message = err.Error()
+		return c.Status(fiber.StatusInternalServerError).JSON(&r)
 	}
 	res, err := client.Do(req)
 	if err != nil {
-		panic(err)
+		r.Message = err.Error()
+		return c.Status(fiber.StatusInternalServerError).JSON(&r)
 	}
 	defer res.Body.Close()
 
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
-		panic(err)
+		r.Message = err.Error()
+		return c.Status(fiber.StatusInternalServerError).JSON(&r)
 	}
 
 	var obj models.OraResponse
 	if err = json.Unmarshal(body, &obj); err != nil {
-		panic(err)
+		r.Message = err.Error()
+		return c.Status(fiber.StatusInternalServerError).JSON(&r)
 	}
 
 	// Get PartName
@@ -108,7 +117,8 @@ func ShowStockByID(c *fiber.Ctx) error {
 	for _, i := range obj.Data {
 		var p models.Part
 		if err = db.Where("title=?", i.PartNo).First(&p).Error; err != nil {
-			panic(err)
+			r.Message = err.Error()
+			return c.Status(fiber.StatusInternalServerError).JSON(&r)
 		}
 		i.Slug = p.Slug
 		i.PartName = p.Description
@@ -145,22 +155,26 @@ func GetAllStockByShelve(c *fiber.Ctx) error {
 	req, err := http.NewRequest(method, url, nil)
 
 	if err != nil {
-		panic(err)
+		r.Message = err.Error()
+		return c.Status(fiber.StatusInternalServerError).JSON(&r)
 	}
 	res, err := client.Do(req)
 	if err != nil {
-		panic(err)
+		r.Message = err.Error()
+		return c.Status(fiber.StatusInternalServerError).JSON(&r)
 	}
 	defer res.Body.Close()
 
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
-		panic(err)
+		r.Message = err.Error()
+		return c.Status(fiber.StatusInternalServerError).JSON(&r)
 	}
 
 	var obj models.OraResponse
 	if err = json.Unmarshal(body, &obj); err != nil {
-		panic(err)
+		r.Message = err.Error()
+		return c.Status(fiber.StatusInternalServerError).JSON(&r)
 	}
 
 	// Get PartName
@@ -168,7 +182,8 @@ func GetAllStockByShelve(c *fiber.Ctx) error {
 	for _, i := range obj.Data {
 		var p models.Part
 		if err = db.Where("title=?", i.PartNo).First(&p).Error; err != nil {
-			panic(err)
+			r.Message = err.Error()
+			return c.Status(fiber.StatusInternalServerError).JSON(&r)
 		}
 		i.Slug = p.Slug
 		i.PartName = p.Description
@@ -189,22 +204,26 @@ func GetAllStockBySerialNo(c *fiber.Ctx) error {
 	req, err := http.NewRequest("GET", url, nil)
 
 	if err != nil {
-		panic(err)
+		r.Message = err.Error()
+		return c.Status(fiber.StatusInternalServerError).JSON(&r)
 	}
 	res, err := client.Do(req)
 	if err != nil {
-		panic(err)
+		r.Message = err.Error()
+		return c.Status(fiber.StatusInternalServerError).JSON(&r)
 	}
 	defer res.Body.Close()
 
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
-		panic(err)
+		r.Message = err.Error()
+		return c.Status(fiber.StatusInternalServerError).JSON(&r)
 	}
 
 	var obj models.OraResponse
 	if err = json.Unmarshal(body, &obj); err != nil {
-		panic(err)
+		r.Message = err.Error()
+		return c.Status(fiber.StatusInternalServerError).JSON(&r)
 	}
 
 	// Get PartName
@@ -212,7 +231,8 @@ func GetAllStockBySerialNo(c *fiber.Ctx) error {
 	for _, i := range obj.Data {
 		var p models.Part
 		if err = db.Where("title=?", i.PartNo).First(&p).Error; err != nil {
-			panic(err)
+			r.Message = err.Error()
+			return c.Status(fiber.StatusInternalServerError).JSON(&r)
 		}
 		i.Slug = p.Slug
 		i.PartName = p.Description
