@@ -34,17 +34,18 @@ func (u *Receive) BeforeCreate(tx *gorm.DB) (err error) {
 }
 
 type ReceiveDetail struct {
-	ID        string    `gorm:"primaryKey;size:21" json:"id,omitempty"`
-	RowID     string    `gorm:"null;size:18" json:"row_id,omitempty" form:"row_id"`
-	ReceiveID *string   `gorm:"not null;" form:"receive_id" json:"receive_id,omitempty"`
-	LedgerID  *string   `gorm:"not null;" form:"ledger_id" json:"ledger_id,omitempty"`
-	PlanQty   int64     `json:"plan_qty" form:"plan_qty"`
-	PlanCtn   int64     `json:"plan_ctn" form:"plan_ctn"`
-	IsActive  bool      `json:"is_active,omitempty" form:"is_active" binding:"required"`
-	CreatedAt time.Time `json:"created_at,omitempty" default:"now"`
-	UpdatedAt time.Time `json:"updated_at,omitempty" default:"now"`
-	Receive   Receive   `gorm:"foreignKey:ReceiveID;references:ID" json:"receive,omitempty"`
-	Ledger    Ledger    `gorm:"foreignKey:LedgerID;references:ID" json:"ledger,omitempty"`
+	ID               string             `gorm:"primaryKey;size:21" json:"id,omitempty"`
+	RowID            string             `gorm:"null;size:18" json:"row_id,omitempty" form:"row_id"`
+	ReceiveID        *string            `gorm:"not null;" form:"receive_id" json:"receive_id,omitempty"`
+	LedgerID         *string            `gorm:"not null;" form:"ledger_id" json:"ledger_id,omitempty"`
+	PlanQty          int64              `json:"plan_qty" form:"plan_qty"`
+	PlanCtn          int64              `json:"plan_ctn" form:"plan_ctn"`
+	IsActive         bool               `json:"is_active,omitempty" form:"is_active" binding:"required"`
+	CreatedAt        time.Time          `json:"created_at,omitempty" default:"now"`
+	UpdatedAt        time.Time          `json:"updated_at,omitempty" default:"now"`
+	Receive          Receive            `gorm:"foreignKey:ReceiveID;references:ID" json:"receive,omitempty"`
+	Ledger           Ledger             `gorm:"foreignKey:LedgerID;references:ID" json:"ledger,omitempty"`
+	CartonNotReceive []CartonNotReceive `json:"receive_carton"`
 	// Cartons   []Carton  `json:"carton"`
 }
 
