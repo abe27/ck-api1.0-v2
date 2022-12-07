@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"time"
+
 	"github.com/abe27/api/configs"
 	"github.com/abe27/api/models"
 	"github.com/abe27/api/services"
@@ -8,12 +10,16 @@ import (
 )
 
 func GetAllReceiveEnt(c *fiber.Ctx) error {
+	etd := time.Now().Format("2006-01-02")
+	if c.Query("etd") != "" {
+		etd = time.Now().Format("2006-01-02")
+	}
 	var r models.Response
 	var obj []models.Receive
 	db := configs.Store
 	err := db.
-		Limit(10).
-		Order("receive_date,transfer_out_no").
+		Limit(25).
+		Order("receive_date desc,transfer_out_no").
 		Preload("FileEdi.Factory").
 		Preload("FileEdi.Mailbox.Area").
 		Preload("FileEdi.FileType").
@@ -21,7 +27,8 @@ func GetAllReceiveEnt(c *fiber.Ctx) error {
 		Preload("ReceiveDetail.Ledger.Part").
 		Preload("ReceiveDetail.Ledger.PartType").
 		Preload("ReceiveDetail.Ledger.Unit").
-		Find(&obj, "is_sync=?", false).
+		Where("receive_date=?", etd).
+		Find(&obj).
 		Error
 	if err != nil {
 		r.Message = services.MessageSystemError

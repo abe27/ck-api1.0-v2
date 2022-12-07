@@ -12,7 +12,7 @@ type Receive struct {
 	RowID         string          `gorm:"null;size:18" json:"row_id,omitempty" form:"row_id"`
 	FileEdiID     *string         `gorm:"not null" form:"file_edi_id" json:"file_edi_id,omitempty"`
 	ReceiveTypeID *string         `gorm:"not null" form:"receive_type_id" json:"receive_type_id,omitempty"`
-	ReceiveDate   time.Time       `json:"receive_date,omitempty" form:"receive_date" binding:"required"`
+	ReceiveDate   time.Time       `gorm:"type:date" json:"receive_date,omitempty" form:"receive_date" binding:"required"`
 	TransferOutNo string          `gorm:"not null;unique;size:15" json:"transfer_out_no,omitempty" form:"transfer_out_no" binding:"required"`
 	TexNo         string          `gorm:"size:15;" json:"tex_no,omitempty" form:"tex_no"`
 	Item          int64           `json:"item,omitempty" form:"item" default:"0"`
