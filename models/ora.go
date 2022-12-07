@@ -27,3 +27,12 @@ type OraStock struct {
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
+
+type FrmUpdateStock struct {
+	Shelve string `form:"shelve" json:"shelve"`
+	Ctn    int64  `form:"ctn" json:"ctn"`
+}
+
+type UpdateStockData struct {
+	Data interface{} `json:"data"`
+}

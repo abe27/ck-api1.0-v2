@@ -9,6 +9,7 @@ import (
 
 	"github.com/abe27/api/configs"
 	"github.com/abe27/api/models"
+	"github.com/abe27/api/services"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -241,5 +242,52 @@ func GetAllStockBySerialNo(c *fiber.Ctx) error {
 
 	r.Message = obj.Message
 	r.Data = &data
+	return c.Status(fiber.StatusOK).JSON(&r)
+}
+
+func UpdateStockBySerialNo(c *fiber.Ctx) error {
+	emp := services.GetUserID(c)
+	var r models.Response
+	if c.Params("serial_no") == "" {
+		r.Message = "serial_no is required"
+		return c.Status(fiber.StatusBadRequest).JSON(&r)
+	}
+
+	var frm models.FrmUpdateStock
+	if err := c.BodyParser(&frm); err != nil {
+		r.Message = err.Error()
+		return c.Status(fiber.StatusInternalServerError).JSON(&r)
+	}
+
+	payload := strings.NewReader(fmt.Sprintf("serial_no=%s&shelve=%s&ctn=%d&emp_id=%s", strings.ToUpper(c.Params("serial_no")), frm.Shelve, frm.Ctn, emp.UserName))
+	client := &http.Client{}
+	req, err := http.NewRequest("PUT", fmt.Sprintf("%s/serial_no", configs.API_TRIGGER_URL), payload)
+
+	if err != nil {
+		r.Message = err.Error()
+		return c.Status(fiber.StatusInternalServerError).JSON(&r)
+	}
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+
+	res, err := client.Do(req)
+	if err != nil {
+		r.Message = err.Error()
+		return c.Status(fiber.StatusInternalServerError).JSON(&r)
+	}
+	defer res.Body.Close()
+
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		r.Message = err.Error()
+		return c.Status(fiber.StatusInternalServerError).JSON(&r)
+	}
+
+	var frmObj models.UpdateStockData
+	if err := json.Unmarshal(body, &frmObj); err != nil {
+		r.Message = err.Error()
+		return c.Status(fiber.StatusInternalServerError).JSON(&r)
+	}
+
+	r.Data = &frmObj.Data
 	return c.Status(fiber.StatusOK).JSON(&r)
 }

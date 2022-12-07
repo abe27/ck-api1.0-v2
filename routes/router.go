@@ -70,6 +70,7 @@ func SetUpRouter(c *fiber.App) {
 	shelve.Get("/:shelve_no", controllers.GetAllStockByShelve)
 	stockSerialNo := app.Group("/stock/serial_no")
 	stockSerialNo.Get("/:serial_no", controllers.GetAllStockBySerialNo)
+	stockSerialNo.Put("/:serial_no", controllers.UpdateStockBySerialNo)
 
 	// Whs Router
 	whs := app.Group("/whs")
