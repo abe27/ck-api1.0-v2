@@ -12,7 +12,7 @@ func GetAllOrderPlanToSync(c *fiber.Ctx) error {
 	var orderPlan []models.OrderPlan
 	if err := configs.Store.
 		Limit(2000).
-		Order("upddte,updtime").
+		Order("upddte,updtime,seq").
 		Where("is_sync=?", false).
 		Preload("FileEdi.Factory").
 		Preload("FileEdi.Mailbox.Area").
