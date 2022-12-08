@@ -7,7 +7,7 @@ require (
 	github.com/golang-jwt/jwt/v4 v4.4.3
 	github.com/joho/godotenv v1.4.0
 	github.com/matoous/go-nanoid/v2 v2.0.0
-	golang.org/x/crypto v0.3.0
+	golang.org/x/crypto v0.4.0
 )
 
 require (
