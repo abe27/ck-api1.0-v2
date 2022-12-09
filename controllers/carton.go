@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"fmt"
+
 	"github.com/abe27/api/configs"
 	"github.com/abe27/api/models"
 	"github.com/abe27/api/services"
@@ -14,6 +16,15 @@ func GetCartonHistory(c *fiber.Ctx) error {
 		r.Message = "Required Param."
 		return c.Status(fiber.StatusBadRequest).JSON(r)
 	}
+
+	var obj []models.CartonHistory
+	if err := configs.Store.Where("", cartonId).Find(&obj).Error; err != nil {
+		r.Message = err.Error()
+		return c.Status(fiber.StatusInternalServerError).JSON(r)
+	}
+
+	r.Message = fmt.Sprintf("Show Carton History `%s`!", cartonId)
+	r.Data = &obj
 	return c.Status(fiber.StatusOK).JSON(&r)
 }
 
