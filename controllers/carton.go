@@ -7,6 +7,16 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+func GetCartonHistory(c *fiber.Ctx) error {
+	var r models.Response
+	cartonId := c.Params("carton_id")
+	if cartonId == "" {
+		r.Message = "Required Param."
+		return c.Status(fiber.StatusBadRequest).JSON(r)
+	}
+	return c.Status(fiber.StatusOK).JSON(&r)
+}
+
 func CreateCartonHistory(c *fiber.Ctx) error {
 	db := configs.Store
 	var r models.Response
