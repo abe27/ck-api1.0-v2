@@ -11,6 +11,28 @@ import (
 	"github.com/shakinm/xlsReader/xls"
 )
 
+func CheckInvoiceTap() {
+	db := configs.Store
+	etd := time.Now().Format("2006-01-02")
+	var data []models.ImportInvoiceTap
+	if err := db.Where("bhivdt >", etd).Find(&data).Error; err != nil {
+		panic(err)
+	}
+
+	for _, v := range data {
+		inv := v.Bhivno
+		inv_seq, _ := strconv.ParseInt(inv[5:len(inv)-1], 10, 64)
+		var facData models.Factory
+		db.Select("id,title,inv_prefix,label_prefix").First(&facData, "inv_prefix=?", inv[:2])
+		var shipment models.Shipment
+		db.First(&shipment, "title=?", inv[len(inv)-1:])
+		var orderPlan models.OrderPlan
+		if err := db.Raw(fmt.Sprintf("select id,bal_qty,bistdp from tbt_order_plans where etd_tap='%s' and part_no='%s' and shipment_id='%s' and pono in ('%s','%s') order by created_at desc,seq desc limit 1", v.Bhivdt.Format("2006-01-02"), v.Bhypat, shipment.ID, strings.Trim(v.Bhodpo, ""), strings.Trim(strings.ReplaceAll(v.Bhodpo, " ", ""), ""))).Scan(&orderPlan).Error; err == nil {
+			CreateOrderPallet(&v, &orderPlan, inv_seq, strconv.Itoa(int(v.Bhwidt)), strconv.Itoa(int(v.Bhleng)), strconv.Itoa(int(v.Bhhigh)), v.Bhpaln, strconv.Itoa(int(v.Bhctn)), v.Bhivdt, &facData)
+		}
+	}
+}
+
 func ImportInvoiceTap(fileName *string) {
 	workbook, err := xls.OpenFile(*fileName)
 	if err != nil {

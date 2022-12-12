@@ -32,6 +32,12 @@ func ImportInvoiceTap(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusCreated).JSON(&r)
 }
 
+func CheckInvoiceTap(c *fiber.Ctx) error {
+	var r models.Response
+	services.CheckInvoiceTap()
+	return c.Status(fiber.StatusOK).JSON(&r)
+}
+
 func ClientImportInvoiceTap(c *fiber.Ctx) error {
 	var r models.Response
 	// Upload GEDI File To Directory
