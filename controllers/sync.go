@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"fmt"
+
 	"github.com/abe27/api/configs"
 	"github.com/abe27/api/models"
 	"github.com/gofiber/fiber/v2"
@@ -10,7 +12,7 @@ func GetSyncOrderList(c *fiber.Ctx) error {
 	var r models.Response
 	var obj []models.Order
 	if err := configs.Store.
-		Limit(10).
+		Limit(50).
 		Order("etd_date,updated_at").
 		Where("is_checked=?", true).
 		Where("is_sync=?", false).
@@ -50,5 +52,22 @@ func GetSyncOrderList(c *fiber.Ctx) error {
 		panic(err)
 	}
 	r.Data = &obj
+	return c.Status(fiber.StatusOK).JSON(&r)
+}
+
+func UpdateOrderSyncByID(c *fiber.Ctx) error {
+	var r models.Response
+	var frm models.OrderSyncForm
+	if err := c.BodyParser(&frm); err != nil {
+		r.Message = err.Error()
+		return c.Status(fiber.StatusInternalServerError).JSON(&r)
+	}
+
+	if err := configs.Store.Model(models.Order{}).Where("id=?", c.Params("id")).Update("is_sync", frm.IsSync).Error; err != nil {
+		r.Message = err.Error()
+		return c.Status(fiber.StatusInternalServerError).JSON(&r)
+	}
+
+	r.Message = fmt.Sprintf("Update `%s` is Success", c.Params("id"))
 	return c.Status(fiber.StatusOK).JSON(&r)
 }

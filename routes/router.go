@@ -21,6 +21,7 @@ func SetUpRouter(c *fiber.App) {
 	r.Group("/receive/notscan").Put("/:id", controllers.UpdateCartonNotReceiveByID)
 	syncRoute := r.Group("/sync")
 	syncRoute.Get("/order", controllers.GetSyncOrderList)
+	syncRoute.Put("/order/:id", controllers.UpdateOrderSyncByID)
 
 	// Start Group Router
 	log := r.Group("/logs")

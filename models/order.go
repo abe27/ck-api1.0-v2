@@ -134,3 +134,7 @@ type OrderShort struct {
 	OrderCtn        int64     `json:"order_ctn" form:"order_ctn"`
 	Ctn             int64     `json:"ctn" form:"ctn"`
 }
+
+type OrderSyncForm struct {
+	IsSync bool `json:"is_sync" form:"is_sync"`
+}
