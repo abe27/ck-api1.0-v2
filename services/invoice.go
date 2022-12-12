@@ -15,7 +15,7 @@ func CheckInvoiceTap() {
 	db := configs.Store
 	etd := time.Now().Format("2006-01-02")
 	var data []models.ImportInvoiceTap
-	if err := db.Where("bhivdt > ?", etd).Find(&data).Error; err != nil {
+	if err := db.Limit(10).Where("bhivdt > ?", etd).Find(&data).Error; err != nil {
 		panic(err)
 	}
 
