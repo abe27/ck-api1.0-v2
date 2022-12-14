@@ -8,6 +8,53 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+func GetSyncOrderPlan(c *fiber.Ctx) error {
+	var r models.Response
+	var obj []models.OrderPlan
+	if err := configs.Store.
+		Limit(100).
+		Order("upddte,updtime").
+		Preload("FileEdi").
+		Preload("Whs").
+		Preload("Consignee").
+		Preload("ReviseOrder").
+		Preload("Ledger.Whs").
+		Preload("Ledger.Factory").
+		Preload("Ledger.Part").
+		Preload("Ledger.PartType").
+		Preload("Ledger.Unit").
+		Preload("Pc").
+		Preload("Commercial").
+		Preload("OrderType").
+		Preload("Shipment").
+		Preload("OrderZone").
+		Preload("SampleFlg").
+		Where("is_sync=?", false).
+		Find(&obj).
+		Error; err != nil {
+		r.Message = err.Error()
+		return c.Status(fiber.StatusInternalServerError).JSON(r)
+	}
+
+	r.Message = "Show Order Plan"
+	r.Data = &obj
+	return c.Status(fiber.StatusOK).JSON(&r)
+}
+
+func UpdateSyncOrderPlan(c *fiber.Ctx) error {
+	var r models.Response
+	var frm models.OrderPlan
+	if err := c.BodyParser(&frm); err != nil {
+		panic(err)
+	}
+
+	if err := configs.Store.Model(&models.OrderPlan{}).Where("id=?", c.Params("id")).Update("is_sync", &frm.IsSync).Error; err != nil {
+		panic(err)
+	}
+	r.Message = fmt.Sprintf("Update %s is Success!", c.Params("id"))
+	return c.Status(fiber.StatusOK).JSON(&r)
+}
+
 func GetSyncOrderList(c *fiber.Ctx) error {
 	var r models.Response
 	var obj []models.Order
