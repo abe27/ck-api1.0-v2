@@ -59,7 +59,7 @@ func GetSyncOrderList(c *fiber.Ctx) error {
 	var r models.Response
 	var obj []models.Order
 	if err := configs.Store.
-		Limit(50).
+		Limit(5).
 		Order("etd_date,updated_at").
 		Where("is_checked=?", true).
 		Where("is_sync=?", false).
