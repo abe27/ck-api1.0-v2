@@ -3,7 +3,8 @@ package services
 import (
 	"fmt"
 	"net/http"
-	"strings"
+	"os"
+	"strconv"
 
 	"github.com/abe27/api/configs"
 	"github.com/abe27/api/models"
@@ -12,7 +13,7 @@ import (
 
 func CheckSerialIsReceived(serial_no string) bool {
 
-	url := fmt.Sprintf("http://127.0.0.1:4000/carton/search?serial_no=%s", serial_no)
+	url := fmt.Sprintf("%s/carton/search?serial_no=%s", os.Getenv("API_TRIGGER_URL"), serial_no)
 	method := "GET"
 
 	client := &http.Client{}
@@ -57,62 +58,74 @@ func ImportReceiveCarton(path string) (err error) {
 
 	for _, sheet := range workbook.GetSheets() {
 		i := 0
-		var transferNo *string
+		// var transferNo *string
 		for _, r := range sheet.GetRows() {
 			if i > 0 {
-				rec_no, _ := r.GetCol(1)
-				if rec_no.GetString() != "" {
-					transfer_out_no, _ := r.GetCol(1)
-					part_no, _ := r.GetCol(2)
-					lot_no, _ := r.GetCol(3)
-					serial_no, _ := r.GetCol(5)
-					qty, err := r.GetCol(6)
-					if err == nil {
-						isFound := CheckSerialIsReceived(serial_no.GetString())
-						cartonNotReceive := models.CartonNotReceive{
-							TransferOutNo: transfer_out_no.GetString(),
-							PartNo:        part_no.GetString(),
-							LotNo:         lot_no.GetString(),
-							SerialNo:      serial_no.GetString(),
-							Qty:           qty.GetInt64(),
-							IsSync:        isFound,
+				rec_no, err := r.GetCol(1)
+				if err == nil && rec_no.GetString() != "" {
+					if rec_no.GetString() != "" {
+						transfer_out_no, _ := r.GetCol(1)
+						var receiveEnt models.Receive
+						if err := db.Preload("ReceiveType").Where("transfer_out_no=?", transfer_out_no.GetString()).First(&receiveEnt).Error; err != nil {
+							panic(err)
 						}
-						db.FirstOrCreate(&cartonNotReceive, models.CartonNotReceive{SerialNo: serial_no.GetString()})
-						if isFound {
-							var recEnt models.Receive
-							db.Preload("FileEdi.Factory").Preload("ReceiveType.Whs").First(&recEnt, "transfer_out_no=?", transfer_out_no.GetString())
-							if recEnt.ID != "" {
-								var part models.Part
-								db.Select("id").First(&part, "slug=?", strings.ReplaceAll(part_no.GetString(), "-", ""))
-								var ledger models.Ledger
-								db.Select("id").Where("whs_id=?", &recEnt.ReceiveType.WhsID).Where("factory_id=?", &recEnt.FileEdi.FactoryID).Where("part_id=?", &part.ID).First(&ledger)
-
-								// Search Receive Detail
-								var receiveDetail models.ReceiveDetail
-								db.Select("id").Where("receive_id=?", &recEnt.ID).Where("ledger_id=?", &ledger.ID).First(&receiveDetail)
-
-								var carton models.Carton
-								db.First(&carton, "serial_no=?", serial_no.GetString())
-								if carton.ID != "" {
-									carton.ReceiveDetailID = &receiveDetail.ID
-									db.Save(&carton)
-								}
-
-								if transferNo != nil && transferNo != &recEnt.ID {
-									go SummaryReceive(transferNo)
-								}
-								transferNo = &recEnt.ID
+						part_no, _ := r.GetCol(2)
+						lot_no, _ := r.GetCol(3)
+						serial_no, _ := r.GetCol(5)
+						q, _ := r.GetCol(6)
+						qty, _ := strconv.ParseInt(q.GetString(), 10, 64)
+						if qty > 0 {
+							var part models.Part
+							if err := db.Select("id").Where("title=?", part_no.GetString()).First(&part).Error; err != nil {
+								panic(err)
 							}
+
+							var ledger models.Ledger
+							if err := db.Select("id").Where("whs_id=?", &receiveEnt.ReceiveType.WhsID).Where("part_id=?", &part.ID).First(&ledger).Error; err != nil {
+								panic(err)
+							}
+
+							fmt.Printf("%s ==> RecENT: %s PartID: %s LedgerID: %s\n", rec_no.GetString(), receiveEnt.ID, part.ID, ledger.ID)
+							var recDetail models.ReceiveDetail
+							if err := db.Select("id,plan_qty").Where("receive_id=?", &receiveEnt.ID).Where("ledger_id=?", &ledger.ID).First(&recDetail).Error; err != nil {
+								fmt.Println(err.Error())
+								recDetail.ReceiveID = &receiveEnt.ID
+								recDetail.LedgerID = &ledger.ID
+								recDetail.PlanQty = qty
+								recDetail.PlanCtn = 1
+								db.Save(&recDetail)
+							}
+
+							var receiveCarton models.CartonNotReceive
+							receiveCarton.ReceiveDetailID = recDetail.ID
+							receiveCarton.TransferOutNo = rec_no.GetString()
+							receiveCarton.PartNo = part_no.GetString()
+							receiveCarton.LotNo = lot_no.GetString()
+							receiveCarton.SerialNo = serial_no.GetString()
+							receiveCarton.Qty = qty
+							if err := db.FirstOrCreate(&receiveCarton, &models.CartonNotReceive{SerialNo: serial_no.GetString()}).Error; err != nil {
+								panic(err)
+							}
+
+							receiveCarton.IsReceived = CheckSerialIsReceived(serial_no.GetString())
+							if err := db.Save(&receiveCarton).Error; err != nil {
+								panic(err)
+							}
+
+							// var recCtn int64
+							// if err := db.Raw("select count(id) from tbt_carton_not_receives where is_received=true and transfer_out_no=?", rec_no.GetString()).Scan(&recCtn).Error; err != nil {
+							// 	panic(err)
+							// }
+							// fmt.Printf("%s ==> %d\n", rec_no.GetString(), recCtn)
 						}
-						fmt.Printf("TransferOutNo: %s PartNo: %s SerialNO: %s is: %v\n", transfer_out_no.GetString(), part_no.GetString(), serial_no.GetString(), isFound)
 					}
 				}
 			}
 			i++
 		}
 
-		db.Where("is_sync=?", true).Delete(&models.CartonNotReceive{})
-		go SummaryReceive(transferNo)
+		// db.Where("is_sync=?", true).Delete(&models.CartonNotReceive{})
+		// go SummaryReceive(transferNo)
 	}
 	return
 }

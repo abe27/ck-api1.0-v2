@@ -15,6 +15,7 @@ type CartonNotReceive struct {
 	LotNo           string        `gorm:"not null;size:8;" json:"lot_no,omitempty" form:"lot_no" binding:"required"`
 	SerialNo        string        `gorm:"not null;size:10;" json:"serial_no,omitempty" form:"serial_no" binding:"required"`
 	Qty             int64         `json:"qty,omitempty" form:"qty" binding:"required"`
+	IsReceived      bool          `json:"is_received,omitempty" form:"is_received"`
 	IsSync          bool          `json:"is_sync,omitempty" form:"is_sync" default:"false"`
 	CreatedAt       time.Time     `json:"created_at,omitempty" default:"now"`
 	UpdatedAt       time.Time     `json:"updated_at,omitempty" default:"now"`
