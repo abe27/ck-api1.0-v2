@@ -85,7 +85,7 @@ func ImportReceiveCarton(path string) (err error) {
 								panic(err)
 							}
 
-							fmt.Printf("%s ==> RecENT: %s PartID: %s LedgerID: %s\n", rec_no.GetString(), receiveEnt.ID, part.ID, ledger.ID)
+							// fmt.Printf("%s ==> RecENT: %s PartID: %s LedgerID: %s\n", rec_no.GetString(), receiveEnt.ID, part.ID, ledger.ID)
 							var recDetail models.ReceiveDetail
 							if err := db.Select("id,plan_qty").Where("receive_id=?", &receiveEnt.ID).Where("ledger_id=?", &ledger.ID).First(&recDetail).Error; err != nil {
 								fmt.Println(err.Error())
