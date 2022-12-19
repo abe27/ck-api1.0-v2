@@ -24,6 +24,13 @@ func SetUpRouter(c *fiber.App) {
 	syncRoute.Put("/orderplan/:id", controllers.UpdateSyncOrderPlan)
 	syncRoute.Get("/order", controllers.GetSyncOrderList)
 	syncRoute.Put("/order/:id", controllers.UpdateOrderSyncByID)
+	fileUpload := r.Group("upload")
+	fileUpload.Post("/receive", controllers.UploadReceiveExcel)
+	fileUpload.Post("/invoice/tap", controllers.ImportInvoiceTap)
+	fileUpload.Patch("/invoice/tap", controllers.CheckInvoiceTap)
+	fileUpload.Post("/invoice/client_tap", controllers.ClientImportInvoiceTap)
+	// fileUpload.Get("/stock", controllers.Verify)
+	// fileUpload.Get("/carton", controllers.Logout)
 
 	// Start Group Router
 	log := r.Group("/logs")
@@ -34,14 +41,6 @@ func SetUpRouter(c *fiber.App) {
 	log.Delete("/:id", controllers.DeleteSyncLoggerByID)
 	// Use Router Middleware
 	app := r.Use(services.AuthorizationRequired)
-
-	fileUpload := app.Group("upload")
-	fileUpload.Post("/receive", controllers.UploadReceiveExcel)
-	fileUpload.Post("/invoice/tap", controllers.ImportInvoiceTap)
-	fileUpload.Patch("/invoice/tap", controllers.CheckInvoiceTap)
-	fileUpload.Post("/invoice/client_tap", controllers.ClientImportInvoiceTap)
-	// fileUpload.Get("/stock", controllers.Verify)
-	// fileUpload.Get("/carton", controllers.Logout)
 
 	auth := app.Group("auth")
 	auth.Get("/me", controllers.Profile)
