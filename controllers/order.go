@@ -16,7 +16,7 @@ func GetAllOrder(c *fiber.Ctx) error {
 	var r models.Response
 	var obj []models.Order
 	isChecked := c.Query("is_checked")
-	limitData := 100
+	limitData := 1000
 	if c.Query("limit") != "" {
 		lmt, _ := strconv.Atoi(c.Query("limit"))
 		limitData = lmt
@@ -28,7 +28,7 @@ func GetAllOrder(c *fiber.Ctx) error {
 		isAdmin := services.IsAdmin(c)
 		if isAdmin {
 			err := db.
-				Limit(limitData).
+				// Limit(limitData).
 				Order("etd_date,updated_at").
 				Where("etd_date=?", etd).
 				Where("is_checked=?", isChecked).
@@ -92,7 +92,7 @@ func GetAllOrder(c *fiber.Ctx) error {
 		}
 
 		err := db.
-			Limit(limitData).
+			// Limit(limitData).
 			Order("etd_date,updated_at").
 			Where("etd_date=?", etd).
 			Where("is_checked=?", isChecked).
