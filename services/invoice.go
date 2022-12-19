@@ -154,6 +154,8 @@ func GenerateImportInvoiceTap() {
 		}
 	}
 	DeleteImportTap()
+	// After Generate Invoice Tap
+	// Send notify
 }
 
 func CreateOrderPallet(invTap *models.ImportInvoiceTap, orderPlan *models.OrderPlan, inv_seq int64, bhwidt, bhleng, bhhigh, bhpaln, bhctn string, etd time.Time, facData *models.Factory) {
