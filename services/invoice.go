@@ -132,7 +132,7 @@ func ImportInvoiceTap(fileName *string) {
 			line++
 		}
 	}
-	// DeleteImportTap()
+	DeleteImportTap()
 }
 
 func GenerateImportInvoiceTap() {
@@ -153,7 +153,7 @@ func GenerateImportInvoiceTap() {
 			}
 		}
 	}
-	// DeleteImportTap()
+	DeleteImportTap()
 }
 
 func CreateOrderPallet(invTap *models.ImportInvoiceTap, orderPlan *models.OrderPlan, inv_seq int64, bhwidt, bhleng, bhhigh, bhpaln, bhctn string, etd time.Time, facData *models.Factory) {
@@ -170,96 +170,102 @@ func CreateOrderPallet(invTap *models.ImportInvoiceTap, orderPlan *models.OrderP
 				order.IsChecked = true
 				order.IsInvoice = false
 				order.IsSync = true
-				if err := db.Save(&order).Error; err == nil {
-					var dimData models.PalletType
-					if err := db.
+				if err := db.Save(&order).Error; err != nil {
+					panic(err)
+				}
+
+				var dimData models.PalletType
+				if err := db.
+					Select("id,type,box_size_width,box_size_length,box_size_hight,pallet_size_width,pallet_size_length,pallet_size_hight").
+					Where("box_size_width=?", bhwidt).
+					Where("box_size_length=?", bhleng).
+					Where("box_size_hight=?", bhhigh).
+					First(&dimData).Error; err != nil {
+					db.
 						Select("id,type,box_size_width,box_size_length,box_size_hight,pallet_size_width,pallet_size_length,pallet_size_hight").
-						Where("box_size_width=?", bhwidt).
-						Where("box_size_length=?", bhleng).
-						Where("box_size_hight=?", bhhigh).
-						First(&dimData).Error; err != nil {
-						db.
-							Select("id,type,box_size_width,box_size_length,box_size_hight,pallet_size_width,pallet_size_length,pallet_size_hight").
-							Where("box_size_width=?", "0").
-							Where("box_size_length=?", "0").
-							Where("box_size_hight=?", "0").
-							First(&dimData)
+						Where("box_size_width=?", "0").
+						Where("box_size_length=?", "0").
+						Where("box_size_hight=?", "0").
+						First(&dimData)
+				}
+
+				txtType := "C"
+				if bhpaln != "" {
+					txtType = "P"
+				}
+
+				y := etd.Format("2006-01-02")
+				ctnRnd, _ := strconv.ParseInt(bhctn, 10, 64)
+				// ctnRnd := orderPlan.BalQty / orderPlan.Bistdp
+				for b := 0; b < int(ctnRnd); b++ {
+					var pln int64 = 0
+					switch txtType {
+					case "C":
+						var bRnd int64
+						db.Where("order_id=?", &order.ID).Where("pallet_prefix=?", "C").Find(&models.Pallet{}).Count(&bRnd)
+						pln = bRnd + 1
+					default:
+						pln, _ = strconv.ParseInt(bhpaln, 10, 64)
 					}
 
-					txtType := "C"
-					if bhpaln != "" {
-						txtType = "P"
+					fmt.Printf("inv: %s pono: %s part: %s etd: %s pln: %d ctn: %s\n", invTap.Bhivno, invTap.Bhodpo, invTap.Bhypat, y, pln, bhctn)
+
+					// Create PalletNo/Box
+					plData := models.Pallet{
+						OrderID:      &order.ID,
+						PalletTypeID: &dimData.ID,
+						PalletPrefix: txtType,
+						PalletNo:     pln,
+						IsActive:     true,
 					}
-
-					y := etd.Format("2006-01-02")
-					ctnRnd, _ := strconv.ParseInt(bhctn, 10, 64)
-					// ctnRnd := orderPlan.BalQty / orderPlan.Bistdp
-					for b := 0; b < int(ctnRnd); b++ {
-						var pln int64 = 0
-						switch txtType {
-						case "C":
-							var bRnd int64
-							db.Where("order_id=?", &order.ID).Where("pallet_prefix=?", "C").Find(&models.Pallet{}).Count(&bRnd)
-							pln = bRnd + 1
-						default:
-							pln, _ = strconv.ParseInt(bhpaln, 10, 64)
+					if err := db.FirstOrCreate(&plData, &models.Pallet{
+						OrderID:      &order.ID,
+						PalletPrefix: txtType,
+						PalletNo:     pln,
+					}).Error; err != nil {
+						var sysLog models.SyncLogger
+						sysLog.Title = fmt.Sprintf("Can not create pln: %d", pln)
+						sysLog.Description = fmt.Sprintf("Error %s", err.Error())
+						sysLog.IsSuccess = false
+						db.Create(&sysLog)
+					}
+					fCtn, _ := strconv.Atoi(bhctn)
+					for r := 0; r <= fCtn; r++ {
+						var checkPlDuplicate int64
+						if err := db.Select("id").Where("order_detail_id=?", &orderDetail.ID).Find(&models.PalletDetail{}).Count(&checkPlDuplicate).Error; err != nil {
+							panic(err)
 						}
-
-						// fmt.Printf("etd: %s pln: %d ctn: %s\n", y, pln, bhctn)
-
-						// Create PalletNo/Box
-						plData := models.Pallet{
-							OrderID:      &order.ID,
-							PalletTypeID: &dimData.ID,
-							PalletPrefix: txtType,
-							PalletNo:     pln,
-							IsActive:     true,
-						}
-						if err := db.FirstOrCreate(&plData, &models.Pallet{
-							OrderID:      &order.ID,
-							PalletPrefix: txtType,
-							PalletNo:     pln,
-						}).Error; err != nil {
-							var sysLog models.SyncLogger
-							sysLog.Title = fmt.Sprintf("Can not create pln: %d", pln)
-							sysLog.Description = fmt.Sprintf("Error %s", err.Error())
-							sysLog.IsSuccess = false
-							db.Create(&sysLog)
-						}
-						fCtn, _ := strconv.Atoi(bhctn)
-						for r := 0; r <= fCtn; r++ {
-							var checkPlDuplicate int64
-							db.Select("id").Where("order_detail_id=?", &orderDetail.ID).Find(&models.PalletDetail{}).Count(&checkPlDuplicate)
-							if checkPlDuplicate < orderDetail.OrderCtn {
-								var lastFticket models.LastFticket
-								if err := db.Select("id,last_running").Where("factory_id=?", &facData.ID).Where("on_year=?", y[:4]).Last(&lastFticket).Error; err == nil {
-									seqNo := (lastFticket.LastRunning + 1)
-									fmt.Printf("Fticket: %d%s:  %d != %d SEQ: %d PLID: %s\n", (r + 1), orderDetail.ID, ctnRnd, checkPlDuplicate, seqNo, plData.ID)
-									//Create PlletDetails
-									plDetailData := models.PalletDetail{
-										PalletID:      &plData.ID,
-										OrderDetailID: &orderDetail.ID,
-										SeqNo:         seqNo,
-										IsActive:      true,
-									}
-
-									if db.Create(&plDetailData).Error == nil {
-										lastFticket.LastRunning = (seqNo + 1)
-										lastFticket.OnYear, _ = strconv.ParseInt(y[:4], 10, 64)
-										lastFticket.FactoryID = &facData.ID
-										lastFticket.IsActive = true
-										db.Save(&lastFticket)
-									}
+						if checkPlDuplicate < orderDetail.OrderCtn {
+							var lastFticket models.LastFticket
+							if err := db.Select("id,last_running").Where("factory_id=?", &facData.ID).Where("on_year=?", y[:4]).Last(&lastFticket).Error; err == nil {
+								seqNo := (lastFticket.LastRunning + 1)
+								fmt.Printf("Fticket: %d%s:  %d != %d SEQ: %d PLID: %s\n", (r + 1), orderDetail.ID, ctnRnd, checkPlDuplicate, seqNo, plData.ID)
+								//Create PlletDetails
+								plDetailData := models.PalletDetail{
+									PalletID:      &plData.ID,
+									OrderDetailID: &orderDetail.ID,
+									SeqNo:         seqNo,
+									IsActive:      true,
 								}
+
+								if err := db.Create(&plDetailData).Error; err != nil {
+									panic(err)
+								}
+
+								lastFticket.LastRunning = (seqNo + 1)
+								lastFticket.OnYear, _ = strconv.ParseInt(y[:4], 10, 64)
+								lastFticket.FactoryID = &facData.ID
+								lastFticket.IsActive = true
+								db.Save(&lastFticket)
 							}
 						}
 					}
-					// // Update Status OrderDetail
-					var sumPl int64
-					db.Select("id").Where("order_detail_id=?", &orderDetail.ID).Find(&models.PalletDetail{}).Count(&sumPl)
-					if err := db.Model(&orderDetail).Select("total_on_pallet", "order_ctn", "is_matched", "is_checked", "is_sync").Updates(models.OrderDetail{TotalOnPallet: sumPl, OrderCtn: int64(orderPlan.BalQty) / int64(orderPlan.Bistdp), IsMatched: true, IsChecked: true, IsSync: true}).Error; err == nil {
-						db.Save(&invTap)
-					}
+				}
+				// // Update Status OrderDetail
+				var sumPl int64
+				db.Select("id").Where("order_detail_id=?", &orderDetail.ID).Find(&models.PalletDetail{}).Count(&sumPl)
+				if err := db.Model(&orderDetail).Select("total_on_pallet", "order_ctn", "is_matched", "is_checked", "is_sync").Updates(models.OrderDetail{TotalOnPallet: sumPl, OrderCtn: int64(orderPlan.BalQty) / int64(orderPlan.Bistdp), IsMatched: true, IsChecked: true, IsSync: true}).Error; err == nil {
+					db.Save(&invTap)
 				}
 			}
 		}
