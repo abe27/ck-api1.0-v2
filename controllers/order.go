@@ -16,7 +16,7 @@ func GetAllOrder(c *fiber.Ctx) error {
 	var r models.Response
 	var obj []models.Order
 	isChecked := c.Query("is_checked")
-	limitData := 50
+	limitData := 100
 	if c.Query("limit") != "" {
 		lmt, _ := strconv.Atoi(c.Query("limit"))
 		limitData = lmt
