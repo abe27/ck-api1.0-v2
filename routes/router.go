@@ -67,6 +67,7 @@ func SetUpRouter(c *fiber.App) {
 	// Whs Router
 	stock := app.Group("/stock")
 	stock.Get("/check_stock", controllers.GetCheckStock)
+	stock.Get("/stock_detail", controllers.GetCheckStockDetail)
 	stock.Get("/data", controllers.GetAllStock)
 	stock.Post("/data", controllers.CreateStock)
 	stock.Get("/data/:id", controllers.ShowStockByID)

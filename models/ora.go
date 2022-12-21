@@ -21,6 +21,27 @@ type StockCheck struct {
 	LastUpdate time.Time `json:"last_update"` // LASTUPDATE
 }
 
+type OraResponseStockDetail struct {
+	Message string             `json:"message,omitempty"`
+	Data    []StockCheckDetail `json:"data,omitempty"`
+	Code    int                `json:"code,omitempty"`
+	Success bool               `json:"success,omitempty"`
+	Error   string             `json:"error,omitempty"`
+}
+
+type StockCheckDetail struct {
+	Tagrp      string    `json:"tagrp"` //TAGRP
+	Slug       string    `json:"slug"`
+	PartNo     string    `json:"partno"` //PARTNO
+	PartName   string    `json:"partname"`
+	LotNo      string    `json:"lot_no"`      // LOTNO
+	SerialNo   string    `json:"serial_no"`   // RUNNINGNO
+	Qty        int64     `json:"qty"`         // STOCKQUANTITY
+	Shelve     string    `json:"shelve"`      // SHELVE
+	PalletNo   string    `json:"pallet_no"`   // PALLETKEY
+	Checked    int64     `json:"checked_flg"` // STKTAKECHKFLG
+	LastUpdate time.Time `json:"last_update"` // UPDDTE
+}
 type OraResponse struct {
 	Message string     `json:"message,omitempty"`
 	Data    []OraStock `json:"data,omitempty"`
