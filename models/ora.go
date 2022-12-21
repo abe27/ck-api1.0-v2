@@ -2,6 +2,25 @@ package models
 
 import "time"
 
+type OraResponseStock struct {
+	Message string       `json:"message,omitempty"`
+	Data    []StockCheck `json:"data,omitempty"`
+	Code    int          `json:"code,omitempty"`
+	Success bool         `json:"success,omitempty"`
+	Error   string       `json:"error,omitempty"`
+}
+
+type StockCheck struct {
+	Tagrp      string    `json:"tagrp"` // TAGRP
+	Slug       string    `json:"slug"`
+	PartNo     string    `json:"partno"`      // PARTNO
+	PartName   string    `json:"partname"`    // PARTNAME
+	Total      int64     `json:"total"`       // TOTAL
+	Checked    int64     `json:"checked"`     // CHECKED
+	NotCheck   int64     `json:"notcheck"`    // NOTCHECK
+	LastUpdate time.Time `json:"last_update"` // LASTUPDATE
+}
+
 type OraResponse struct {
 	Message string     `json:"message,omitempty"`
 	Data    []OraStock `json:"data,omitempty"`

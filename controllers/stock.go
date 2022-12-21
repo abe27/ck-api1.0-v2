@@ -13,6 +13,55 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+func GetCheckStock(c *fiber.Ctx) error {
+	var r models.Response
+	tag := "C"
+	if c.Query("tag") != "" {
+		tag = c.Query("tag")
+	}
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/check_stock?tag=%s", configs.API_TRIGGER_URL, tag), nil)
+
+	if err != nil {
+		r.Message = err.Error()
+		return c.Status(fiber.StatusInternalServerError).JSON(&r)
+	}
+	res, err := client.Do(req)
+	if err != nil {
+		r.Message = err.Error()
+		return c.Status(fiber.StatusInternalServerError).JSON(&r)
+	}
+	defer res.Body.Close()
+
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		r.Message = err.Error()
+		return c.Status(fiber.StatusInternalServerError).JSON(&r)
+	}
+	var obj models.OraResponseStock
+	if err = json.Unmarshal(body, &obj); err != nil {
+		r.Message = err.Error()
+		return c.Status(fiber.StatusInternalServerError).JSON(&r)
+	}
+
+	// Get PartName
+	var data []models.StockCheck
+	for _, i := range obj.Data {
+		var p models.Part
+		if err = configs.Store.Where("title=?", i.PartNo).First(&p).Error; err != nil {
+			r.Message = err.Error()
+			return c.Status(fiber.StatusInternalServerError).JSON(&r)
+		}
+		i.Slug = p.Slug
+		i.PartName = p.Description
+		data = append(data, i)
+	}
+
+	r.Message = obj.Message
+	r.Data = &data
+	return c.Status(fiber.StatusOK).JSON(&r)
+}
+
 func GetAllStock(c *fiber.Ctx) error {
 	db := configs.Store
 	var r models.Response

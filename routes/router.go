@@ -65,12 +65,13 @@ func SetUpRouter(c *fiber.App) {
 	area.Delete("/:id", controllers.DeleteAreaByID)
 
 	// Whs Router
-	stock := app.Group("/stock/data")
-	stock.Get("", controllers.GetAllStock)
-	stock.Post("", controllers.CreateStock)
-	stock.Get("/:id", controllers.ShowStockByID)
-	stock.Put("/:id", controllers.UpdateStockByID)
-	stock.Delete("/:id", controllers.DeleteStockByID)
+	stock := app.Group("/stock")
+	stock.Get("/check_stock", controllers.GetCheckStock)
+	stock.Get("/data", controllers.GetAllStock)
+	stock.Post("/data", controllers.CreateStock)
+	stock.Get("/data/:id", controllers.ShowStockByID)
+	stock.Put("/data/:id", controllers.UpdateStockByID)
+	stock.Delete("/data/:id", controllers.DeleteStockByID)
 
 	shelve := app.Group("/stock/shelve")
 	shelve.Get("/:shelve_no", controllers.GetAllStockByShelve)
