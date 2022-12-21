@@ -19,8 +19,13 @@ func GetCheckStock(c *fiber.Ctx) error {
 	if c.Query("tag") != "" {
 		tag = c.Query("tag")
 	}
+
+	part_no := "-"
+	if c.Query("part_no") != "" {
+		part_no = c.Query("part_no")
+	}
 	client := &http.Client{}
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/check_stock?tag=%s", configs.API_TRIGGER_URL, tag), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/check_stock?tag=%s&part_no=%s", configs.API_TRIGGER_URL, tag, part_no), nil)
 
 	if err != nil {
 		r.Message = err.Error()
