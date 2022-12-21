@@ -47,7 +47,7 @@ func CreateToken(user models.User) models.AuthSession {
 	obj.User = &user
 	obj.IsAdmin = false
 	var admin models.Administrator
-	db.First(&admin, "user_id=?", &user.ID)
+	db.Select("id").First(&admin, "user_id=?", &user.ID)
 	if admin.ID != "" {
 		obj.IsAdmin = true
 	}
