@@ -239,27 +239,37 @@ func CreateOrderPallet(invTap *models.ImportInvoiceTap, orderPlan *models.OrderP
 						}
 						if checkPlDuplicate < orderDetail.OrderCtn {
 							var lastFticket models.LastFticket
-							if err := db.Select("id,last_running").Where("factory_id=?", &facData.ID).Where("on_year=?", y[:4]).Last(&lastFticket).Error; err == nil {
-								seqNo := (lastFticket.LastRunning + 1)
-								fmt.Printf("Fticket: %d%s:  %d != %d SEQ: %d PLID: %s\n", (r + 1), orderDetail.ID, ctnRnd, checkPlDuplicate, seqNo, plData.ID)
-								//Create PlletDetails
-								plDetailData := models.PalletDetail{
-									PalletID:      &plData.ID,
-									OrderDetailID: &orderDetail.ID,
-									SeqNo:         seqNo,
-									IsActive:      true,
-								}
-
-								if err := db.Create(&plDetailData).Error; err != nil {
-									panic(err)
-								}
-
-								lastFticket.LastRunning = (seqNo + 1)
-								lastFticket.OnYear, _ = strconv.ParseInt(y[:4], 10, 64)
+							if err := db.Select("id,last_running").Where("factory_id=?", &facData.ID).Where("on_year=?", y[:4]).Last(&lastFticket).Error; err != nil {
+								OnYear, _ := strconv.ParseInt(y[:4], 10, 64)
+								lastFticket.LastRunning = 0
+								lastFticket.OnYear = OnYear
 								lastFticket.FactoryID = &facData.ID
 								lastFticket.IsActive = true
-								db.Save(&lastFticket)
+
+								db.FirstOrCreate(&lastFticket, &models.LastFticket{
+									OnYear:    OnYear,
+									FactoryID: &facData.ID,
+								})
 							}
+							seqNo := (lastFticket.LastRunning + 1)
+							fmt.Printf("Fticket: %d%s:  %d != %d SEQ: %d PLID: %s\n", (r + 1), orderDetail.ID, ctnRnd, checkPlDuplicate, seqNo, plData.ID)
+							//Create PlletDetails
+							plDetailData := models.PalletDetail{
+								PalletID:      &plData.ID,
+								OrderDetailID: &orderDetail.ID,
+								SeqNo:         seqNo,
+								IsActive:      true,
+							}
+
+							if err := db.Create(&plDetailData).Error; err != nil {
+								panic(err)
+							}
+
+							lastFticket.LastRunning = (seqNo + 1)
+							lastFticket.OnYear, _ = strconv.ParseInt(y[:4], 10, 64)
+							lastFticket.FactoryID = &facData.ID
+							lastFticket.IsActive = true
+							db.Save(&lastFticket)
 						}
 					}
 				}

@@ -401,7 +401,7 @@ func (obj *PalletType) BeforeCreate(tx *gorm.DB) (err error) {
 
 type LastFticket struct {
 	ID          string    `gorm:"primaryKey;size:21" json:"id,omitempty"`
-	FactoryID   *string   `gorm:"not null;unique;" json:"factory_id,omitempty" form:"factory_id" binding:"required"`
+	FactoryID   *string   `gorm:"not null;" json:"factory_id,omitempty" form:"factory_id" binding:"required"`
 	OnYear      int64     `gorm:"not null;" json:"on_year,omitempty" form:"on_year"`
 	LastRunning int64     `json:"last_running,omitempty" form:"last_running" binding:"required"`
 	IsActive    bool      `json:"is_active,omitempty" form:"is_active" binding:"required"`
