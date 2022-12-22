@@ -278,7 +278,7 @@ func DeleteImportTap() {
 	if err := configs.Store.Where("bhivdt < ?", (time.Now()).Format("2006-01-02")).Delete(&models.ImportInvoiceTap{}).Error; err != nil {
 		panic(err)
 	}
-	if err := configs.Store.Where("is_matched = ?", true).Delete(&models.ImportInvoiceTap{}).Error; err != nil {
-		panic(err)
-	}
+	// if err := configs.Store.Where("is_matched = ?", true).Delete(&models.ImportInvoiceTap{}).Error; err != nil {
+	// 	panic(err)
+	// }
 }
