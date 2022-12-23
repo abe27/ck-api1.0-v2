@@ -285,7 +285,9 @@ func CreateOrderPallet(invTap *models.ImportInvoiceTap, orderPlan *models.OrderP
 							lastFticket.OnYear, _ = strconv.ParseInt(y[:4], 10, 64)
 							lastFticket.FactoryID = &facData.ID
 							lastFticket.IsActive = true
-							db.Save(&lastFticket)
+							if err := db.Save(&lastFticket).Error; err != nil {
+								panic(err)
+							}
 						}
 					}
 				}
