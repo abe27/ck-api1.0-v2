@@ -40,7 +40,7 @@ func GenerateFTicketInvoiceTap(c *fiber.Ctx) error {
 	var r models.Response
 	//// Read Excel
 	var invTap []models.ImportInvoiceTap
-	if err := db.Limit(100).Where("is_matched=?", false).Find(&invTap).Error; err != nil {
+	if err := db.Where("is_matched=?", false).Find(&invTap).Error; err != nil {
 		r.Message = err.Error()
 		return c.Status(fiber.StatusInternalServerError).JSON(&r)
 	}
