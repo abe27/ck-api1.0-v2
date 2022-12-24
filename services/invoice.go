@@ -116,7 +116,7 @@ func ImportInvoiceTap(fileName *string) {
 						})
 
 						if invTap.ID != "" {
-							if err := db.Model(&models.ImportInvoiceTap{}).Where("id=?", &invTap.ID).Update("is_matched=?", false).Error; err != nil {
+							if err := db.Model(&models.ImportInvoiceTap{}).Where("id=?", &invTap.ID).Update("is_matched", false).Error; err != nil {
 								panic(err)
 							}
 						}
