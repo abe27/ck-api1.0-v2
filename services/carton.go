@@ -32,22 +32,22 @@ func CreateCarton(obj *models.CartonHistory) {
 	// sysLog.Description = fmt.Sprintf("%s created successfully", obj.SerialNo)
 	// sysLog.IsSuccess = true
 	// Get Master Data
-	whsTite := obj.Whs
-	switch whsTite {
+	whsTitle := obj.Whs
+	switch whsTitle {
 	case "C":
-		whsTite = "COM"
+		whsTitle = "COM"
 	case "D":
-		whsTite = "DOM"
+		whsTitle = "DOM"
 	case "N":
-		whsTite = "NESC"
+		whsTitle = "NESC"
 	case "I":
-		whsTite = "ICAM"
+		whsTitle = "ICAM"
 	default:
-		whsTite = "COM"
+		whsTitle = "COM"
 	}
 
 	var whs models.Whs
-	db.First(&whs, "title=?", whsTite)
+	db.First(&whs, "title=?", whsTitle)
 	part := models.Part{
 		Slug:        strings.ReplaceAll(obj.PartNo, "-", ""),
 		Title:       obj.PartNo,
